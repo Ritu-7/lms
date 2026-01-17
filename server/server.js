@@ -1,33 +1,28 @@
-import express from 'express'
-import cors from 'cors'
-import bodyParser from 'body-parser'
-import mongoose, { connect } from 'mongoose'
-import dotenv from 'dotenv'
-import connectDB from './configs/mongodb.js'
-import { clerkWebhook } from './controllers/webhooks.js'
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import connectDB from './configs/mongodb.js';
+import { clerkWebhook } from './controllers/webhooks.js';
 
-// initilize express
-const app = express()
-// connect to database
+const app = express();
+
+// Connect to Database
 await connectDB();
 
-// middleware
-app.use(cors())
-app.use(bodyParser.json())
+// Middlewares
+app.use(cors());
 
-// routes
+// Routes
 app.get('/', (req, res) => {
-  res.send('API is running...')
-})
+  res.send('API is running...');
+});
 
+// Clerk Webhook route
+// Note: We use express.json() here to handle the incoming webhook payload
 app.post('/clerk', express.json(), clerkWebhook);
 
-// Port
-const PORT = process.env.PORT || 5000
-// load environment variables
-dotenv.config()
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`)
-}   
-)   
+  console.log(`Server is running on port ${PORT}`);
+});
