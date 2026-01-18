@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
-  "type":"module",
+  "type": "module",
   "scripts": {
-    "server":"node server.js",
+    "server": "node server.js",
     "start": "node server.js"
   },
   "keywords": [],
@@ -20,6 +20,7 @@
     "mongoose": "^9.1.4",
     "multer": "^2.0.2",
     "nodemon": "^3.1.11",
+    "razorpay": "^2.9.6",
     "stripe": "^20.1.2",
     "svix": "^1.42.0"
   }
