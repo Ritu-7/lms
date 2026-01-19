@@ -29,7 +29,7 @@ const CourseCard = ({ course }) => {
         </h3>
 
         <p className="text-xs text-gray-500">
-          {course.educator?.name || 'Unknown Instructor'}
+          {course.educator.name || 'Unknown Instructor'}
         </p>
 
         {/* Rating */}

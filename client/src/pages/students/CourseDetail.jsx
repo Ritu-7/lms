@@ -279,7 +279,7 @@ const CourseDetail = () => {
     currency,
     backendUrl,
     getToken,
-    userData, // To check if user is logged in
+    userData, 
   } = useContext(AppContext)
 
   const [courseData, setCourseData] = useState(null)
@@ -296,11 +296,24 @@ const CourseDetail = () => {
       }
 
       if (isAlreadyEnrolled) {
-        return navigate(`/player/${courseData._id}`)
+        return toast.warn('Already Enrolled')
       }
 
       const token = await getToken()
-      
+      const fetchCourseData = async()=>{
+        try{
+          const {data} = await axios.post(backendURL+'/api/user/purchase',{courseId:courseData._id}{
+            headers:{Authorization:`Bearer ${token}`}
+          }  )
+          if(data.success){ 
+           const {session_url}=datawindow.location.replace(session_url)
+        }else{
+          toast.error(data.message)
+        }
+      }
+      catch(error){
+        toast.error(error.message)
+      }};
       // 1. Create Order on Backend
       const { data } = await axios.post(
         `${backendUrl}/api/user/purchase-course`,

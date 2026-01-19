@@ -6,18 +6,44 @@ import Footer from '../../components/students/Footer';
 
 const MyEnrollments = () => {
   const navigate = useNavigate();
-  const { enrolledCourses, calculateCourseDuration } = useContext(AppContext);
+  const { enrolledCourses, calculateCourseDuration,userData,fetchUserEnrolledCourses,backendUrl,getToken,calculateNoOflectures} = useContext(AppContext);
 
   const [progressArray] = useState([
-    { lectureCompleted: 2, totalLectures: 4 },
-    { lectureCompleted: 1, totalLectures: 5 },
-    { lectureCompleted: 10, totalLectures: 10 },
-    { lectureCompleted: 0, totalLectures: 8 },
-    { lectureCompleted: 4, totalLectures: 12 },
-    { lectureCompleted: 7, totalLectures: 7 },
-    { lectureCompleted: 3, totalLectures: 10 }
+
   ]);
 
+  const getCourseProgress = async()=>{
+    try{
+      const token = await getToken();
+      const tempProgressArray = await Promise.all(
+        enrolledCourses.map(async(course)=>{
+          const{data}=await axios.post(`${backendURL}/api/user/get-course-progress`{
+            courseId:course._id},{headers:{
+              Authorization:`Bearer ${token}`
+            }}
+          })
+          let totalLectures = calculateNoOflectures(course);
+          const lectureCompleted = data.progressData?data.progressData.lectureCompleted.length:0;
+          return {totalLectures,lectureCompleted}
+        })
+        setProgressarray(tempProgressArray);
+      )catch(error){
+        toast.error(error.message);
+      }
+    }
+  }
+
+  useEffect(()=>{
+    if(userData){
+      fetchUserEnrolledCourses()
+    }
+  },[userData])
+
+  useEffect(()=>{
+    if(enrolledCourses.length>0){
+      getCourseProgress()
+    }
+  },[enrolledCourses])
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <div className="flex-grow md:px-24 lg:px-36 px-4 pt-10">

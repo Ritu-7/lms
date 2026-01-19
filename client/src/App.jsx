@@ -80,10 +80,12 @@ import Navbar from './components/students/SNavbar.jsx'
 
 // Quill Styles for Text Editor
 import 'quill/dist/quill.snow.css';
+  import { ToastContainer} from 'react-toastify';
 
 const App = () => {
   return (
     <div className="text-default min-h-screen bg-white">
+      <ToastContainer position="top-center" />
       <Routes>
         {/* --- STUDENT ROUTES --- 
           The Navbar is included only in these specific routes. 

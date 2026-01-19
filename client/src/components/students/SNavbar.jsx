@@ -1,24 +1,48 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { assets } from '../../assets/assets'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useClerk, UserButton, useUser } from '@clerk/clerk-react'
+import { AppContext } from '../../context/AppContext'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 const SNavbar = () => {
-  const navigate = useNavigate()
   const location = useLocation()
-
+  const navigate = useNavigate()
+  
+  const { isEducator, backendURL, setIsEducator, getToken } = useContext(AppContext)
+  
   const isCourseListPage = location.pathname.includes('course-list')
-
   const { openSignIn } = useClerk()
   const { user } = useUser()
 
+  const becomeEducator = async () => {
+    try {
+      if (isEducator) {
+        navigate('/educator')
+        return
+      }
+
+      const token = await getToken()
+      const { data } = await axios.post(backendURL + '/api/user/update-role', {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+
+      if (data.success) {
+        setIsEducator(true)
+        toast.success(data.message)
+        navigate('/educator')
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
+
   return (
-    <div
-      className={`flex items-center justify-between px-4 sm:px-10 md:px-14 lg:px-36 
-      border-b border-gray-500 py-4
-      ${isCourseListPage ? 'bg-white' : 'bg-cyan-100/70'}`}
-    >
-      {/* Logo */}
+    <div className={`flex items-center justify-between px-4 sm:px-10 md:px-14 lg:px-36 border-b border-gray-500 py-4 ${isCourseListPage ? 'bg-white' : 'bg-cyan-100/70'}`}>
+      
       <img
         src={assets.logo}
         alt="Logo"
@@ -26,52 +50,41 @@ const SNavbar = () => {
         onClick={() => navigate('/')}
       />
 
-      {/* Desktop */}
       <div className="hidden md:flex items-center gap-5 text-gray-600">
         {user && (
           <>
-            <Link to="/educator" className="hover:text-black">
-              Become Educator
-            </Link>
-
-            <Link to="/my-enrollments" className="hover:text-black">
-              My Enrollments
-            </Link>
+            <button onClick={becomeEducator} className="hover:text-black">
+              {isEducator ? 'Educator Dashboard' : 'Become an Educator'}
+            </button>
+            <Link to="/my-enrollments" className="hover:text-black">My Enrollments</Link>
           </>
         )}
 
         {user ? (
           <UserButton />
         ) : (
-          <button
-            onClick={() => openSignIn()}
-            className="bg-blue-600 text-white px-5 py-2 rounded-full"
-          >
+          <button onClick={() => openSignIn()} className="bg-blue-600 text-white px-5 py-2 rounded-full">
             Create Account
           </button>
         )}
       </div>
 
-      {/* Mobile */}
       <div className="md:hidden flex items-center gap-2 sm:gap-5 text-gray-500">
         <div className="flex items-center gap-1 sm:gap-2 max-sm:text-xs">
           {user && (
             <>
-              <Link to="/educator">Educator</Link>
+              <button onClick={becomeEducator}>
+                {isEducator ? 'Educator' : 'Become Educator'}
+              </button>
               <Link to="/my-enrollments">Enrollments</Link>
             </>
           )}
         </div>
-
         {user ? (
           <UserButton />
         ) : (
           <button onClick={() => openSignIn()}>
-            <img
-              src={assets.user_icon}
-              alt="User Icon"
-              className="w-8 h-8 cursor-pointer"
-            />
+            <img src={assets.user_icon} alt="User Icon" className="w-8 h-8 cursor-pointer" />
           </button>
         )}
       </div>
