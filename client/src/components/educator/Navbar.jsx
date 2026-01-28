@@ -1,11 +1,9 @@
 import React from 'react'
-import{dummyEducatorData} from '../../assets/assets'
 import{UserButton,useUser} from '@clerk/clerk-react'
 import { Link } from 'react-router-dom'
 import { assets } from '../../assets/assets'
 const Navbar = () => {
 
-    const educatorData = dummyEducatorData
     const {user} = useUser()
   return (
   

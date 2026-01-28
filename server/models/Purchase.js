@@ -1,61 +1,50 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
+const purchaseSchema = new mongoose.Schema(
+  {
+    course: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Course",
+      required: true,
+    },
 
-const purchaseSchema = new mongoose.Schema({
-    courseId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Course',
-        required: true
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
-    userId: {
-        type: String, 
-        ref: 'User',
-        required: true
+
+    amount: {
+      type: Number,
+      required: true,
     },
-    amount: { 
-        type: Number, 
-        required: true 
+
+    status: {
+      type: String,
+      enum: ["pending", "completed", "failed"],
+      default: "pending",
     },
-    status: { 
-        type: String, 
-        enum: ['pending', 'completed', 'failed'], 
-        default: 'pending' 
-    },
-    // --- Razorpay Specific Fields ---
+
+    // Razorpay fields
     razorpayOrderId: {
-        type: String,
-        required: true,
-        unique: true
+      type: String,
+      required: true,
+      unique: true,
     },
+
     razorpayPaymentId: {
-        type: String, 
+      type: String,
     },
+
     razorpaySignature: {
-        type: String, 
-    }
-}, { timestamps: true });
+      type: String,
+    },
+  },
+  { timestamps: true }
+);
 
-
-const Purchase = mongoose.models.Purchase || mongoose.model('Purchase', purchaseSchema);
+const Purchase =
+  mongoose.models.Purchase ||
+  mongoose.model("Purchase", purchaseSchema);
 
 export default Purchase;
-
-// import mongoose from 'mongoose';
-
-// const PurchseSchema = new mongoose.Schema({
-//     courseId:{
-//         type: mongoose.Schema.Types.ObjectId,
-//         ref: 'Course',
-//         required: true
-//     },
-//         userId:{
-//        type:String,
-//        ref:'User',
-//        required:true
-//         },
-
-//         amount :{type:Number,required:true},
-//         status :{type:String,enum :['pending','completed','failed'],default:'pending'}},
-//         {timestamps:true});
-
-//       export  const Purchse = mongoose.model('Purchase',PurchseSchema)

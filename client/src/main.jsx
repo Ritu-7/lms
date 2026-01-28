@@ -1,21 +1,10 @@
-
 import { createRoot } from 'react-dom/client'
 import React from 'react'
-import ReactDOM from 'react-dom/client'
 import './index.css'
-
 import { ClerkProvider } from '@clerk/clerk-react'
-
-<ClerkProvider
-  publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}
-  appearance={{}}
->
-  <App />
-</ClerkProvider>
-
 import { BrowserRouter } from 'react-router-dom'
 import App from './App'
-import { AppContextProvider } from './context/AppContext'
+import { AppContextProvider } from './context/AppContextProvider'
 
 
 // Import your Publishable Key
@@ -26,14 +15,13 @@ if (!PUBLISHABLE_KEY) {
 }
 
 createRoot(document.getElementById('root')).render(
-  <BrowserRouter>
-  <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl='/'>
-    <AppContextProvider>
-      <App />
-    </AppContextProvider>
-    </ClerkProvider>
-  </BrowserRouter>
+  <React.StrictMode>
+    <BrowserRouter>
+      <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl='/'>
+        <AppContextProvider>
+          <App />
+        </AppContextProvider>
+      </ClerkProvider>
+    </BrowserRouter>
+  </React.StrictMode>
 )
-
-
-

@@ -10,7 +10,7 @@ const SNavbar = () => {
   const location = useLocation()
   const navigate = useNavigate()
   
-  const { isEducator, backendURL, setIsEducator, getToken } = useContext(AppContext)
+  const { isEducator, backendURL, getToken } = useContext(AppContext)
   
   const isCourseListPage = location.pathname.includes('course-list')
   const { openSignIn } = useClerk()
@@ -18,27 +18,29 @@ const SNavbar = () => {
 
   const becomeEducator = async () => {
     try {
-      if (isEducator) {
-        navigate('/educator')
-        return
-      }
+      const token = await getToken();
 
-      const token = await getToken()
-      const { data } = await axios.post(backendURL + '/api/user/update-role', {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const { data } = await axios.get(
+        `${backendURL}/api/educator/update-role`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (data.success) {
-        setIsEducator(true)
-        toast.success(data.message)
-        navigate('/educator')
+        toast.success("You are now an educator 🎉");
+
+        // Refresh user + role
+        // await fetchUserData(); // This function is not available here
+
+        navigate("/educator/dashboard");
       } else {
-        toast.error(data.message)
+        toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message)
+      toast.error(error.response?.data?.message || error.message);
     }
-  }
+  };
 
   return (
     <div className={`flex items-center justify-between px-4 sm:px-10 md:px-14 lg:px-36 border-b border-gray-500 py-4 ${isCourseListPage ? 'bg-white' : 'bg-cyan-100/70'}`}>

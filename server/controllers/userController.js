@@ -1,193 +1,320 @@
-import Course from '../models/Course.js';
-import User from '../models/User.js';
-import  Purchase  from '../models/Purchase.js';
-import { CourseProgress } from '../models/CourseProgress.js';
-import Razorpay from 'razorpay';
-import crypto from 'crypto';
+import User from "../models/User.js";
+import Course from "../models/Course.js";
+import CourseProgress from "../models/CourseProgress.js";
+import Purchase from "../models/Purchase.js"; // Import Purchase model
+import Razorpay from "razorpay";
+import mongoose from "mongoose"; // Import mongoose
 
-// Initialize Razorpay instance
-const razorpayInstance = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
-
-// --- 1. USER PROFILE & ENROLLMENT ---
-
+/* ===============================
+   Get current user profile
+================================ */
 export const getUserData = async (req, res) => {
-    try {
-        const userId = req.auth.userId;
-        const user = await User.findById(userId);
-        if (!user) return res.status(404).json({ success: false, message: "User not found" });
-        res.status(200).json({ success: true, user });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+  try {
+    const auth = req.auth();
+
+    if (!auth || !auth.userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
     }
+
+    // ✅ ALWAYS search by clerkUserId
+    let user = await User.findOne({ clerkUserId: auth.userId });
+
+    // Safety net (only if webhook failed)
+    if (!user) {
+      user = await User.create({
+        clerkUserId: auth.userId,
+        name: "User",
+        email: "",
+        imageUrl: "",
+        role: "student",
+        enrolledCourses: [],
+      });
+    }
+
+    res.json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    console.error("getUserData error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
+
+/* ===============================
+   Get enrolled courses
+================================ */
 export const userEnrolledCourses = async (req, res) => {
-    try {
-        const userId = req.auth.userId;
-        const userData = await User.findById(userId).populate('enrolledCourses');
-        
-        if (!userData) return res.status(404).json({ success: false, message: "User not found" });
-        
-        res.status(200).json({ success: true, enrolledCourses: userData.enrolledCourses });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+  try {
+    const { userId } = req.auth();
+
+    const user = await User.findOne({ clerkUserId: userId })
+      .populate("enrolledCourses");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
     }
+
+    res.json({
+      success: true,
+      enrolledCourses: user.enrolledCourses,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
-// --- 2. RAZORPAY PAYMENT LOGIC ---
-
+/* ===============================
+   Create Razorpay order
+================================ */
 export const purchaseCourse = async (req, res) => {
-    try {
-        const { courseId } = req.body;
-        const userId = req.auth.userId;
+  try {
+    const { userId } = req.auth();
+    const { courseId } = req.body;
 
-        const courseData = await Course.findById(courseId);
-        if (!courseData) return res.status(404).json({ success: false, message: "Course not found" });
-
-        // Calculate amount in paisa (Razorpay requirement)
-        const amount = Math.round((courseData.coursePrice - (courseData.discount * courseData.coursePrice / 100)) * 100);
-
-        const options = {
-            amount: amount,
-            currency: process.env.CURRENCY || 'INR',
-            receipt: `rcpt_${Date.now()}`,
-        };
-
-        const razorpayOrder = await razorpayInstance.orders.create(options);
-
-        // Save pending purchase receipt
-        await Purchase.create({
-            courseId: courseData._id,
-            userId,
-            amount: amount / 100,
-            razorpayOrderId: razorpayOrder.id,
-            status: 'pending'
-        });
-
-        res.status(200).json({ success: true, order: razorpayOrder });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+    // Input Validation: courseId
+    if (!courseId || !mongoose.Types.ObjectId.isValid(courseId)) {
+      return res.status(400).json({ success: false, message: "Invalid Course ID" });
     }
+
+    // Find User
+    const user = await User.findOne({ clerkUserId: userId });
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Find Course
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ success: false, message: "Course not found" });
+    }
+
+    // Check if course is published
+    if (!course.isPublished) {
+      return res.status(400).json({ success: false, message: "Course is not published yet" });
+    }
+
+    // Check if user is already enrolled
+    if (user.enrolledCourses.includes(course._id)) {
+      return res.status(400).json({ success: false, message: "You are already enrolled in this course" });
+    }
+
+    // Calculate Amount
+    const amount =
+      (course.coursePrice -
+        (course.discount * course.coursePrice) / 100) *
+      100; // Amount in paisa for Razorpay
+
+    // Initialize Razorpay
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+
+    // Create Razorpay Order
+    const order = await razorpay.orders.create({
+      amount,
+      currency: process.env.CURRENCY || "INR",
+      receipt: `${userId.slice(-5)}_${courseId.slice(-5)}`, // Unique receipt ID
+      notes: { courseId: course._id.toString(), userId: user._id.toString() }, // Store actual MongoDB IDs
+    });
+
+    // Respond with order details
+    res.json({ success: true, order });
+  } catch (error) {
+    console.error("purchaseCourse error:", error); // Log the error for debugging
+    res.status(500).json({ success: false, message: error.message || "Internal Server Error" });
+  }
 };
 
+/* ===============================
+   Verify payment & enroll
+================================ */
 export const verifyRazorpayPayment = async (req, res) => {
-    try {
-        const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-        const userId = req.auth.userId;
+  try {
+    const { userId } = req.auth();
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body; // Destructure all Razorpay fields
 
-        const body = razorpay_order_id + "|" + razorpay_payment_id;
-        const expectedSignature = crypto
-            .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-            .update(body.toString())
-            .digest("hex");
-
-        if (expectedSignature === razorpay_signature) {
-            const purchase = await Purchase.findOneAndUpdate(
-                { razorpayOrderId: razorpay_order_id },
-                { status: 'completed', razorpayPaymentId: razorpay_payment_id, razorpaySignature: razorpay_signature },
-                { new: true }
-            );
-
-            // Add course to user's enrolled list
-            await User.findByIdAndUpdate(userId, {
-                $addToSet: { enrolledCourses: purchase.courseId }
-            });
-
-            res.status(200).json({ success: true, message: "Payment verified and course unlocked" });
-        } else {
-            res.status(400).json({ success: false, message: "Invalid payment signature" });
-        }
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+    // Basic validation for incoming data
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return res.status(400).json({ success: false, message: "Payment verification failed: missing Razorpay data" });
     }
+
+    // Initialize Razorpay
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+
+    // Verify the payment signature
+    // Dynamically import crypto for potential serverless environment or cleaner import
+    const crypto = await import('crypto'); 
+    const hmac = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET);
+    hmac.update(razorpay_order_id + '|' + razorpay_payment_id);
+    const generatedSignature = hmac.digest('hex');
+
+    if (generatedSignature !== razorpay_signature) {
+      return res.status(400).json({ success: false, message: "Payment verification failed: invalid signature" });
+    }
+
+    // Fetch order details from Razorpay
+    const orderInfo = await razorpay.orders.fetch(razorpay_order_id);
+
+    // Ensure order status is 'paid'
+    if (orderInfo.status !== "paid") {
+      return res.status(400).json({ success: false, message: "Payment not completed or failed" });
+    }
+    
+    // Extract courseId and user's MongoDB ID from notes
+    const courseId = orderInfo.notes.courseId;
+    const userMongoIdFromNotes = orderInfo.notes.userId; // This is the user's MongoDB _id, not Clerk userId
+
+    // Find the actual user object from MongoDB using the Clerk userId (for current authenticated user)
+    const user = await User.findOne({ clerkUserId: userId });
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Authenticated user not found in DB" });
+    }
+
+    // Double-check if user is already enrolled before proceeding with enrollment
+    if (user.enrolledCourses.includes(courseId)) {
+      return res.status(400).json({ success: false, message: "You are already enrolled in this course" });
+    }
+
+    // Create a new purchase record
+    const purchase = await Purchase.create({
+      course: courseId,
+      user: user._id, // Use actual MongoDB user ID
+      amount: orderInfo.amount / 100, // Convert paisa back to currency (assuming currency in paisa)
+      status: "completed",
+      razorpayOrderId: razorpay_order_id,
+      razorpayPaymentId: razorpay_payment_id,
+      razorpaySignature: razorpay_signature,
+    });
+
+    // Enroll the user in the course (add course to user's enrolledCourses)
+    await User.findByIdAndUpdate(user._id, { $addToSet: { enrolledCourses: courseId } });
+
+    // Add user to Course's studentsEnrolled list
+    await Course.findByIdAndUpdate(courseId, { $addToSet: { studentsEnrolled: user._id } });
+
+    res.json({ success: true, message: "Payment successful and enrolled", purchaseId: purchase._id });
+  } catch (error) {
+    console.error("verifyRazorpayPayment error:", error); // Log the error for debugging
+    res.status(500).json({ success: false, message: error.message || "Internal Server Error" });
+  }
 };
 
-// --- 3. COURSE PROGRESS TRACKING ---
-
+/* ===============================
+   Update course progress
+================================ */
 export const updateUserCourseProgress = async (req, res) => {
-    try {
-        const userId = req.auth.userId;
-        const { courseId, lectureId } = req.body;
+  try {
+    const { userId } = req.auth();
+    const { courseId, lectureId } = req.body;
 
-        let progressData = await CourseProgress.findOne({ userId, courseId });
+    let progress = await CourseProgress.findOne({ clerkUserId: userId, courseId });
 
-        if (progressData) {
-            if (progressData.lectureCompleted.includes(lectureId)) {
-                return res.status(400).json({ success: false, message: "Lecture already completed" });
-            }
-            progressData.lectureCompleted.push(lectureId);
-            await progressData.save();
-            return res.status(200).json({ success: true, message: "Progress updated" });
-        } else {
-            await CourseProgress.create({
-                userId,
-                courseId,
-                lectureCompleted: [lectureId]
-            });
-            return res.status(201).json({ success: true, message: "Progress started and updated" });
-        }
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+    if (!progress) {
+      progress = await CourseProgress.create({
+        clerkUserId: userId,
+        courseId,
+        completedLectures: [],
+      });
     }
+
+    if (!progress.completedLectures.includes(lectureId)) {
+      progress.completedLectures.push(lectureId);
+      await progress.save();
+    }
+
+    res.json({ success: true, message: "Progress updated" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 
+/* ===============================
+   Get course progress
+================================ */
 export const getUserCourseProgress = async (req, res) => {
-    try {
-        const userId = req.auth.userId;
-        const { courseId } = req.params;
-        const progressData = await CourseProgress.findOne({ userId, courseId });
-        res.status(200).json({ success: true, progressData });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
+  try {
+    const { userId } = req.auth();
+    const { courseId } = req.body;
+
+    const progress = await CourseProgress.findOne({
+      clerkUserId: userId,
+      courseId,
+    });
+
+    res.json({
+      success: true,
+      progressData: progress || { completedLectures: [] },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 
-// --- 4. RATINGS & REVIEWS ---
-
+/* ===============================
+   Add / update rating
+================================ */
 export const addUserRating = async (req, res) => {
-    const userId = req.auth.userId;
-    const { courseId, rating, review } = req.body;
+  try {
+    const { userId } = req.auth();
+    const { courseId, rating } = req.body;
 
-    if (!courseId || !rating || rating < 1 || rating > 5) {
-        return res.status(400).json({ success: false, message: "Invalid data" });
+    const course = await Course.findById(courseId);
+
+    const index = course.courseRatings.findIndex(
+      (r) => r.userId === userId
+    );
+
+    if (index > -1) {
+      course.courseRatings[index].rating = rating;
+    } else {
+      course.courseRatings.push({ userId, rating });
     }
 
-    try {
-        const course = await Course.findById(courseId);
-        if (!course) return res.status(404).json({ success: false, message: "Course not found" });
+    await course.save();
 
-        const user = await User.findById(userId);
-        if (!user || !user.enrolledCourses.includes(courseId)) {
-            return res.status(403).json({ success: false, message: "You must be enrolled to rate this course" });
-        }
-
-       
-        const existingRatingIndex = course.courseRatings.findIndex(r => r.userId.toString() === userId);
-
-        if (existingRatingIndex !== -1) {
-            course.courseRatings[existingRatingIndex].rating = rating;
-            course.courseRatings[existingRatingIndex].review = review;
-        } else {
-            course.courseRatings.push({ userId, rating, review });
-        }
-
-        await course.save();
-        res.status(200).json({ success: true, message: "Rating submitted successfully" });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
+    res.json({ success: true, message: "Rating added" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 
-
+/* ===============================
+   Update user role (MongoDB)
+================================ */
 export const updateUserRole = async (req, res) => {
-    try {
-        const userId = req.auth.userId;
-        await User.findByIdAndUpdate(userId, { role: 'educator' });
-        res.status(200).json({ success: true, message: "Successfully updated account to Educator" });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+  try {
+    const { userId } = req.auth();
+    const { role } = req.body;
+
+    if (!["student", "educator"].includes(role)) {
+      return res.status(400).json({ success: false, message: "Invalid role" });
     }
+
+    await User.findOneAndUpdate(
+      { clerkUserId: userId },
+      { role }
+    );
+
+    res.json({ success: true, message: "Role updated successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };

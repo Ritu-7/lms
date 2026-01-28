@@ -1,34 +1,31 @@
-
-import React, { useEffect }  from 'react'
-import { useState } from 'react'
-import { dummyStudentEnrolled } from '../../assets/assets'
-import { toast } from 'react-toastify'
+import React, { useEffect, useContext, useState, useCallback } from 'react';
+import { AppContext } from "../../context/AppContext";
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
 const StudentsEnrolled = () => {
+  const { backendURL, getToken, isEducator } = useContext(AppContext);
+  const [enrolledStudents, setEnrolledStudents] = useState(null);
 
-  const {backendURL,getToken} =useContext(AppContext)
-  const[enrolledStudents,setEnrolledStudents]=useState(null);
-  
-  const fetchEnrolledStudents=async()=>{
-   try{
-    const token = await getToken()
-    const {data}=await axios.get(`${backendURL}/api/educator/enrolled-students`,{headers:{Authorization:`Bearer ${token}`}})
-    if(data.success){
-      setEnrolledStudents(data.enrolledStudents.reverse())
-    }else{
-      toast.error(data.message)
+  const fetchEnrolledStudents = useCallback(async () => {
+    try {
+      const token = await getToken();
+      const { data } = await axios.get(`${backendURL}/api/educator/enrolled-students`, { headers: { Authorization: `Bearer ${token}` } });
+      if (data.success) {
+        setEnrolledStudents(Array.isArray(data.enrolledStudents) ? data.enrolledStudents.reverse() : []);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
     }
-   }catch(error){
-  toast.error(error.message)
-   }
-  }
+  }, [backendURL, getToken]);
 
-  useEffect(()=>{
-    if(isEducator){
-      fetchEnrolledStudents()
+  useEffect(() => {
+    if (isEducator) {
+      fetchEnrolledStudents();
     }
-   
-  },[isEducator])
+  }, [isEducator, fetchEnrolledStudents]);
   return enrolledStudents ? (
     <div className='min-h-screen flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0'>
       <div className='flex flex-col items-center max-w-4xl w*full overflow-hidden rounded-md bg-white border-gray-500/20'>
@@ -55,8 +52,8 @@ const StudentsEnrolled = () => {
       </div>
     </div>
   ) : (
-    <div>Loading...</div>
+    <div>NO student enrolled</div>
   )
 }
 
-export default StudentsEnrolled
+export default StudentsEnrolled;

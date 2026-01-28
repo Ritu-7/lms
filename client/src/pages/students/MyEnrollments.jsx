@@ -1,49 +1,60 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 import { Line } from 'rc-progress';
 import Footer from '../../components/students/Footer';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const MyEnrollments = () => {
   const navigate = useNavigate();
-  const { enrolledCourses, calculateCourseDuration,userData,fetchUserEnrolledCourses,backendUrl,getToken,calculateNoOflectures} = useContext(AppContext);
+  const { 
+    enrolledCourses, 
+    calculateCourseDuration, 
+    userData, 
+    fetchUserEnrolledCourses, 
+    backendURL, 
+    getToken, 
+    calculateNoOfLectures 
+  } = useContext(AppContext);
 
-  const [progressArray] = useState([
+  const [progressArray, setProgressArray] = useState([]);
 
-  ]);
-
-  const getCourseProgress = async()=>{
-    try{
+  const getCourseProgress = useCallback(async () => {
+    try {
       const token = await getToken();
       const tempProgressArray = await Promise.all(
-        enrolledCourses.map(async(course)=>{
-          const{data}=await axios.post(`${backendURL}/api/user/get-course-progress`{
-            courseId:course._id},{headers:{
-              Authorization:`Bearer ${token}`
-            }}
-          })
-          let totalLectures = calculateNoOflectures(course);
-          const lectureCompleted = data.progressData?data.progressData.lectureCompleted.length:0;
-          return {totalLectures,lectureCompleted}
+        enrolledCourses.map(async (course) => {
+          const { data } = await axios.post(
+            `${backendURL}/api/user/get-course-progress`,
+            { courseId: course._id },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          
+          let totalLectures = calculateNoOfLectures(course);
+          const lectureCompleted = data.progressData ? data.progressData.completedLectures.length : 0;
+          
+          return { totalLectures, lectureCompleted };
         })
-        setProgressarray(tempProgressArray);
-      )catch(error){
-        toast.error(error.message);
-      }
+      );
+      setProgressArray(tempProgressArray);
+    } catch (error) {
+      toast.error(error.message);
     }
-  }
+  }, [backendURL, getToken, enrolledCourses, calculateNoOfLectures]);
 
-  useEffect(()=>{
-    if(userData){
-      fetchUserEnrolledCourses()
+  useEffect(() => {
+    if (userData) {
+      fetchUserEnrolledCourses();
     }
-  },[userData])
+  }, [userData, fetchUserEnrolledCourses]);
 
-  useEffect(()=>{
-    if(enrolledCourses.length>0){
-      getCourseProgress()
+  useEffect(() => {
+    if (enrolledCourses && enrolledCourses.length > 0) {
+      getCourseProgress();
     }
-  },[enrolledCourses])
+  }, [enrolledCourses, getCourseProgress]);
+
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <div className="flex-grow md:px-24 lg:px-36 px-4 pt-10">
@@ -54,7 +65,6 @@ const MyEnrollments = () => {
 
         <div className="overflow-hidden border border-gray-200 rounded-xl shadow-sm">
           <table className="w-full table-auto">
-            {/* TABLE HEAD - Clean and professional */}
             <thead className="bg-gray-50 border-b border-gray-200 hidden md:table-header-group">
               <tr>
                 <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">Course</th>
@@ -72,7 +82,6 @@ const MyEnrollments = () => {
 
                 return (
                   <tr key={index} className="hover:bg-gray-50/50 transition-colors group">
-                    {/* COURSE INFO */}
                     <td className="px-4 md:px-6 py-5">
                       <div className="flex items-center gap-4">
                         <img
@@ -84,7 +93,6 @@ const MyEnrollments = () => {
                           <h2 className="text-sm md:text-base font-semibold text-gray-800 truncate">
                             {course.courseTitle}
                           </h2>
-                          {/* Mobile-only lecture count */}
                           <p className="md:hidden text-xs text-gray-500 mt-1">
                             {stats.lectureCompleted}/{stats.totalLectures} Lectures
                           </p>
@@ -92,12 +100,10 @@ const MyEnrollments = () => {
                       </div>
                     </td>
 
-                    {/* DURATION */}
                     <td className="px-6 py-5 text-sm text-gray-600 hidden md:table-cell">
                       {calculateCourseDuration(course)}
                     </td>
 
-                    {/* PROGRESS - This shows the lecture count clearly on desktop */}
                     <td className="px-6 py-5 hidden md:table-cell">
                       <div className="flex flex-col w-40 lg:w-52">
                         <div className="flex justify-between items-center mb-2">
@@ -117,7 +123,6 @@ const MyEnrollments = () => {
                       </div>
                     </td>
 
-                    {/* ACTION BUTTON */}
                     <td className="px-4 md:px-6 py-5 text-right">
                       <button
                         onClick={() => navigate(`/player/${course._id}`)}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 const Rating = ({ initialRating, onRate }) => {
   const [rating, setRating] = useState(initialRating || 0)
@@ -8,11 +8,6 @@ const Rating = ({ initialRating, onRate }) => {
     if (onRate) onRate(value);
   }
 
-  useEffect(() => {
-    if (initialRating) {
-      setRating(initialRating)
-    }
-  }, [initialRating])
 
   return (
     <div className="flex items-center gap-1">
