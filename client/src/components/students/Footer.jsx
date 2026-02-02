@@ -11,8 +11,7 @@ const Footer = () => {
         <div className="flex flex-col md:items-start items-center w-full">
           <img src={assets.logo_dark} alt="logo" />
           <p className="mt-6 text-center md:text-left text-sm text-white/80">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-            Nullam auctor, nisl eget ultricies aliquam.
+          Learn. Grow. Succeed — anytime, anywhere.
           </p>
         </div>
 
