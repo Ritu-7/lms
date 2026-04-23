@@ -24,8 +24,11 @@ const EditCourse = () => {
   const [courseFeatures, setCourseFeatures] = useState([]);
   const [featureInput, setFeatureInput] = useState('');
 
+  // Lecture & Popup States
   const [showPopup, setShowPopup] = useState(false);
+  const [isEditingLecture, setIsEditingLecture] = useState(false);
   const [currentChapterId, setCurrentChapterId] = useState(null);
+  const [currentLectureId, setCurrentLectureId] = useState(null);
   const [lectureDetails, setLectureDetails] = useState({
     lectureTitle: '',
     lectureDuration: '',
@@ -68,9 +71,13 @@ const EditCourse = () => {
         theme: 'snow',
         placeholder: 'Write course description here...'
       });
-      if (courseData?.courseDescription) {
-        quillRef.current.root.innerHTML = courseData.courseDescription;
-      }
+    }
+  }, []);
+
+  // Update Quill content once courseData is loaded
+  useEffect(() => {
+    if (quillRef.current && courseData?.courseDescription) {
+      quillRef.current.root.innerHTML = courseData.courseDescription;
     }
   }, [courseData]);
 
@@ -107,26 +114,51 @@ const EditCourse = () => {
     }
   };
 
-  // Lecture Operations
-  const addLecture = () => {
+  // Lecture Edit Handler
+  const handleEditLecture = (chapterId, lecture) => {
+    setCurrentChapterId(chapterId);
+    setCurrentLectureId(lecture.lectureId);
+    setLectureDetails({
+      lectureTitle: lecture.lectureTitle,
+      lectureDuration: lecture.lectureDuration,
+      lectureVideoUrl: lecture.lectureVideoUrl,
+      isPreview: lecture.isPreview
+    });
+    setIsEditingLecture(true);
+    setShowPopup(true);
+  };
+
+  // Save Lecture (Add or Update)
+  const saveLecture = () => {
     setChapters(chapters.map(c => {
       if (c.chapterId === currentChapterId) {
-        return {
-          ...c,
-          chapterContent: [...c.chapterContent, {
+        let updatedContent;
+        if (isEditingLecture) {
+          updatedContent = c.chapterContent.map(lec => 
+            lec.lectureId === currentLectureId ? { ...lec, ...lectureDetails, lectureDuration: Number(lectureDetails.lectureDuration) } : lec
+          );
+        } else {
+          updatedContent = [...c.chapterContent, {
             lectureId: uniqid(),
             ...lectureDetails,
             lectureDuration: Number(lectureDetails.lectureDuration),
             lectureOrder: c.chapterContent.length > 0 ? Math.max(...c.chapterContent.map(l => l.lectureOrder)) + 1 : 1,
-          }]
-        };
+          }];
+        }
+        return { ...c, chapterContent: updatedContent };
       }
       return c;
     }));
+    resetLecturePopup();
+  };
+
+  const resetLecturePopup = () => {
     setShowPopup(false);
+    setIsEditingLecture(false);
+    setCurrentLectureId(null);
     setLectureDetails({ lectureTitle: '', lectureDuration: '', lectureVideoUrl: '', isPreview: false });
   };
-  
+
   // Form Submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -231,12 +263,19 @@ const EditCourse = () => {
               {!chapter.collapsed && (
                 <div className='p-4 space-y-2'>
                   {chapter.chapterContent.map((lec, i) => (
-                    <div key={i} className='flex justify-between text-sm border-b pb-2'>
+                    <div key={i} className='flex justify-between items-center text-sm border-b pb-2'>
                       <span>{i + 1}. {lec.lectureTitle} ({lec.lectureDuration} min)</span>
-                      <span className='text-blue-500 cursor-pointer'>Edit</span>
+                      <div className='flex gap-3'>
+                        <span 
+                          className='text-blue-500 cursor-pointer hover:underline'
+                          onClick={() => handleEditLecture(chapter.chapterId, lec)}
+                        >
+                          Edit
+                        </span>
+                      </div>
                     </div>
                   ))}
-                  <div className='text-blue-600 cursor-pointer text-sm font-medium' onClick={() => { setCurrentChapterId(chapter.chapterId); setShowPopup(true); }}>
+                  <div className='text-blue-600 cursor-pointer text-sm font-medium pt-2' onClick={() => { setCurrentChapterId(chapter.chapterId); setShowPopup(true); }}>
                     + Add Lecture
                   </div>
                 </div>
@@ -257,7 +296,7 @@ const EditCourse = () => {
       {showPopup && (
         <div className='fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50'>
           <div className='bg-white p-6 rounded-lg w-full max-w-md relative'>
-            <h2 className='text-xl font-bold mb-4'>Add Lecture</h2>
+            <h2 className='text-xl font-bold mb-4'>{isEditingLecture ? 'Edit Lecture' : 'Add Lecture'}</h2>
             <div className='space-y-3'>
               <input type='text' placeholder='Lecture Title' className='w-full border p-2 rounded' value={lectureDetails.lectureTitle} onChange={e => setLectureDetails({...lectureDetails, lectureTitle: e.target.value})} />
               <input type='number' placeholder='Duration (min)' className='w-full border p-2 rounded' value={lectureDetails.lectureDuration} onChange={e => setLectureDetails({...lectureDetails, lectureDuration: e.target.value})} />
@@ -266,9 +305,11 @@ const EditCourse = () => {
                 <input type='checkbox' checked={lectureDetails.isPreview} onChange={e => setLectureDetails({...lectureDetails, isPreview: e.target.checked})} />
                 Free Preview?
               </label>
-              <button onClick={addLecture} className='w-full bg-blue-600 text-white py-2 rounded'>Add</button>
+              <button onClick={saveLecture} className='w-full bg-blue-600 text-white py-2 rounded'>
+                {isEditingLecture ? 'Update Lecture' : 'Add Lecture'}
+              </button>
             </div>
-            <img onClick={() => setShowPopup(false)} src={assets.cross_icon} className='absolute top-4 right-4 cursor-pointer w-4' alt="close" />
+            <img onClick={resetLecturePopup} src={assets.cross_icon} className='absolute top-4 right-4 cursor-pointer w-4' alt="close" />
           </div>
         </div>
       )}
