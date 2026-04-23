@@ -24,19 +24,24 @@ await connectCloudinary();
 /* ===============================
    CORS
 ================================ */
-const allowedOrigins = ['https://lms-hazel-rho-45.vercel.app', 'http://localhost:5173'];
+const allowedOrigins = [
+  'https://lms-hazel-rho-45.vercel.app', 
+  'http://localhost:5173'
+];
 
 app.use(cors({
-  origin: (origin, callback) => {
-    // Local requests and tools like Postman might have no origin
-    if (!origin || allowedOrigins.includes(origin)) {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or Postman)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Add OPTIONS
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
