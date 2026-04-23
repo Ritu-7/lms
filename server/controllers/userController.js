@@ -63,15 +63,26 @@ export const purchaseCourse = async (req, res) => {
     const { userId } = req.auth();
     const { courseId } = req.body;
 
+    // --- DEBUG LOGS START ---
+    console.log("=== RAZORPAY DEBUG START ===");
+    console.log("1. RAZORPAY_KEY_ID from process.env:", process.env.RAZORPAY_KEY_ID ? "FOUND" : "NOT FOUND");
+    console.log("2. Value of Key (first 5 chars):", process.env.RAZORPAY_KEY_ID ? process.env.RAZORPAY_KEY_ID.substring(0, 8) : "NULL");
+    console.log("3. Course ID received:", courseId);
+    console.log("4. User ID from Auth:", userId);
+    console.log("=== RAZORPAY DEBUG END ===");
+    // --- DEBUG LOGS END ---
+
     const user = await User.findOne({ clerkUserId: userId });
-    const course = await Course.findById(courseId); // Defining 'course' here
+    const course = await Course.findById(courseId);
 
     if (!user || !course) {
       return res.status(404).json({ success: false, message: "User or Course not found" });
     }
 
+    // Amount in paisa
     const amount = Math.round((course.coursePrice - (course.discount * course.coursePrice) / 100) * 100);
 
+    // Initializing Razorpay
     const razorpay = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID,
       key_secret: process.env.RAZORPAY_KEY_SECRET,
@@ -80,14 +91,14 @@ export const purchaseCourse = async (req, res) => {
     const order = await razorpay.orders.create({
       amount,
       currency: process.env.CURRENCY || "INR",
-      receipt: `${userId.slice(-5)}_${courseId.slice(-5)}`,
+      receipt: `rcpt_${userId.slice(-5)}`,
       notes: { courseId: course._id.toString(), userId: user._id.toString() },
     });
 
     res.json({ success: true, order });
   } catch (error) {
-    console.error("Purchase Error:", error.message);
-    console.log("DEBUG KEY CHECK:", process.env.RAZORPAY_KEY_ID ? "LOADED" : "MISSING");
+    // Isse Render logs mein poora stack trace dikhega
+    console.error("DETAILED PURCHASE ERROR:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
