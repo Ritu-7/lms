@@ -10,38 +10,31 @@ const SNavbar = () => {
   const location = useLocation()
   const navigate = useNavigate()
   
-  const { isEducator, backendURL, getToken } = useContext(AppContext)
+  const { isEducator, backendURL, getToken ,fetchUserData} = useContext(AppContext)
   
   const isCourseListPage = location.pathname.includes('course-list')
   const { openSignIn } = useClerk()
   const { user } = useUser()
 
-  const becomeEducator = async () => {
-    try {
-      const token = await getToken();
 
-      const { data } = await axios.get(
-        `${backendURL}/api/educator/update-role`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+const becomeEducator = async () => {
+  try {
+    const token = await getToken();
+    const { data } = await axios.get(
+      `${backendURL}/api/educator/update-role`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
 
-      if (data.success) {
-        toast.success("You are now an educator 🎉");
-
-        // Refresh user + role
-        // await fetchUserData(); // This function is not available here
-
-        navigate("/educator/dashboard");
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.message || error.message);
-    }
-  };
-
+    if (data.success) {
+      toast.success("You are now an educator 🎉");
+      if (fetchUserData) await fetchUserData(); // Update the global state
+      navigate("/educator/dashboard");
+    } 
+  } catch (error) {
+    console.error(error); // This will show you exactly what's failing in Inspect > Console
+    toast.error(error.response?.data?.message || "Check console for CORS error");
+  }
+};
   return (
     <div className={`flex items-center justify-between px-4 sm:px-10 md:px-14 lg:px-36 border-b border-gray-500 py-4 ${isCourseListPage ? 'bg-white' : 'bg-cyan-100/70'}`}>
       

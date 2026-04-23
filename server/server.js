@@ -24,13 +24,12 @@ await connectCloudinary();
 /* ===============================
    CORS
 ================================ */
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+app.use(cors({
+  origin: 'https://lms-hazel-rho-45.vercel.app', 
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 /* ===============================
    Clerk Webhook (RAW BODY ONLY)
