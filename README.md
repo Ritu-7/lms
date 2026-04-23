@@ -109,6 +109,8 @@ VITE_BACKEND_URL=http://localhost:5000
 | **Student Progress** | ![Student Progress](screenshots/07-student-progress.png) | Real-time progress persistence and lesson completion tracking for students. |
 | **Course Details** | ![Course Details](screenshots/08-course-details.png) | Detailed course overview, including structured curriculum and enrollment options. |
 | **Testimonials** | ![Testimonials](screenshots/09-testimonials.png) | Integrated student testimonials section for social proof and community feedback. |
+| **secure Payments** | ![Secure Payments](screenshots/10-razorpay.png) | Seamless payment gateway integration using Razorpay, supporting multiple payment methods for course enrollments. |
+
 
 ## 🔮 Future Enhancements
 - [ ] **AI-Driven Recommendations:** Personalized course suggestions based on student behavior.
