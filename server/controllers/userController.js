@@ -112,23 +112,30 @@ export const purchaseCourse = async (req, res) => {
     const { userId } = req.auth();
     const { courseId } = req.body;
 
-    // ... (validation logic)
-
-    // Check if keys are actually loading (Debugging)
-    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
-        return res.status(500).json({ 
-            success: false, 
-            message: "Razorpay keys are not defined in server environment" 
-        });
+    // 1. Find the user
+    const user = await User.findOne({ clerkUserId: userId });
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
     }
 
+    // 2. Find the course - Is variable ka naam 'course' hona chahiye
+    const course = await Course.findById(courseId); 
+    if (!course) {
+      return res.status(404).json({ success: false, message: "Course not found" });
+    }
+
+    // 3. Amount calculation - Ensure 'course' variable exists here
+    const amount = Math.round(
+      (course.coursePrice - (course.discount * course.coursePrice) / 100) * 100
+    ); 
+
+    // 4. Initialize Razorpay
     const razorpay = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID,
       key_secret: process.env.RAZORPAY_KEY_SECRET,
     });
 
-    const amount = Math.round((course.coursePrice - (course.discount * course.coursePrice) / 100) * 100);
-
+    // 5. Create Order
     const order = await razorpay.orders.create({
       amount,
       currency: process.env.CURRENCY || "INR",
@@ -137,8 +144,9 @@ export const purchaseCourse = async (req, res) => {
     });
 
     res.json({ success: true, order });
+
   } catch (error) {
-    console.error("purchaseCourse error:", error);
+    console.error("purchaseCourse error:", error); // Ab ye error nahi aayega
     res.status(500).json({ success: false, message: error.message });
   }
 };
