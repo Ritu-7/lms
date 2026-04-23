@@ -39,29 +39,33 @@ export const AppContextProvider = ({ children }) => {
      FETCH USER DATA (CLERK + DB)
   */
   const fetchUserData = useCallback(async () => {
-    try {
-      if (!user) return;
+   try {
+     if (!user) return;
 
-      // Clerk role
-      const role = user?.publicMetadata?.role;
-      setIsEducator(role === "educator");
+     const token = await getToken();
 
-      const token = await getToken();
+     console.log("Fetching user data with token:", token ? "Exists" : "Null");
 
-      const { data } = await axios.get(`${backendURL}/api/user/data`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+     if (!token) {
+       console.error("No Clerk token available, skipping API call.");
+       return;
+     }
 
-      if (data.success) {
-        setUserData(data.user);
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.message || error.message);
-    }
+     const { data } = await axios.get(`${backendURL}/api/user/data`, {
+       headers: { Authorization: `Bearer ${token}` },
+     });
+
+     if (data.success) {
+       setUserData(data.user);
+       setIsEducator(data.user.role === "educator");
+     } else {
+       toast.error(data.message);
+     }
+   } catch (error) {
+     console.error("Fetch user data error:", error);
+     toast.error(error.response?.data?.message || "Failed to fetch user data");
+   }
   }, [backendURL, getToken, user]);
-
   /* ===============================
      FETCH ENROLLED COURSES
   ================================ */
@@ -141,21 +145,27 @@ export const AppContextProvider = ({ children }) => {
     });
   };
 
-  const calculateCourseDuration = (courseContent) => {
-    if (!courseContent || !Array.isArray(courseContent)) return "0 min";
+  // Inside AppContext.jsx
 
-    let totalMinutes = 0;
-    courseContent.forEach((chapter) => {
-      chapter.chapterContent?.forEach((lecture) => {
-        totalMinutes += lecture.lectureDuration || 0;
-      });
+const calculateCourseDuration = (course) => {
+    let totalDuration = 0;
+
+    course.courseContent?.forEach(chapter => {
+        chapter.chapterContent?.forEach(lecture => {
+            totalDuration += Number(lecture.lectureDuration || 0);
+        });
     });
 
-    return humanizeDuration(totalMinutes * 60000, {
-      units: ["h", "m"],
-      round: true,
-    });
-  };
+    if (totalDuration === 0) return "0m";
+
+    const hours = Math.floor(totalDuration / 60);
+    const mins = Math.round(totalDuration % 60); // Use Math.round to kill decimals
+
+    if (hours > 0) {
+        return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+    }
+    return `${mins}m`;
+};
 
   const calculateNoOfLectures = (course) => {
     if (!course || !Array.isArray(course.courseContent)) return 0;

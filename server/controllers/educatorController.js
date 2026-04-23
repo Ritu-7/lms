@@ -98,26 +98,22 @@ export const educatorDashboardData = async (req, res) => {
     const { userId } = req.auth();
 
     const educator = await User.findOne({ clerkUserId: userId });
-    if (!educator) {
-      return res.status(404).json({ success: false, message: "Educator not found" });
-    }
+    if (!educator) return res.status(404).json({ success: false });
 
-    const courses = await Course.find({ educator: educator._id }).populate(
-      "studentsEnrolled",
-      "name email imageUrl"
-    );
-
+    const courses = await Course.find({ educator: educator._id });
     const courseIds = courses.map((c) => c._id);
 
+    // ✅ FIX: Change 'courseId' to 'course' to match your database schema
     const purchases = await Purchase.find({
-      courseId: { $in: courseIds },
-      status: "completed",
+      course: { $in: courseIds }, 
+      status: { $in: ["completed", "success"] },
     });
 
-    const totalEarnings = purchases.reduce((sum, p) => sum + p.amount, 0);
+    // ✅ FIX: Use Number() to ensure the total is a math calculation, not a string
+    const totalEarnings = purchases.reduce((sum, p) => sum + Number(p.amount || 0), 0);
 
     const enrolledStudents = courses.flatMap((course) =>
-      course.studentsEnrolled.map((student) => ({
+      (course.studentsEnrolled || []).map((student) => ({
         courseTitle: course.courseTitle,
         student,
       }))
@@ -138,32 +134,29 @@ export const educatorDashboardData = async (req, res) => {
 };
 
 /* ===============================
-   Enrolled Students
+   Also fix Enrolled Students Data
 ================================ */
 export const getEnrolledStudentsData = async (req, res) => {
   try {
     const { userId } = req.auth();
-
     const educator = await User.findOne({ clerkUserId: userId });
-    if (!educator) {
-      return res.status(404).json({ success: false, message: "Educator not found" });
-    }
 
     const courses = await Course.find({ educator: educator._id });
     const courseIds = courses.map((c) => c._id);
 
     const purchases = await Purchase.find({
-      courseId: { $in: courseIds },
-      status: "completed",
+      course: { $in: courseIds }, // Matches your DB field 'course'
+      status: { $in: ["completed", "success"] },
     })
-      .populate("userId", "name email imageUrl")
-      .populate("courseId", "courseTitle");
+    .populate("user", "name email imageUrl") // ✅ Matches your DB field 'user'
+    .populate("course", "courseTitle");
 
     res.json({
       success: true,
       enrolledStudentsData: purchases.map((p) => ({
-        student: p.userId,
-        courseTitle: p.courseId.courseTitle,
+        // ✅ CRITICAL: We map 'p.user' to the 'student' key the frontend expects
+        student: p.user, 
+        courseTitle: p.course?.courseTitle || "Untitled Course",
         purchaseDate: p.createdAt,
       })),
     });
@@ -171,6 +164,7 @@ export const getEnrolledStudentsData = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 /* ===============================
    Publish / Unpublish Course
@@ -211,7 +205,11 @@ export const getEducatorCourses = async (req, res) => {
       return res.status(404).json({ success: false, message: "Educator not found" });
     }
 
+    // ✅ FIX: Ensure we find courses belonging to this educator
+    // If you want to be extra safe, you can .populate('studentsEnrolled') 
+    // but just ensuring the field exists is usually enough.
     const courses = await Course.find({ educator: educator._id });
+    
     res.json({ success: true, courses });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

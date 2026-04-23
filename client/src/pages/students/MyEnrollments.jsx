@@ -18,28 +18,39 @@ const MyEnrollments = () => {
     calculateNoOfLectures 
   } = useContext(AppContext);
 
-  const [progressArray, setProgressArray] = useState([]);
+  const [courseProgress, setCourseProgress] = useState({});
 
   const getCourseProgress = useCallback(async () => {
     try {
       const token = await getToken();
-      const tempProgressArray = await Promise.all(
+      if (!token || !enrolledCourses || enrolledCourses.length === 0) return;
+
+      const progressDataMap = {};
+
+      await Promise.all(
         enrolledCourses.map(async (course) => {
-          const { data } = await axios.post(
-            `${backendURL}/api/user/get-course-progress`,
-            { courseId: course._id },
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
-          
-          let totalLectures = calculateNoOfLectures(course);
-          const lectureCompleted = data.progressData ? data.progressData.completedLectures.length : 0;
-          
-          return { totalLectures, lectureCompleted };
+          try {
+            const { data } = await axios.post(
+              `${backendURL}/api/user/get-course-progress`,
+              { courseId: course._id },
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
+            
+            const totalLectures = calculateNoOfLectures(course) || 0;
+            const lectureCompleted = data.success && data.progressData 
+              ? data.progressData.completedLectures.length 
+              : 0;
+            
+            progressDataMap[course._id] = { totalLectures, lectureCompleted };
+          } catch (err) {
+            progressDataMap[course._id] = { totalLectures: calculateNoOfLectures(course), lectureCompleted: 0 };
+          }
         })
       );
-      setProgressArray(tempProgressArray);
+      
+      setCourseProgress(progressDataMap);
     } catch (error) {
-      toast.error(error.message);
+      toast.error("Failed to load course progress");
     }
   }, [backendURL, getToken, enrolledCourses, calculateNoOfLectures]);
 
@@ -56,95 +67,121 @@ const MyEnrollments = () => {
   }, [enrolledCourses, getCourseProgress]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
-      <div className="flex-grow md:px-24 lg:px-36 px-4 pt-10">
+    <div className="flex flex-col min-h-screen bg-gray-50/30">
+      {/* Content Wrapper */}
+      <div className="flex-grow md:px-24 lg:px-36 px-4 pt-10 pb-12">
         <header className="mb-10">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">My Enrollments</h1>
-          <p className="text-gray-500 mt-2">Manage your learning journey and track your progress.</p>
+          <p className="text-gray-500 mt-2">Track your learning progress and certificates.</p>
         </header>
 
-        <div className="overflow-hidden border border-gray-200 rounded-xl shadow-sm">
-          <table className="w-full table-auto">
-            <thead className="bg-gray-50 border-b border-gray-200 hidden md:table-header-group">
-              <tr>
-                <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">Course</th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">Duration</th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">Progress</th>
-                <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase">Action</th>
-              </tr>
-            </thead>
+        <div className="overflow-hidden border border-gray-200 rounded-xl shadow-sm bg-white">
+          <div className="overflow-x-auto">
+            <table className="w-full table-auto">
+              <thead className="bg-gray-50 border-b border-gray-200 hidden md:table-header-group">
+                <tr>
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Course</th>
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Duration</th>
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Progress</th>
+                  <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Action</th>
+                </tr>
+              </thead>
 
-            <tbody className="divide-y divide-gray-200">
-              {enrolledCourses.map((course, index) => {
-                const stats = progressArray[index] || { lectureCompleted: 0, totalLectures: 1 };
-                const percentage = Math.round((stats.lectureCompleted / stats.totalLectures) * 100);
-                const isFinished = percentage === 100;
+              <tbody className="divide-y divide-gray-100">
+                {enrolledCourses.length > 0 ? (
+                  enrolledCourses.map((course) => {
+                    const stats = courseProgress[course._id] || { lectureCompleted: 0, totalLectures: 0 };
+                    const total = stats.totalLectures || 1;
+                    const percentage = Math.min(Math.round((stats.lectureCompleted / total) * 100), 100);
+                    const isFinished = percentage === 100;
 
-                return (
-                  <tr key={index} className="hover:bg-gray-50/50 transition-colors group">
-                    <td className="px-4 md:px-6 py-5">
-                      <div className="flex items-center gap-4">
-                        <img
-                          src={course.courseThumbnail}
-                          alt="course"
-                          className="w-20 h-12 md:w-28 md:h-16 object-cover rounded-lg shadow-sm"
-                        />
-                        <div className="min-w-0">
-                          <h2 className="text-sm md:text-base font-semibold text-gray-800 truncate">
-                            {course.courseTitle}
-                          </h2>
-                          <p className="md:hidden text-xs text-gray-500 mt-1">
-                            {stats.lectureCompleted}/{stats.totalLectures} Lectures
-                          </p>
-                        </div>
-                      </div>
-                    </td>
+                    return (
+                      <tr key={course._id} className="hover:bg-gray-50/80 transition-colors">
+                        {/* Course Column */}
+                        <td className="px-4 md:px-6 py-5">
+                          <div className="flex items-center gap-4">
+                            <img
+                              src={course.courseThumbnail}
+                              alt="thumb"
+                              className="w-16 h-10 md:w-24 md:h-14 object-cover rounded-lg border border-gray-100"
+                            />
+                            <div className="min-w-0">
+                              <h2 className="text-sm md:text-base font-semibold text-gray-800 truncate">
+                                {course.courseTitle}
+                              </h2>
+                              <p className="md:hidden text-[11px] text-gray-500 mt-1">
+                                {stats.lectureCompleted}/{stats.totalLectures} Lessons
+                              </p>
+                            </div>
+                          </div>
+                        </td>
 
-                    <td className="px-6 py-5 text-sm text-gray-600 hidden md:table-cell">
-                      {calculateCourseDuration(course)}
-                    </td>
-
-                    <td className="px-6 py-5 hidden md:table-cell">
-                      <div className="flex flex-col w-40 lg:w-52">
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-xs font-bold text-gray-700">{percentage}%</span>
-                          <span className="text-[11px] font-medium text-gray-400">
-                            {stats.lectureCompleted} / {stats.totalLectures} Lectures
+                        {/* Duration Column */}
+                        <td className='px-6 py-5 hidden md:table-cell'>
+                          <span className='text-gray-600 text-sm bg-gray-100 px-3 py-1 rounded-full whitespace-nowrap'>
+                            {calculateCourseDuration(course)}
                           </span>
-                        </div>
-                        <Line
-                          strokeWidth={3}
-                          percent={percentage}
-                          strokeColor={isFinished ? "#16a34a" : "#2563eb"}
-                          trailColor="#e5e7eb"
-                          strokeLinecap="round"
-                          className="h-1.5"
-                        />
-                      </div>
-                    </td>
+                        </td>
 
-                    <td className="px-4 md:px-6 py-5 text-right">
-                      <button
-                        onClick={() => navigate(`/player/${course._id}`)}
-                        className={`inline-flex items-center justify-center px-5 py-2 rounded-lg text-sm font-bold transition-all ${
-                          isFinished
-                            ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                            : 'bg-blue-600 text-white hover:bg-blue-700 shadow-md shadow-blue-100 hover:-translate-y-0.5'
-                        }`}
+                        {/* Progress Column */}
+                        <td className="px-6 py-5 hidden md:table-cell">
+                          <div className="flex flex-col w-40 lg:w-52">
+                            <div className="flex justify-between items-center mb-1">
+                              <span className={`text-xs font-bold ${isFinished ? 'text-green-600' : 'text-blue-600'}`}>
+                                {percentage}%
+                              </span>
+                              <span className="text-[10px] text-gray-400">
+                                {stats.lectureCompleted} / {stats.totalLectures}
+                              </span>
+                            </div>
+                            <Line
+                              strokeWidth={3}
+                              percent={percentage}
+                              strokeColor={isFinished ? "#10b981" : "#2563eb"}
+                              trailColor="#f3f4f6"
+                              strokeLinecap="round"
+                              className="h-1.5"
+                            />
+                          </div>
+                        </td>
+
+                        {/* Action Column */}
+                        <td className="px-4 md:px-6 py-5 text-right">
+                          <button
+                            onClick={() => navigate(`/player/${course._id}`)}
+                            className={`px-4 py-2 md:px-6 rounded-lg text-xs md:text-sm font-bold transition-all ${
+                              isFinished
+                                ? 'bg-green-50 text-green-700 border border-green-100 hover:bg-green-100'
+                                : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95'
+                            }`}
+                          >
+                            {isFinished ? 'Review' : 'Continue'}
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan="4" className="py-24 text-center">
+                      <p className="text-gray-500">No enrollments found.</p>
+                      <button 
+                        onClick={() => navigate('/course-list')}
+                        className="mt-4 text-blue-600 font-bold hover:underline"
                       >
-                        {isFinished ? 'Completed' : 'On Going'}
+                        Browse Courses
                       </button>
                     </td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-      <div className="mt-auto pt-20">
-        <Footer />
-      </div>
+
+      {/* Full Screen Footer */}
+      <Footer />
     </div>
   );
 };

@@ -1,20 +1,21 @@
 import User from "../models/User.js";
+import { getAuth } from "@clerk/express";
 
 /* ======================================
    Protect all authenticated routes
 ====================================== */
 export const protectRoute = async (req, res, next) => {
   try {
-    const auth = req.auth(); // ✅ ALWAYS a function
+    const { userId } = getAuth(req);
 
-    if (!auth || !auth.userId) {
+    if (!userId) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized",
+        message: "Unauthorized - No Session Found",
       });
     }
 
-    req.clerkUserId = auth.userId; // store Clerk ID safely
+    req.clerkUserId = userId; // store Clerk ID safely
     next();
   } catch (error) {
     console.error("Auth error:", error.message);
@@ -30,9 +31,9 @@ export const protectRoute = async (req, res, next) => {
 ====================================== */
 export const protectEducatorRoutes = async (req, res, next) => {
   try {
-    const auth = req.auth(); // ✅ FIXED
+    const { userId } = getAuth(req);
 
-    if (!auth || !auth.userId) {
+    if (!userId) {
       return res.status(401).json({
         success: false,
         message: "Unauthorized. Please login again.",
@@ -40,7 +41,7 @@ export const protectEducatorRoutes = async (req, res, next) => {
     }
 
     const user = await User.findOne({
-      clerkUserId: auth.userId, // ✅ correct lookup
+      clerkUserId: userId,
     });
 
     if (!user) {

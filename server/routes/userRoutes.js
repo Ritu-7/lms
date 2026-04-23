@@ -7,6 +7,7 @@ import {
   updateUserCourseProgress,
   getUserCourseProgress,
   addUserRating,
+  getCourseData
 } from "../controllers/userController.js";
 
 import { protectRoute } from "../middlewares/authMiddleware.js";
@@ -22,7 +23,7 @@ userRouter.get("/test", (req, res) => {
 
 userRouter.get("/data", protectRoute, getUserData);
 userRouter.get("/enrolled-courses", protectRoute, userEnrolledCourses);
-
+userRouter.get('/course/:courseId', getCourseData);
 /* ===============================
    POST routes
 ================================ */

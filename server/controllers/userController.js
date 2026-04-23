@@ -234,12 +234,11 @@ export const updateUserCourseProgress = async (req, res) => {
         completedLectures: [],
       });
     }
-
-    if (!progress.completedLectures.includes(lectureId)) {
-      progress.completedLectures.push(lectureId);
-      await progress.save();
-    }
-
+    if (!progress.completedLectures.includes(String(lectureId))) {
+  progress.completedLectures.push(String(lectureId));
+  await progress.save();
+}
+   
     res.json({ success: true, message: "Progress updated" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -251,20 +250,15 @@ export const updateUserCourseProgress = async (req, res) => {
 ================================ */
 export const getUserCourseProgress = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const { userId } = req.auth(); // Use ()
     const { courseId } = req.body;
 
-    const progress = await CourseProgress.findOne({
-      clerkUserId: userId,
-      courseId,
-    });
+    // Use 'userId' to match the fixed update controller
+    const progressData = await CourseProgress.findOne({ userId, courseId });
 
-    res.json({
-      success: true,
-      progressData: progress || { completedLectures: [] },
-    });
+    res.json({ success: true, progressData });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.json({ success: false, message: error.message });
   }
 };
 
@@ -317,4 +311,33 @@ export const updateUserRole = async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
+};
+
+export const getCourseData = async (req, res) => {
+    try {
+        const { courseId } = req.params;
+
+      
+        const courseData = await Course.findById(courseId).lean();
+
+        if (!courseData) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "Course not found." 
+            });
+        }
+
+
+        res.json({ 
+            success: true, 
+            courseData 
+        });
+
+    } catch (error) {
+        console.error("Error fetching course data:", error.message);
+        res.status(500).json({ 
+            success: false, 
+            message: "Server error while fetching course details." 
+        });
+    }
 };

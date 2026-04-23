@@ -28,6 +28,7 @@ app.use(
   cors({
     origin: "http://localhost:5173",
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
@@ -49,7 +50,7 @@ app.use(express.json());
 /* ===============================
    Clerk Auth Middleware
 ================================ */
-app.use(clerkMiddleware());
+app.use(clerkMiddleware({ debug: true }));
 
 /* ===============================
    Routes
@@ -58,20 +59,43 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
+/* ===============================
+   Routes
+================================ */
 app.use("/api/courses", courseRouter);
 app.use("/api/user", userRouter);
 app.use("/api/educator", educatorRouter);
 
 /* ===============================
-   Error Handler
+   Database Fix Script
 ================================ */
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(err.status || 500).json({
-    success: false,
-    message: err.message || "Internal Server Error",
-  });
-});
+import User from "./models/User.js"; 
+
+const fixDatabaseNames = async () => {
+  try {
+    const users = await User.find({ 
+      $or: [{ name: "User" }, { name: "" }] 
+    });
+
+    if (users.length > 0) {
+      for (let user of users) {
+        if (user.email) {
+          // If name is "User" or empty, use email prefix
+          user.name = user.email.split('@')[0]; 
+          await user.save();
+        }
+      }
+      console.log(`✅ Successfully fixed ${users.length} user records!`);
+    } else {
+      console.log("ℹ️ No 'User' names found to fix.");
+    }
+  } catch (error) {
+    console.error("❌ Fix script error:", error.message);
+  }
+};
+
+// ✅ UNCOMMENT THE LINE BELOW, SAVE, AND RESTART YOUR SERVER
+// fixDatabaseNames(); 
 
 /* ===============================
    Server Start
