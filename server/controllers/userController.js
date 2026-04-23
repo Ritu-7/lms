@@ -243,45 +243,77 @@ export const verifyRazorpayPayment = async (req, res) => {
 /* ===============================
    Update course progress
 ================================ */
+// userController.js 
+
+// userController.js
+
 export const updateUserCourseProgress = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    // 1. Get userId safely (Clerk is moving req.auth to a function)
+    const { userId } = typeof req.auth === 'function' ? req.auth() : req.auth;
     const { courseId, lectureId } = req.body;
 
-    let progress = await CourseProgress.findOne({ clerkUserId: userId, courseId });
+    // 2. IMPORTANT: Change findById to findOne using the clerkUserId string
+    const userData = await User.findOne({ clerkUserId: userId });
 
-    if (!progress) {
-      progress = await CourseProgress.create({
-        clerkUserId: userId,
-        courseId,
-        completedLectures: [],
-      });
+    if (!userData) {
+      return res.status(404).json({ success: false, message: 'User Not Found' });
     }
-    if (!progress.completedLectures.includes(String(lectureId))) {
-  progress.completedLectures.push(String(lectureId));
-  await progress.save();
-}
-   
-    res.json({ success: true, message: "Progress updated" });
+
+    // 3. Initialize nested objects if they don't exist
+    if (!userData.courseProgressData) {
+        userData.courseProgressData = {};
+    }
+
+    if (!userData.courseProgressData[courseId]) {
+        userData.courseProgressData[courseId] = [];
+    }
+
+    // 4. Prevent duplicate lecture entries
+    if (userData.courseProgressData[courseId].includes(lectureId)) {
+        return res.json({ success: true, message: 'Lecture already completed' });
+    }
+
+    // 5. Update and Save
+    userData.courseProgressData[courseId].push(lectureId);
+
+    // Tell Mongoose the Object type has changed
+    userData.markModified('courseProgressData');
+
+    await userData.save();
+
+    res.json({ success: true, message: 'Progress Updated' });
+
   } catch (error) {
+    console.error("Update Error:", error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
 /* ===============================
-   Get course progress
+    Get course progress
 ================================ */
 export const getUserCourseProgress = async (req, res) => {
   try {
-    const { userId } = req.auth(); // Use ()
+    const { userId } = typeof req.auth === 'function' ? req.auth() : req.auth;
     const { courseId } = req.body;
 
-    // Use 'userId' to match the fixed update controller
-    const progressData = await CourseProgress.findOne({ userId, courseId });
+    // Consistency: Always use findOne for Clerk IDs
+    const userData = await User.findOne({ clerkUserId: userId });
+    
+    if (!userData) {
+      return res.status(404).json({ success: false, message: 'User Not Found' });
+    }
 
-    res.json({ success: true, progressData });
+    const progress = userData.courseProgressData ? userData.courseProgressData[courseId] : [];
+    
+    res.json({ 
+      success: true, 
+      progressData: { completedLectures: progress || [] } 
+    });
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    console.error("Fetch Progress Error:", error.message);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 

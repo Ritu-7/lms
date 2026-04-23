@@ -29,14 +29,22 @@ const userSchema = new mongoose.Schema(
     enrolledCourses: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref:"Course",
+        ref: "Course",
       },
     ],
+    // 🚀 ADD THIS FIELD
+    courseProgressData: {
+      type: Object,
+      default: {},
+    },
   },
-  { timestamps: true }
+  { 
+    timestamps: true,
+    // 🔒 This ensures empty objects {} are actually saved in the DB
+    minimize: false 
+  }
 );
 
-// ✅ VERY IMPORTANT
 const User = mongoose.models.User || mongoose.model("User", userSchema);
 
 export default User;

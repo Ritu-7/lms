@@ -2,7 +2,6 @@ import React, { useEffect, useState, useContext, useCallback } from "react";
 import { AppContext } from "../../context/AppContext";
 import { useParams } from "react-router-dom";
 import { assets } from "../../assets/assets";
-import humanizeDuration from "humanize-duration";
 import YouTube from "react-youtube";
 import Footer from "../../components/students/Footer";
 import Loading from "../../components/students/Loading";
@@ -15,7 +14,6 @@ const Player = () => {
     calculateChapterTime,
     backendURL,
     getToken,
-    userData,
     fetchUserEnrolledCourses,
   } = useContext(AppContext);
 
@@ -26,7 +24,7 @@ const Player = () => {
   const [playerData, setPlayerData] = useState(null);
   const [progressData, setProgressData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isUpdating, setIsUpdating] = useState(false); // Added missing state
+  const [isUpdating, setIsUpdating] = useState(false);
 
   // Rating States
   const [rating, setRating] = useState(0);
@@ -42,7 +40,7 @@ const Player = () => {
   };
 
   /* ================= GET COURSE DATA ================= */
-  const getCourseData = async () => {
+  const getCourseData = useCallback(async () => {
     try {
       const token = await getToken();
       const { data } = await axios.get(`${backendURL}/api/user/course/${courseId}`, {
@@ -51,12 +49,16 @@ const Player = () => {
 
       if (data.success) {
         setCourseData(data.courseData);
-        if (data.courseData.courseContent.length > 0 && data.courseData.courseContent[0].chapterContent.length > 0) {
-          setPlayerData({
-            ...data.courseData.courseContent[0].chapterContent[0],
-            chapter: 1,
-            lecture: 1
-          });
+        // Only set initial player data once
+        if (!playerData && data.courseData.courseContent.length > 0) {
+          const firstChapter = data.courseData.courseContent[0];
+          if (firstChapter.chapterContent.length > 0) {
+            setPlayerData({
+              ...firstChapter.chapterContent[0],
+              chapter: 1,
+              lecture: 1
+            });
+          }
         }
       } else {
         toast.error(data.message);
@@ -66,34 +68,7 @@ const Player = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  /* ================= RATING HANDLER ================= */
-  const handleRatingSubmit = async () => {
-    if (rating === 0) return toast.error("Please select a star rating");
-    try {
-      setIsSubmitting(true);
-      const token = await getToken();
-      const { data } = await axios.post(
-        `${backendURL}/api/user/add-rating`,
-        { courseId, rating },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (data.success) {
-        toast.success("Thank you for your feedback!");
-        fetchUserEnrolledCourses(); // Refresh global state
-      }
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  /* ================= TOGGLE SECTION ================= */
-  const toggleSection = (index) => {
-    setOpenSection((prev) => ({ ...prev, [index]: !prev[index] }));
-  };
+  }, [backendURL, courseId, getToken, playerData]);
 
   /* ================= FETCH PROGRESS ================= */
   const getCourseProgress = useCallback(async () => {
@@ -116,6 +91,7 @@ const Player = () => {
   /* ================= UPDATE PROGRESS ================= */
   const markLectureAsCompleted = async (lectureId) => {
     try {
+      if (isUpdating) return;
       setIsUpdating(true);
       const token = await getToken();
       
@@ -137,16 +113,47 @@ const Player = () => {
     }
   };
 
+  /* ================= RATING HANDLER ================= */
+  const handleRatingSubmit = async () => {
+    if (rating === 0) return toast.error("Please select a star rating");
+    try {
+      setIsSubmitting(true);
+      const token = await getToken();
+      const { data } = await axios.post(
+        `${backendURL}/api/user/add-rating`,
+        { courseId, rating },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (data.success) {
+        toast.success("Thank you for your feedback!");
+        fetchUserEnrolledCourses();
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const toggleSection = (index) => {
+    setOpenSection((prev) => ({ ...prev, [index]: !prev[index] }));
+  };
+
   /* ================= EFFECTS ================= */
   useEffect(() => {
-    if (enrolledCourses.length) getCourseData();
-  }, [enrolledCourses, getCourseData]);
+    if (enrolledCourses.length > 0) {
+      getCourseData();
+    }
+  }, [getCourseData, enrolledCourses.length]);
 
   useEffect(() => {
-    if (courseId) getCourseProgress();
+    if (courseId) {
+      getCourseProgress();
+    }
   }, [courseId, getCourseProgress]);
 
-  if (!courseData) return <Loading />;
+  if (loading) return <Loading />;
+  if (!courseData) return null;
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -203,21 +210,18 @@ const Player = () => {
             ))}
           </div>
 
-          {/* UPDATED RATING SECTION */}
           <div className="mt-10 border-t pt-8 pb-10">
             <div className="flex flex-col items-center gap-4 bg-gray-50 p-6 rounded-xl border border-gray-100">
               <div className="text-center">
                 <h3 className="font-bold text-gray-800">Rate this Course</h3>
-                <p className="text-xs text-gray-500 mt-1">Your feedback helps us improve.</p>
               </div>
-              
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <img
                       key={star}
                       src={star <= (hover || rating) ? assets.star : assets.star_blank}
-                      className="w-8 h-8 cursor-pointer transition-transform hover:scale-110"
+                      className="w-8 h-8 cursor-pointer"
                       onClick={() => setRating(star)}
                       onMouseEnter={() => setHover(star)}
                       onMouseLeave={() => setHover(0)}
@@ -225,15 +229,10 @@ const Player = () => {
                     />
                   ))}
                 </div>
-
                 <button
                   onClick={handleRatingSubmit}
                   disabled={isSubmitting || rating === 0}
-                  className={`px-5 py-2 rounded-lg font-bold text-xs transition-all ${
-                    rating === 0 
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
-                    : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95'
-                  }`}
+                  className="bg-blue-600 text-white px-5 py-2 rounded-lg"
                 >
                   {isSubmitting ? 'Saving...' : 'Submit'}
                 </button>
@@ -242,7 +241,7 @@ const Player = () => {
           </div>
         </div>
 
-        {/* RIGHT SECTION: PLAYER & THUMBNAIL */}
+        {/* RIGHT SECTION: PLAYER */}
         <div className="md:sticky md:top-10 h-fit">
           {playerData ? (
             <div className="rounded-xl overflow-hidden shadow-2xl border bg-black">
@@ -253,16 +252,16 @@ const Player = () => {
               />
               <div className="p-5 bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div>
-                  <p className="text-xs text-blue-600 font-bold uppercase tracking-wider">Chapter {playerData.chapter} • Lesson {playerData.lecture}</p>
+                  <p className="text-xs text-blue-600 font-bold">Chapter {playerData.chapter} • Lesson {playerData.lecture}</p>
                   <p className="font-semibold text-gray-800 text-lg">{playerData.lectureTitle}</p>
                 </div>
                 <button
                   onClick={() => markLectureAsCompleted(playerData.lectureId)}
                   disabled={isUpdating}
-                  className={`text-sm px-6 py-2 rounded-full font-medium transition-all ${
+                  className={`text-sm px-6 py-2 rounded-full font-medium ${
                     progressData?.completedLectures?.includes(playerData.lectureId)
-                      ? "bg-green-100 text-green-700 border border-green-200"
-                      : "bg-blue-600 text-white hover:bg-blue-700"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-blue-600 text-white"
                   }`}
                 >
                   {progressData?.completedLectures?.includes(playerData.lectureId) ? "✓ Completed" : "Mark as completed"}
@@ -271,20 +270,10 @@ const Player = () => {
             </div>
           ) : (
             <div className="w-full rounded-xl overflow-hidden shadow-lg border bg-white">
-              <img
-                src={courseData.courseThumbnail}
-                className="w-full aspect-video object-cover"
-                alt="Course Preview"
-              />
+              <img src={courseData.courseThumbnail} className="w-full aspect-video object-cover" alt="" />
               <div className="p-6">
-                <h1 className="text-2xl font-bold text-gray-800">{courseData.courseTitle}</h1>
-                <p 
-                  className="text-gray-500 mt-3 line-clamp-3 text-sm leading-relaxed" 
-                  dangerouslySetInnerHTML={{ __html: courseData.courseDescription }}
-                ></p>
-                <div className="mt-6 flex items-center justify-center p-4 bg-blue-50 text-blue-700 rounded-lg border border-blue-100 text-sm font-medium">
-                   Select a lesson to begin your learning session.
-                </div>
+                <h1 className="text-2xl font-bold">{courseData.courseTitle}</h1>
+                <p className="text-gray-500 mt-3 text-sm" dangerouslySetInnerHTML={{ __html: courseData.courseDescription }}></p>
               </div>
             </div>
           )}
