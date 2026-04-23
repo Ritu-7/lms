@@ -15,6 +15,7 @@ const Player = () => {
     backendURL,
     getToken,
     fetchUserEnrolledCourses,
+    userData // Make sure userData is provided in AppContext to get current user's ID
   } = useContext(AppContext);
 
   const { courseId } = useParams();
@@ -30,6 +31,14 @@ const Player = () => {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // 1. Enrollment Check: Watch button visibility logic
+  const isEnrolled = enrolledCourses.some(course => 
+    (typeof course === 'string' ? course : course._id) === courseId
+  );
+
+  // 2. Rating Check: Check if user already rated this course
+  const hasUserRated = courseData?.courseRatings?.some(r => r.userId === userData?._id) || false;
 
   /* ================= HELPERS ================= */
   const getYouTubeID = (url) => {
@@ -49,7 +58,6 @@ const Player = () => {
 
       if (data.success) {
         setCourseData(data.courseData);
-        // Only set initial player data once
         if (!playerData && data.courseData.courseContent.length > 0) {
           const firstChapter = data.courseData.courseContent[0];
           if (firstChapter.chapterContent.length > 0) {
@@ -126,6 +134,7 @@ const Player = () => {
       );
       if (data.success) {
         toast.success("Thank you for your feedback!");
+        await getCourseData(); // Refresh to update rating status
         fetchUserEnrolledCourses();
       }
     } catch (error) {
@@ -141,10 +150,8 @@ const Player = () => {
 
   /* ================= EFFECTS ================= */
   useEffect(() => {
-    if (enrolledCourses.length > 0) {
-      getCourseData();
-    }
-  }, [getCourseData, enrolledCourses.length]);
+    getCourseData();
+  }, [getCourseData]);
 
   useEffect(() => {
     if (courseId) {
@@ -194,10 +201,11 @@ const Player = () => {
                           />
                           <p className="text-sm text-gray-700">{lecture.lectureTitle}</p>
                         </div>
-                        {lecture.lectureUrl && (
+                        {/* WATCH BUTTON: Only visible if Enrolled */}
+                        {isEnrolled && lecture.lectureUrl && (
                           <button
                             onClick={() => setPlayerData({ ...lecture, chapter: index + 1, lecture: i + 1 })}
-                            className="text-blue-600 text-xs font-bold hover:underline"
+                            className="bg-blue-100 text-blue-600 px-3 py-1 rounded-md text-xs font-bold hover:bg-blue-600 hover:text-white transition-all"
                           >
                             Watch
                           </button>
@@ -210,40 +218,45 @@ const Player = () => {
             ))}
           </div>
 
-          <div className="mt-10 border-t pt-8 pb-10">
-            <div className="flex flex-col items-center gap-4 bg-gray-50 p-6 rounded-xl border border-gray-100">
-              <div className="text-center">
+          {/* RATING SECTION: Only visible if Enrolled */}
+          {isEnrolled && (
+            <div className="mt-10 border-t pt-8 pb-10">
+              <div className="flex flex-col items-center gap-4 bg-gray-50 p-6 rounded-xl border border-gray-100">
                 <h3 className="font-bold text-gray-800">Rate this Course</h3>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <img
-                      key={star}
-                      src={star <= (hover || rating) ? assets.star : assets.star_blank}
-                      className="w-8 h-8 cursor-pointer"
-                      onClick={() => setRating(star)}
-                      onMouseEnter={() => setHover(star)}
-                      onMouseLeave={() => setHover(0)}
-                      alt="star"
-                    />
-                  ))}
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <img
+                        key={star}
+                        src={star <= (hover || rating) ? assets.star : assets.star_blank}
+                        className={`w-8 h-8 ${hasUserRated ? 'cursor-default' : 'cursor-pointer'}`}
+                        onClick={() => !hasUserRated && setRating(star)}
+                        onMouseEnter={() => !hasUserRated && setHover(star)}
+                        onMouseLeave={() => !hasUserRated && setHover(0)}
+                        alt="star"
+                      />
+                    ))}
+                  </div>
+                  <button
+                    onClick={handleRatingSubmit}
+                    disabled={isSubmitting || rating === 0 || hasUserRated}
+                    className={`px-5 py-2 rounded-lg font-medium transition-all ${
+                      hasUserRated 
+                      ? 'bg-green-500 text-white cursor-not-allowed' 
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                    }`}
+                  >
+                    {isSubmitting ? 'Saving...' : hasUserRated ? 'Submitted' : 'Submit'}
+                  </button>
                 </div>
-                <button
-                  onClick={handleRatingSubmit}
-                  disabled={isSubmitting || rating === 0}
-                  className="bg-blue-600 text-white px-5 py-2 rounded-lg"
-                >
-                  {isSubmitting ? 'Saving...' : 'Submit'}
-                </button>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* RIGHT SECTION: PLAYER */}
         <div className="md:sticky md:top-10 h-fit">
-          {playerData ? (
+          {playerData && isEnrolled ? (
             <div className="rounded-xl overflow-hidden shadow-2xl border bg-black">
               <YouTube
                 videoId={getYouTubeID(playerData.lectureUrl)}
@@ -274,6 +287,11 @@ const Player = () => {
               <div className="p-6">
                 <h1 className="text-2xl font-bold">{courseData.courseTitle}</h1>
                 <p className="text-gray-500 mt-3 text-sm" dangerouslySetInnerHTML={{ __html: courseData.courseDescription }}></p>
+                {!isEnrolled && (
+                    <div className="mt-5 p-3 bg-orange-50 border border-orange-200 rounded-lg text-orange-700 text-sm font-medium">
+                        Enroll in this course to access the content and track your progress.
+                    </div>
+                )}
               </div>
             </div>
           )}
