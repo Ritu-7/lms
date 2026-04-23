@@ -1,3 +1,4 @@
+import "dotenv/config";
 import User from "../models/User.js";
 import Course from "../models/Course.js";
 import CourseProgress from "../models/CourseProgress.js";
@@ -103,63 +104,42 @@ export const userEnrolledCourses = async (req, res) => {
 /* ===============================
    Create Razorpay order
 ================================ */
+/* ===============================
+   Create Razorpay order
+================================ */
 export const purchaseCourse = async (req, res) => {
   try {
     const { userId } = req.auth();
     const { courseId } = req.body;
 
-    // Input Validation: courseId
-    if (!courseId || !mongoose.Types.ObjectId.isValid(courseId)) {
-      return res.status(400).json({ success: false, message: "Invalid Course ID" });
+    // ... (validation logic)
+
+    // Check if keys are actually loading (Debugging)
+    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+        return res.status(500).json({ 
+            success: false, 
+            message: "Razorpay keys are not defined in server environment" 
+        });
     }
 
-    // Find User
-    const user = await User.findOne({ clerkUserId: userId });
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
-
-    // Find Course
-    const course = await Course.findById(courseId);
-    if (!course) {
-      return res.status(404).json({ success: false, message: "Course not found" });
-    }
-
-    // Check if course is published
-    if (!course.isPublished) {
-      return res.status(400).json({ success: false, message: "Course is not published yet" });
-    }
-
-    // Check if user is already enrolled
-    if (user.enrolledCourses.includes(course._id)) {
-      return res.status(400).json({ success: false, message: "You are already enrolled in this course" });
-    }
-
-    // Calculate Amount
-    const amount =
-      (course.coursePrice -
-        (course.discount * course.coursePrice) / 100) *
-      100; // Amount in paisa for Razorpay
-
-    // Initialize Razorpay
     const razorpay = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID,
       key_secret: process.env.RAZORPAY_KEY_SECRET,
     });
 
-    // Create Razorpay Order
+    const amount = Math.round((course.coursePrice - (course.discount * course.coursePrice) / 100) * 100);
+
     const order = await razorpay.orders.create({
       amount,
       currency: process.env.CURRENCY || "INR",
-      receipt: `${userId.slice(-5)}_${courseId.slice(-5)}`, // Unique receipt ID
-      notes: { courseId: course._id.toString(), userId: user._id.toString() }, // Store actual MongoDB IDs
+      receipt: `${userId.slice(-5)}_${courseId.slice(-5)}`,
+      notes: { courseId: course._id.toString(), userId: user._id.toString() },
     });
 
-    // Respond with order details
     res.json({ success: true, order });
   } catch (error) {
-    console.error("purchaseCourse error:", error); // Log the error for debugging
-    res.status(500).json({ success: false, message: error.message || "Internal Server Error" });
+    console.error("purchaseCourse error:", error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
