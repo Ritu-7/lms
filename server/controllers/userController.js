@@ -87,6 +87,7 @@ export const purchaseCourse = async (req, res) => {
     res.json({ success: true, order });
   } catch (error) {
     console.error("Purchase Error:", error.message);
+    console.log("DEBUG KEY CHECK:", process.env.RAZORPAY_KEY_ID ? "LOADED" : "MISSING");
     res.status(500).json({ success: false, message: error.message });
   }
 };
