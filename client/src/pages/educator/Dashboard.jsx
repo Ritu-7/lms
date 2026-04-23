@@ -79,19 +79,39 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody className='text-sm text-gray-600'>
-              {dashboardData.enrolledStudents?.length > 0 ? (
-                dashboardData.enrolledStudents.slice(0, 5).map((item, index) => (
-                  <tr key={index} className='border-b border-gray-500/20 hover:bg-gray-50 transition-colors'>
-                    <td className='px-4 py-3'>{index + 1}</td>
-                    <td className='px-4 py-3 flex items-center gap-3'>
-                      <img src={item.student?.imageUrl || assets.profile_img} className='w-9 h-9 rounded-full object-cover' alt="" />
-                      <span className='font-medium text-gray-800'>{item.student?.name || "Test Student"}</span>
-                    </td>
-                    <td className='px-4 py-3 text-gray-600'>{item.courseTitle}</td>
-                  </tr>
-                ))
+              {/* ✅ FIXED: Accessing enrolledStudentsData instead of enrolledStudents */}
+              {(dashboardData.enrolledStudentsData || dashboardData.enrolledStudents)?.length > 0 ? (
+                (dashboardData.enrolledStudentsData || dashboardData.enrolledStudents).slice(0, 5).map((item, index) => {
+                  
+                  // ✅ FIXED: Support both 'student' and 'user' keys
+                  const studentInfo = item.student || item.user;
+                  
+                  // ✅ FIXED: Fallback name logic
+                  const displayName = studentInfo?.name || 
+                                     (studentInfo?.email ? studentInfo.email.split('@')[0] : "Student");
+
+                  return (
+                    <tr key={index} className='border-b border-gray-500/20 hover:bg-gray-50 transition-colors'>
+                      <td className='px-4 py-3'>{index + 1}</td>
+                      <td className='px-4 py-3 flex items-center gap-3'>
+                        <img 
+                          src={studentInfo?.imageUrl || studentInfo?.image || assets.profile_img} 
+                          className='w-9 h-9 rounded-full object-cover bg-gray-100' 
+                          alt="" 
+                          onError={(e) => { e.target.src = assets.profile_img }}
+                        />
+                        <span className='font-medium text-gray-800 capitalize'>{displayName}</span>
+                      </td>
+                      <td className='px-4 py-3 text-gray-600'>{item.courseTitle || "Untitled Course"}</td>
+                    </tr>
+                  );
+                })
               ) : (
-                <tr><td colSpan="3" className="text-center py-12 text-gray-400 italic">No recent test enrollments found.</td></tr>
+                <tr>
+                  <td colSpan="3" className="text-center py-12 text-gray-400 italic">
+                    No recent enrollments found.
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>

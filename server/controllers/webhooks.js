@@ -4,71 +4,78 @@ import User from "../models/User.js";
 import Purchase from "../models/Purchase.js";
 
 /* ===============================
-   Clerk Webhook Logic
+    Clerk Webhook Logic
 ================================ */
 export const clerkWebhook = async (req, res) => {
   try {
-    const payload = req.body.toString("utf8");
+    const payloadString = req.body.toString("utf8");
     const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
 
-    const event = wh.verify(payload, {
+    // Verify headers
+    const evt = wh.verify(payloadString, {
       "svix-id": req.headers["svix-id"],
       "svix-timestamp": req.headers["svix-timestamp"],
       "svix-signature": req.headers["svix-signature"],
     });
 
-    const { type, data } = event;
+    const { type, data } = evt;
 
-    // 1. Get Primary Email Safely
-    const primaryEmail = data.email_addresses?.[0]?.email_address || "";
+    switch (type) {
+      case 'user.created':
+      case 'user.updated': {
+        // Extracting required fields from Clerk data
+        const { id, first_name, last_name, image_url, email_addresses, username } = data;
+        
+        const primaryEmail = email_addresses?.[0]?.email_address || "";
+        
+        // Multi-Level Name Logic
+        const firstName = first_name || "";
+        const lastName = last_name || "";
+        let finalName = `${firstName} ${lastName}`.trim();
 
-    // 2. Multi-Level Name Logic
-    // Priority: First+Last Name > Username > Email Prefix > Default
-    const firstName = data.first_name || "";
-    const lastName = data.last_name || "";
-    let finalName = `${firstName} ${lastName}`.trim();
-
-    if (!finalName) {
-      finalName = data.username || primaryEmail.split('@')[0] || "Student";
-    }
-
-    /* ========= USER CREATED / UPDATED ========= */
-    if (type === "user.created" || type === "user.updated") {
-      await User.findOneAndUpdate(
-        { clerkUserId: data.id },
-        {
-          clerkUserId: data.id,
-          name: finalName,
-          email: primaryEmail,
-          // Clerk sends image_url; we map to your DB field imageUrl
-          imageUrl: data.image_url || data.profile_image_url || "",
-          role: "student",
-        },
-        { 
-          upsert: true, 
-          new: true, 
-          setDefaultsOnInsert: true 
+        if (!finalName) {
+          finalName = username || primaryEmail.split('@')[0] || "User";
         }
-      );
 
-      console.log(`✅ Sync Success: ${finalName} (${data.id})`);
+        const userData = {
+          clerkUserId: id,
+          email: primaryEmail,
+          name: finalName,
+          imageUrl: image_url || "",
+        };
+
+        // Update or Create User in MongoDB
+        await User.findOneAndUpdate(
+          { clerkUserId: id },
+          userData,
+          { upsert: true, new: true }
+        );
+        
+        console.log(`👤 User ${type}: ${id}`);
+        break;
+      }
+
+      case 'user.deleted': {
+        const { id } = data;
+        await User.findOneAndDelete({ clerkUserId: id });
+        console.log(`🗑️ User Deleted: ${id}`);
+        break;
+      }
+
+      default:
+        break;
     }
 
-    /* ========= USER DELETED ========= */
-    if (type === "user.deleted") {
-      await User.findOneAndDelete({ clerkUserId: data.id });
-      console.log(`❌ Deleted: ${data.id}`);
-    }
+    return res.status(200).json({ success: true, message: "Webhook received" });
 
-    return res.status(200).json({ success: true });
   } catch (error) {
-    console.error("❌ Webhook Error:", error.message);
-    return res.status(400).json({ success: false });
+    console.error("❌ Clerk Webhook Error:", error.message);
+    return res.status(400).json({ success: false, message: error.message });
   }
 };
 
 /* ===============================
-   Razorpay Webhook Logic
+    Razorpay Webhook Logic
 ================================ */
 export const razorpayWebhook = async (req, res) => {
   try {
@@ -97,7 +104,7 @@ export const razorpayWebhook = async (req, res) => {
         purchase.razorpayPaymentId = paymentId;
         await purchase.save();
 
-        // Use purchase.userId (Clerk ID) to find the user and enroll them
+        // Enroll user in the course
         await User.findOneAndUpdate(
           { clerkUserId: purchase.userId }, 
           { $addToSet: { enrolledCourses: purchase.courseId } }

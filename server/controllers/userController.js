@@ -5,6 +5,29 @@ import Purchase from "../models/Purchase.js"; // Import Purchase model
 import Razorpay from "razorpay";
 import mongoose from "mongoose"; // Import mongoose
 
+
+
+export const syncUser = async (req, res) => {
+    try {
+        const { clerkUserId, name, email, imageUrl } = req.body;
+
+        // findOneAndUpdate with upsert: true will:
+        // 1. Find the user by clerkUserId
+        // 2. Update their name, email, and imageUrl
+        // 3. If they don't exist, create a new document
+        const user = await User.findOneAndUpdate(
+            { clerkUserId }, 
+            { name, email, imageUrl }, 
+            { upsert: true, new: true }
+        );
+
+        res.json({ success: true, user });
+
+    } catch (error) {
+        console.log(error.message);
+        res.json({ success: false, message: error.message });
+    }
+}
 /* ===============================
    Get current user profile
 ================================ */

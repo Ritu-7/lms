@@ -93,6 +93,12 @@ export const addCourse = async (req, res) => {
 /* ===============================
    Educator Dashboard
 ================================ */
+/* ===============================
+   Educator Dashboard
+================================ */
+/* ===============================
+   Educator Dashboard (FIXED)
+================================ */
 export const educatorDashboardData = async (req, res) => {
   try {
     const { userId } = req.auth();
@@ -103,21 +109,21 @@ export const educatorDashboardData = async (req, res) => {
     const courses = await Course.find({ educator: educator._id });
     const courseIds = courses.map((c) => c._id);
 
-    // ✅ FIX: Change 'courseId' to 'course' to match your database schema
     const purchases = await Purchase.find({
       course: { $in: courseIds }, 
-      status: { $in: ["completed", "success"] },
-    });
+      status: { $in: ["completed", "success", "paid"] },
+    })
+    .populate("user", "name imageUrl email") // Populate Student Info
+    .populate("course", "courseTitle")       // ✅ ADD THIS: Populate Course Info
+    .sort({ createdAt: -1 });
 
-    // ✅ FIX: Use Number() to ensure the total is a math calculation, not a string
     const totalEarnings = purchases.reduce((sum, p) => sum + Number(p.amount || 0), 0);
 
-    const enrolledStudents = courses.flatMap((course) =>
-      (course.studentsEnrolled || []).map((student) => ({
-        courseTitle: course.courseTitle,
-        student,
-      }))
-    );
+    const enrolledStudents = purchases.map((p) => ({
+      // ✅ Use optional chaining to get the title safely
+      courseTitle: p.course?.courseTitle || "Untitled Course", 
+      student: p.user,
+    }));
 
     res.json({
       success: true,
@@ -125,14 +131,13 @@ export const educatorDashboardData = async (req, res) => {
         totalCourses: courses.length,
         totalEarnings,
         totalEnrolledStudents: enrolledStudents.length,
-        enrolledStudents,
+        enrolledStudentsData: enrolledStudents, 
       },
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
 /* ===============================
    Also fix Enrolled Students Data
 ================================ */
