@@ -1,3 +1,7 @@
+import dns from "node:dns";
+
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
+console.log("DNS Servers:", dns.getServers());
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
@@ -18,8 +22,24 @@ const app = express();
 /* ===============================
    Database & Services
 ================================ */
-await connectDB();
-await connectCloudinary();
+// Wrapped in an async IIFE to allow graceful, non-blocking connection attempts
+(async () => {
+  try {
+    await connectDB();
+    console.log("💾 MongoDB Connected Successfully");
+  } catch (error) {
+    console.error("❌ Database connection failed during startup!");
+    console.error(`Reason: ${error.message}`);
+    console.log("👉 Tip: Check your .env credentials or IP Whitelist in MongoDB Atlas.");
+  }
+
+  try {
+    await connectCloudinary();
+    console.log("☁️ Cloudinary Configured Successfully");
+  } catch (error) {
+    console.error("❌ Cloudinary configuration failed:", error.message);
+  }
+})();
 
 /* ===============================
    CORS
@@ -72,9 +92,6 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-/* ===============================
-   Routes
-================================ */
 app.use("/api/courses", courseRouter);
 app.use("/api/user", userRouter);
 app.use("/api/educator", educatorRouter);
@@ -107,7 +124,7 @@ const fixDatabaseNames = async () => {
   }
 };
 
-// ✅ UNCOMMENT THE LINE BELOW, SAVE, AND RESTART YOUR SERVER
+// ✅ UNCOMMENT THE LINE BELOW, SAVE, AND RESTART YOUR SERVER IF NEEDED
 // fixDatabaseNames(); 
 
 /* ===============================
