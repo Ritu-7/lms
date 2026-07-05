@@ -12,6 +12,9 @@ const Sidebar = () => {
     { name: 'Add Course', path: '/educator/add-course', icon: assets.add_icon },
     { name: 'My Courses', path: '/educator/my-courses', icon: assets.my_course_icon },
     { name: 'Student Enrolled', path: '/educator/student-enrolled', icon: assets.person_tick_icon },
+    { name: 'Assignments', path: '/educator/assignments', icon: assets.lesson_icon },
+    { name: 'Quizzes', path: '/educator/quizzes', icon: assets.lesson_icon },
+    { name: 'Notifications', path: '/educator/notifications', icon: assets.time_left_clock_icon },
   ]
 
   // Only render if user is an educator

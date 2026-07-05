@@ -1,5 +1,5 @@
 import express from "express";
-import upload from "../configs/multer.js";
+import upload, { lessonAssetUpload } from "../configs/multer.js";
 
 import {
   educatorDashboardData,
@@ -11,8 +11,9 @@ import {
   editCourse,
   deleteCourse
 } from "../controllers/educatorController.js";
+import { uploadLessonAsset, uploadLessonResource } from "../controllers/lessonAssetController.js";
 
-import { protectEducatorRoutes } from "../middlewares/authMiddleware.js";
+import { protectEducatorRoutes, protectRoute } from "../middlewares/authMiddleware.js";
 
 const educatorRouter = express.Router();
 
@@ -20,7 +21,7 @@ const educatorRouter = express.Router();
    Public Educator Routes
 ================================ */
 // Used once to convert user → educator
-educatorRouter.get("/update-role", updateRoleToEducator);
+educatorRouter.post("/update-role", updateRoleToEducator);
 
 /* ===============================
    Protected Educator Routes
@@ -46,6 +47,20 @@ educatorRouter.post(
   protectEducatorRoutes,
   upload.single("thumbnail"),
   addCourse
+);
+
+educatorRouter.post(
+  "/upload-lesson-asset",
+  protectEducatorRoutes,
+  lessonAssetUpload.single("file"),
+  uploadLessonAsset
+);
+
+educatorRouter.post(
+  "/upload-lesson-resource",
+  protectEducatorRoutes,
+  lessonAssetUpload.single("file"),
+  uploadLessonResource
 );
 
 // Enrolled students

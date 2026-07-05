@@ -1,15 +1,16 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { assets } from '../../assets/assets';
 import Loading from '../../components/students/Loading';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { motion } from 'framer-motion';
 
 const Dashboard = () => {
   const { currency, backendURL, getToken, isEducator } = useContext(AppContext);
   const [dashboardData, setDashboardData] = useState(null);
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     try {
       const token = await getToken();
       const { data } = await axios.get(`${backendURL}/api/educator/dashboard`, {
@@ -24,91 +25,103 @@ const Dashboard = () => {
     } catch (error) {
       toast.error(error.response?.data?.message || error.message);
     }
-  }
+  }, [backendURL, getToken]);
 
   useEffect(() => {
     if (isEducator) fetchDashboardData();
-  }, [isEducator]);
+  }, [isEducator, fetchDashboardData]);
 
   if (!dashboardData) return <Loading />;
 
+  const stats = [
+    { label: 'Total Earnings', value: `${currency}${Number(dashboardData.totalEarnings || 0).toLocaleString()}`, icon: assets.earning_icon, color: 'text-blue-600' },
+    { label: 'Total Courses', value: dashboardData.totalCourses || 0, icon: assets.appointments_icon, color: 'text-indigo-600' },
+    { label: 'Total Students', value: dashboardData.totalEnrolledStudents || 0, icon: assets.patients_icon, color: 'text-cyan-600' },
+    { label: 'Assignments', value: dashboardData.totalAssignments || 0, icon: assets.file_upload_icon, color: 'text-violet-600' },
+    { label: 'Quizzes', value: dashboardData.totalQuizzes || 0, icon: assets.lesson_icon, color: 'text-emerald-600' },
+  ];
+
   return (
-    <div className='min-h-screen flex flex-col gap-8 md:p-8 p-4 pt-8 bg-gray-50/30'>
+    <div className='min-h-screen bg-slate-50 dark:bg-slate-950 p-4 md:p-8 space-y-8'>
       
-      <div className='flex flex-wrap gap-5 items-center'>
-        
-        {/* Total Earnings Card */}
-        <div className='flex items-center gap-4 p-6 bg-white border border-gray-500/20 rounded-md shadow-sm min-w-[220px] flex-1'>
-          <img src={assets.earning_icon} alt="" className='w-12' />
-          <div>
-            <p className='text-2xl font-bold text-gray-800'>
-              {currency}{Number(dashboardData.totalEarnings || 0).toLocaleString()}
-            </p>
-            <p className='text-sm text-gray-500 font-medium'>Total Earnings</p>
-          </div>
-        </div>
-
-        {/* Total Courses Card */}
-        <div className='flex items-center gap-4 p-6 bg-white border border-gray-500/20 rounded-md shadow-sm min-w-[220px] flex-1'>
-          <img src={assets.appointments_icon} alt="" className='w-12' />
-          <div>
-            <p className='text-2xl font-bold text-gray-800'>{dashboardData.totalCourses || 0}</p>
-            <p className='text-sm text-gray-500 font-medium'>Total Courses</p>
-          </div>
-        </div>
-
-        {/* Total Students Card */}
-        <div className='flex items-center gap-4 p-6 bg-white border border-gray-500/20 rounded-md shadow-sm min-w-[220px] flex-1'>
-          <img src={assets.patients_icon} alt="" className='w-12' />
-          <div>
-            <p className='text-2xl font-bold text-gray-800'>{dashboardData.totalEnrolledStudents || 0}</p>
-            <p className='text-sm text-gray-500 font-medium'>Total Students</p>
-          </div>
-        </div>
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6'>
+        {stats.map((stat, idx) => (
+          <motion.div 
+            key={stat.label}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.1 }}
+            className='bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-white/10 shadow-sm flex items-center gap-4'
+          >
+            <img src={stat.icon} alt={stat.label} className='w-12 h-12' />
+            <div>
+              <p className={`text-2xl font-bold font-space-grotesk ${stat.color} dark:text-white`}>{stat.value}</p>
+              <p className='text-sm text-slate-500 dark:text-slate-400 font-medium'>{stat.label}</p>
+            </div>
+          </motion.div>
+        ))}
       </div>
 
-      <div className='w-full'>
-        <h2 className='pb-4 text-lg font-medium text-gray-800'>Latest Enrollments</h2>
-        <div className='max-w-4xl w-full overflow-hidden rounded-md bg-white border border-gray-500/20 shadow-sm'>
-          <table className='table-auto w-full text-left'>
-            <thead className='text-gray-900 border-b border-gray-500/20 text-sm bg-gray-50'>
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+        {[
+          { label: 'Submissions', value: dashboardData.assignmentSubmissionCount || 0 },
+          { label: 'Graded', value: dashboardData.assignmentGradedCount || 0 },
+          { label: 'Upcoming Deadlines', value: dashboardData.upcomingAssignments || 0 },
+          { label: 'Quiz Attempts', value: dashboardData.quizAttemptCount || 0 },
+          { label: 'Quiz Passes', value: dashboardData.quizPassCount || 0 },
+        ].map((item, idx) => (
+          <motion.div 
+            key={item.label}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.1 }}
+            className='bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-white/10 shadow-sm'
+          >
+            <p className='text-sm font-medium text-slate-500 dark:text-slate-400'>{item.label}</p>
+            <p className='mt-2 text-3xl font-bold font-space-grotesk text-slate-900 dark:text-white'>{item.value}</p>
+          </motion.div>
+        ))}
+      </div>
+
+      <div className='bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm overflow-hidden'>
+        <div className='p-6 border-b border-slate-200 dark:border-white/10'>
+          <h2 className='text-xl font-bold font-space-grotesk text-slate-900 dark:text-white'>Latest Enrollments</h2>
+        </div>
+        <div className='overflow-x-auto'>
+          <table className='w-full text-left text-sm'>
+            <thead className='text-slate-500 bg-slate-50 dark:bg-slate-800/50'>
               <tr>
-                <th className='px-4 py-3 font-semibold'>#</th>
-                <th className='px-4 py-3 font-semibold'>Student Name</th>
-                <th className='px-4 py-3 font-semibold'>Course Title</th>
+                <th className='px-6 py-4 font-semibold'>#</th>
+                <th className='px-6 py-4 font-semibold'>Student Name</th>
+                <th className='px-6 py-4 font-semibold'>Course Title</th>
               </tr>
             </thead>
-            <tbody className='text-sm text-gray-600'>
-              {/* ✅ FIXED: Accessing enrolledStudentsData instead of enrolledStudents */}
+            <tbody className='divide-y divide-slate-100 dark:divide-slate-800'>
               {(dashboardData.enrolledStudentsData || dashboardData.enrolledStudents)?.length > 0 ? (
                 (dashboardData.enrolledStudentsData || dashboardData.enrolledStudents).slice(0, 5).map((item, index) => {
-                  
-                  // ✅ FIXED: Support both 'student' and 'user' keys
                   const studentInfo = item.student || item.user;
-                  
-                  // ✅ FIXED: Fallback name logic
                   const displayName = studentInfo?.name || 
                                      (studentInfo?.email ? studentInfo.email.split('@')[0] : "Student");
 
                   return (
-                    <tr key={index} className='border-b border-gray-500/20 hover:bg-gray-50 transition-colors'>
-                      <td className='px-4 py-3'>{index + 1}</td>
-                      <td className='px-4 py-3 flex items-center gap-3'>
+                    <tr key={index} className='hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors'>
+                      <td className='px-6 py-4 text-slate-500'>{index + 1}</td>
+                      <td className='px-6 py-4 flex items-center gap-3'>
                         <img 
                           src={studentInfo?.imageUrl || studentInfo?.image || assets.profile_img} 
-                          className='w-9 h-9 rounded-full object-cover bg-gray-100' 
+                          className='w-10 h-10 rounded-full object-cover bg-slate-100' 
                           alt="" 
                           onError={(e) => { e.target.src = assets.profile_img }}
                         />
-                        <span className='font-medium text-gray-800 capitalize'>{displayName}</span>
+                        <span className='font-semibold text-slate-900 dark:text-slate-200 capitalize'>{displayName}</span>
                       </td>
-                      <td className='px-4 py-3 text-gray-600'>{item.courseTitle || "Untitled Course"}</td>
+                      <td className='px-6 py-4 text-slate-600 dark:text-slate-400'>{item.courseTitle || "Untitled Course"}</td>
                     </tr>
                   );
                 })
               ) : (
                 <tr>
-                  <td colSpan="3" className="text-center py-12 text-gray-400 italic">
+                  <td colSpan="3" className="text-center py-16 text-slate-400 italic">
                     No recent enrollments found.
                   </td>
                 </tr>

@@ -1,122 +1,70 @@
 import { Webhook } from "svix";
-import crypto from "crypto";
+import crypto from "node:crypto";
 import User from "../models/User.js";
+import Course from "../models/Course.js";
 import Purchase from "../models/Purchase.js";
+import { resolveUserRole } from "../utils/roleUtils.js";
+import { logger } from "../utils/logger.js";
 
-/* ===============================
-    Clerk Webhook Logic
-================================ */
 export const clerkWebhook = async (req, res) => {
   try {
-    const payloadString = req.body.toString("utf8");
-    const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
-
-    // Verify headers
-    const evt = wh.verify(payloadString, {
+    const webhook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
+    const event = webhook.verify(req.body.toString("utf8"), {
       "svix-id": req.headers["svix-id"],
       "svix-timestamp": req.headers["svix-timestamp"],
       "svix-signature": req.headers["svix-signature"],
     });
+    const { type, data } = event;
+    const email = data.email_addresses?.find((item) => item.id === data.primary_email_address_id)?.email_address || "";
+    const name = `${data.first_name || ""} ${data.last_name || ""}`.trim() || "User";
 
-    const { type, data } = evt;
-
-    switch (type) {
-      case 'user.created':
-      case 'user.updated': {
-        // Extracting required fields from Clerk data
-        const { id, first_name, last_name, image_url, email_addresses, username } = data;
-        
-        const primaryEmail = email_addresses?.[0]?.email_address || "";
-        
-        // Multi-Level Name Logic
-        const firstName = first_name || "";
-        const lastName = last_name || "";
-        let finalName = `${firstName} ${lastName}`.trim();
-
-        if (!finalName) {
-          finalName = username || primaryEmail.split('@')[0] || "User";
-        }
-
-        const userData = {
-          clerkUserId: id,
-          email: primaryEmail,
-          name: finalName,
-          imageUrl: image_url || "",
-        };
-
-        // Update or Create User in MongoDB
-        await User.findOneAndUpdate(
-          { clerkUserId: id },
-          userData,
-          { upsert: true, new: true }
-        );
-        
-        console.log(`👤 User ${type}: ${id}`);
-        break;
-      }
-
-      case 'user.deleted': {
-        const { id } = data;
-        await User.findOneAndDelete({ clerkUserId: id });
-        console.log(`🗑️ User Deleted: ${id}`);
-        break;
-      }
-
-      default:
-        break;
+    if (type === "user.created" || type === "user.updated") {
+      const existing = await User.findOne({ clerkUserId: data.id });
+      await User.findOneAndUpdate(
+        { clerkUserId: data.id },
+        { clerkUserId: data.id, name, email, imageUrl: data.image_url || "", role: resolveUserRole({ clerkUserId: data.id, email, existingRole: existing?.role }) },
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+      );
+      logger.info("webhook.clerk_user_synced", { clerkUserId: data.id });
+    } else if (type === "user.deleted") {
+      await User.findOneAndDelete({ clerkUserId: data.id });
+      logger.info("webhook.clerk_user_deleted", { clerkUserId: data.id });
     }
-
-    return res.status(200).json({ success: true, message: "Webhook received" });
-
+    res.json({ success: true });
   } catch (error) {
-    console.error("❌ Clerk Webhook Error:", error.message);
-    return res.status(400).json({ success: false, message: error.message });
+    logger.warn("webhook.clerk_rejected", { message: error.message });
+    res.status(400).json({ success: false, message: "Invalid webhook" });
   }
 };
 
-/* ===============================
-    Razorpay Webhook Logic
-================================ */
 export const razorpayWebhook = async (req, res) => {
   try {
-    const payload = req.body.toString("utf8");
-    const signature = req.headers["x-razorpay-signature"];
-
-    const expectedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_WEBHOOK_SECRET)
-      .update(payload)
-      .digest("hex");
-
-    if (expectedSignature !== signature) {
-      return res.status(400).json({ success: false, message: "Signature Mismatch" });
+    const signature = req.headers["x-razorpay-signature"] || "";
+    const expected = crypto.createHmac("sha256", process.env.RAZORPAY_WEBHOOK_SECRET).update(req.body).digest("hex");
+    if (signature.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) {
+      return res.status(400).json({ success: false, message: "Invalid webhook signature" });
     }
 
-    const event = JSON.parse(payload);
-
+    const event = JSON.parse(req.body.toString("utf8"));
     if (event.event === "order.paid") {
       const orderId = event.payload.order.entity.id;
       const paymentId = event.payload.payment.entity.id;
-
-      const purchase = await Purchase.findOne({ razorpayOrderId: orderId });
-
-      if (purchase && purchase.status !== "completed") {
-        purchase.status = "completed";
-        purchase.razorpayPaymentId = paymentId;
-        await purchase.save();
-
-        // Enroll user in the course
-        await User.findOneAndUpdate(
-          { clerkUserId: purchase.userId }, 
-          { $addToSet: { enrolledCourses: purchase.courseId } }
-        );
-
-        console.log(`✅ Enrollment Success for Order: ${orderId}`);
+      const purchase = await Purchase.findOneAndUpdate(
+        { razorpayOrderId: orderId },
+        { status: "completed", razorpayPaymentId: paymentId },
+        { new: true }
+      );
+      if (purchase) {
+        await Promise.all([
+          User.findByIdAndUpdate(purchase.user, { $addToSet: { enrolledCourses: purchase.course } }),
+          Course.findByIdAndUpdate(purchase.course, { $addToSet: { studentsEnrolled: purchase.user } }),
+        ]);
+        logger.info("webhook.razorpay_payment_completed", { orderId });
       }
     }
-
-    return res.status(200).json({ success: true });
+    res.json({ success: true });
   } catch (error) {
-    console.error("❌ Razorpay Error:", error.message);
-    return res.status(500).json({ success: false });
+    logger.error("webhook.razorpay_failed", { message: error.message });
+    res.status(500).json({ success: false, message: "Webhook processing failed" });
   }
 };

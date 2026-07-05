@@ -10,9 +10,17 @@ const courseProgressSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    completedLessons: {
+      type: [String],
+      default: [],
+    },
     completedLectures: {
       type: [String],
       default: [],
+    },
+    progressVersion: {
+      type: Number,
+      default: 2,
     },
   },
   {
@@ -20,6 +28,8 @@ const courseProgressSchema = new mongoose.Schema(
     minimize: false,
   }
 );
+
+courseProgressSchema.index({ userId: 1, courseId: 1 }, { unique: true });
 
 const CourseProgress =
   mongoose.models.CourseProgress ||

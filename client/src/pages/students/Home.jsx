@@ -1,5 +1,6 @@
 import React from 'react'
 import Hero from '../../components/students/Hero'
+import PlatformOverview from '../../components/students/PlatformOverview'
 import Companies from '../../components/students/Companies'
 import CoursesSection from '../../components/students/CoursesSection'
 import TestimonialsSection from '../../components/students/TestimonialsSection'
@@ -9,6 +10,7 @@ const Home = () => {
   return (
     <div className ='flex flex-col items-center space-y-7 text-center'>
       <Hero />
+      <PlatformOverview />
       <Companies />
       <CoursesSection/>
       <TestimonialsSection />

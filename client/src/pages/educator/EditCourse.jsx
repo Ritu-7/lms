@@ -1,53 +1,49 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import uniqid from 'uniqid';
-import Quill from 'quill';
-import axios from 'axios';
-import 'quill/dist/quill.snow.css';
-import { assets } from '../../assets/assets';
-import { toast } from 'react-toastify';
-import { AppContext } from '../../context/AppContext';
-import Loading from '../../components/students/Loading';
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import Quill from "quill";
+import axios from "axios";
+import "quill/dist/quill.snow.css";
+import { assets } from "../../assets/assets";
+import { toast } from "react-toastify";
+import { AppContext } from "../../context/AppContext";
+import Loading from "../../components/students/Loading";
+import LessonEditorModal from "../../components/educator/LessonEditorModal";
+import { moveItem, normalizeLessonOrder, normalizeModuleOrder } from "../../utils/orderUtils";
 
 const EditCourse = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
-  const { backendURL, getToken } = useContext(AppContext);
-  
+  const { backendURL, getToken, getCourseChapters } = useContext(AppContext);
+
   const editorRef = useRef(null);
   const quillRef = useRef(null);
 
   const [loading, setLoading] = useState(true);
   const [courseData, setCourseData] = useState(null);
+  const [courseCategory, setCourseCategory] = useState("");
   const [image, setImage] = useState(null);
-  const [chapters, setChapters] = useState([]);
+  const [modules, setModules] = useState([]);
   const [courseFeatures, setCourseFeatures] = useState([]);
-  const [featureInput, setFeatureInput] = useState('');
+  const [featureInput, setFeatureInput] = useState("");
+  const [draggedModuleIndex, setDraggedModuleIndex] = useState(null);
+  const [draggedLesson, setDraggedLesson] = useState(null);
+  const [lessonModalOpen, setLessonModalOpen] = useState(false);
+  const [lessonMode, setLessonMode] = useState("add");
+  const [activeModuleId, setActiveModuleId] = useState(null);
+  const [activeLesson, setActiveLesson] = useState(null);
 
-  // Lecture & Popup States
-  const [showPopup, setShowPopup] = useState(false);
-  const [isEditingLecture, setIsEditingLecture] = useState(false);
-  const [currentChapterId, setCurrentChapterId] = useState(null);
-  const [currentLectureId, setCurrentLectureId] = useState(null);
-  const [lectureDetails, setLectureDetails] = useState({
-    lectureTitle: '',
-    lectureDuration: '',
-    lectureVideoUrl: '',
-    isPreview: false
-  });
-
-  // Fetch Course Data
   useEffect(() => {
     const fetchCourse = async () => {
       try {
         const token = await getToken();
         const { data } = await axios.get(`${backendURL}/api/courses/${courseId}`, {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
         if (data.success) {
           const course = data.data;
           setCourseData(course);
-          setChapters(course.courseContent || []);
+          setCourseCategory(course.category || "");
+          setModules(normalizeModuleOrder(getCourseChapters(course)));
           setCourseFeatures(course.courseFeatures || []);
           if (quillRef.current) {
             quillRef.current.root.innerHTML = course.courseDescription;
@@ -55,264 +51,430 @@ const EditCourse = () => {
         } else {
           toast.error(data.message);
         }
-      } catch (error) {
-        toast.error('Failed to fetch course data.');
+      } catch {
+        toast.error("Failed to fetch course data.");
       } finally {
         setLoading(false);
       }
     };
     fetchCourse();
-  }, [courseId, backendURL, getToken]);
+  }, [courseId, backendURL, getToken, getCourseChapters]);
 
-  // Initialize Quill Editor
   useEffect(() => {
     if (editorRef.current && !quillRef.current) {
       quillRef.current = new Quill(editorRef.current, {
-        theme: 'snow',
-        placeholder: 'Write course description here...'
+        theme: "snow",
+        placeholder: "Write course description here...",
       });
     }
   }, []);
 
-  // Update Quill content once courseData is loaded
   useEffect(() => {
     if (quillRef.current && courseData?.courseDescription) {
       quillRef.current.root.innerHTML = courseData.courseDescription;
     }
   }, [courseData]);
 
-  // Feature Operations
   const handleFeature = (action, index) => {
-    if (action === 'add') {
+    if (action === "add") {
       if (featureInput.trim()) {
         setCourseFeatures([...courseFeatures, featureInput.trim()]);
-        setFeatureInput('');
+        setFeatureInput("");
       }
-    } else if (action === 'remove') {
+    } else if (action === "remove") {
       setCourseFeatures(courseFeatures.filter((_, i) => i !== index));
     }
   };
 
-  // Chapter Operations
-  const handleChapter = (action, chapterId) => {
-    if (action === 'add') {
-      const title = prompt('Enter Chapter Name:');
-      if (title) {
-        const newChapter = {
-          chapterId: uniqid(),
+  const createModule = () => {
+    const title = prompt("Enter Module Name:");
+    if (!title) return;
+
+    setModules((prev) =>
+      normalizeModuleOrder([
+        ...prev,
+        {
+          chapterId: `${Date.now()}`,
           chapterTitle: title,
           chapterContent: [],
           collapsed: false,
-          chapterOrder: chapters.length > 0 ? Math.max(...chapters.map(c => c.chapterOrder)) + 1 : 1,
-        };
-        setChapters([...chapters, newChapter]);
-      }
-    } else if (action === 'remove') {
-      setChapters(chapters.filter(c => c.chapterId !== chapterId));
-    } else if (action === 'toggle') {
-      setChapters(chapters.map(c => c.chapterId === chapterId ? { ...c, collapsed: !c.collapsed } : c));
-    }
+          chapterOrder: prev.length + 1,
+        },
+      ])
+    );
   };
 
-  // Lecture Edit Handler
-  const handleEditLecture = (chapterId, lecture) => {
-    setCurrentChapterId(chapterId);
-    setCurrentLectureId(lecture.lectureId);
-    setLectureDetails({
-      lectureTitle: lecture.lectureTitle,
-      lectureDuration: lecture.lectureDuration,
-      lectureVideoUrl: lecture.lectureVideoUrl,
-      isPreview: lecture.isPreview
-    });
-    setIsEditingLecture(true);
-    setShowPopup(true);
+  const removeModule = (moduleId) => {
+    setModules((prev) => normalizeModuleOrder(prev.filter((module) => module.chapterId !== moduleId)));
   };
 
-  // Save Lecture (Add or Update)
-  const saveLecture = () => {
-    setChapters(chapters.map(c => {
-      if (c.chapterId === currentChapterId) {
-        let updatedContent;
-        if (isEditingLecture) {
-          updatedContent = c.chapterContent.map(lec => 
-            lec.lectureId === currentLectureId ? { ...lec, ...lectureDetails, lectureDuration: Number(lectureDetails.lectureDuration) } : lec
-          );
-        } else {
-          updatedContent = [...c.chapterContent, {
-            lectureId: uniqid(),
-            ...lectureDetails,
-            lectureDuration: Number(lectureDetails.lectureDuration),
-            lectureOrder: c.chapterContent.length > 0 ? Math.max(...c.chapterContent.map(l => l.lectureOrder)) + 1 : 1,
-          }];
-        }
-        return { ...c, chapterContent: updatedContent };
-      }
-      return c;
-    }));
-    resetLecturePopup();
+  const toggleModule = (moduleId) => {
+    setModules((prev) =>
+      prev.map((module) =>
+        module.chapterId === moduleId ? { ...module, collapsed: !module.collapsed } : module
+      )
+    );
   };
 
-  const resetLecturePopup = () => {
-    setShowPopup(false);
-    setIsEditingLecture(false);
-    setCurrentLectureId(null);
-    setLectureDetails({ lectureTitle: '', lectureDuration: '', lectureVideoUrl: '', isPreview: false });
+  const openLessonModal = (moduleId, lesson = null) => {
+    setActiveModuleId(moduleId);
+    setActiveLesson(lesson);
+    setLessonMode(lesson ? "edit" : "add");
+    setLessonModalOpen(true);
   };
 
-  // Form Submission
+  const closeLessonModal = () => {
+    setLessonModalOpen(false);
+    setActiveModuleId(null);
+    setActiveLesson(null);
+    setLessonMode("add");
+  };
+
+  const saveLesson = (lesson) => {
+    if (!activeModuleId) return;
+
+    setModules((prev) =>
+      normalizeModuleOrder(
+        prev.map((module) => {
+          if (module.chapterId !== activeModuleId) return module;
+
+          const currentLessons = [...(module.chapterContent || [])];
+
+          if (lessonMode === "edit" && activeLesson?.lessonId) {
+            const updatedLessons = currentLessons.map((item) =>
+              item.lessonId === activeLesson.lessonId ? { ...item, ...lesson } : item
+            );
+            return { ...module, chapterContent: normalizeLessonOrder(updatedLessons) };
+          }
+
+          const newLesson = {
+            ...lesson,
+            lessonId: lesson.lessonId || `${Date.now()}`,
+            lectureId: lesson.lectureId || lesson.lessonId || `${Date.now()}`,
+          };
+          return {
+            ...module,
+            chapterContent: normalizeLessonOrder([...currentLessons, newLesson]),
+          };
+        })
+      )
+    );
+
+    closeLessonModal();
+  };
+
+  const deleteLesson = (moduleId, lessonId) => {
+    setModules((prev) =>
+      normalizeModuleOrder(
+        prev.map((module) => {
+          if (module.chapterId !== moduleId) return module;
+          return {
+            ...module,
+            chapterContent: normalizeLessonOrder(
+              module.chapterContent.filter((lesson) => lesson.lessonId !== lessonId)
+            ),
+          };
+        })
+      )
+    );
+  };
+
+  const reorderModules = (targetIndex) => {
+    if (draggedModuleIndex === null) return;
+    setModules((prev) => normalizeModuleOrder(moveItem(prev, draggedModuleIndex, targetIndex)));
+    setDraggedModuleIndex(null);
+  };
+
+  const reorderLessons = (moduleId, targetIndex) => {
+    if (!draggedLesson || draggedLesson.moduleId !== moduleId) return;
+    setModules((prev) =>
+      normalizeModuleOrder(
+        prev.map((module) => {
+          if (module.chapterId !== moduleId) return module;
+          return {
+            ...module,
+            chapterContent: normalizeLessonOrder(
+              moveItem(module.chapterContent, draggedLesson.lessonIndex, targetIndex)
+            ),
+          };
+        })
+      )
+    );
+    setDraggedLesson(null);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const updatedCourseData = {
         ...courseData,
+        category: courseCategory.trim(),
         courseDescription: quillRef.current.root.innerHTML,
-        courseContent: chapters,
+        courseContent: normalizeModuleOrder(modules),
         courseFeatures,
       };
 
       const formData = new FormData();
-      formData.append('courseData', JSON.stringify(updatedCourseData));
+      formData.append("courseData", JSON.stringify(updatedCourseData));
       if (image) {
-        formData.append('thumbnail', image);
+        formData.append("thumbnail", image);
       }
-      
+
       const token = await getToken();
       const { data } = await axios.put(`${backendURL}/api/educator/edit-course/${courseId}`, formData, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (data.success) {
-        toast.success('Course updated successfully!');
-        navigate('/educator/my-courses');
+        toast.success("Course updated successfully!");
+        navigate("/educator/my-courses");
       } else {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'An error occurred.');
+      toast.error(error.response?.data?.message || "An error occurred.");
     }
   };
 
   if (loading) return <Loading />;
 
   return (
-    <div className='h-screen overflow-scroll flex flex-col items-start md:p-8 p-4 pt-8 bg-gray-50'>
-      <form onSubmit={handleSubmit} className='w-full max-w-3xl space-y-5'>
-        
-        {/* Course Title */}
-        <div className='flex flex-col gap-1'>
-          <p className='text-gray-600 font-medium'>Course Title</p>
-          <input type='text' value={courseData?.courseTitle || ''} onChange={(e) => setCourseData({...courseData, courseTitle: e.target.value})} placeholder='Type Here' className='outline-none border border-gray-400 rounded-md p-2' required />
+    <div className="h-screen overflow-scroll flex flex-col items-start md:p-8 p-4 pt-8 bg-gray-50">
+      <form onSubmit={handleSubmit} className="w-full max-w-4xl space-y-5">
+        <div className="flex flex-col gap-1">
+          <p className="text-gray-600 font-medium">Course Title</p>
+          <input
+            type="text"
+            value={courseData?.courseTitle || ""}
+            onChange={(e) => setCourseData({ ...courseData, courseTitle: e.target.value })}
+            placeholder="Type Here"
+            className="outline-none border border-gray-400 rounded-md p-2"
+            required
+          />
         </div>
 
-        {/* Quill Editor */}
-        <div className='flex flex-col gap-1'>
-          <p className='text-gray-600 font-medium mb-2'>Course Description</p>
-          <div ref={editorRef} className='h-40 bg-white'></div>
+        <div className="flex flex-col gap-1">
+          <p className="text-gray-600 font-medium">Category</p>
+          <input
+            type="text"
+            value={courseCategory}
+            onChange={(e) => setCourseCategory(e.target.value)}
+            placeholder="Type Here"
+            className="outline-none border border-gray-400 rounded-md p-2"
+          />
         </div>
 
-        {/* Price & Discount */}
-        <div className='flex gap-4'>
-          <div className='flex-1'>
-            <p className='text-gray-600 font-medium'>Price</p>
-            <input type='number' value={courseData?.coursePrice || 0} onChange={(e) => setCourseData({...courseData, coursePrice: e.target.value})} className='w-full border border-gray-400 rounded-md p-2' placeholder='0' />
+        <div className="flex flex-col gap-1">
+          <p className="text-gray-600 font-medium mb-2">Course Description</p>
+          <div ref={editorRef} className="h-40 bg-white" />
+        </div>
+
+        <div className="flex gap-4">
+          <div className="flex-1">
+            <p className="text-gray-600 font-medium">Price</p>
+            <input
+              type="number"
+              value={courseData?.coursePrice || 0}
+              onChange={(e) => setCourseData({ ...courseData, coursePrice: e.target.value })}
+              className="w-full border border-gray-400 rounded-md p-2"
+              placeholder="0"
+            />
           </div>
-          <div className='flex-1'>
-            <p className='text-gray-600 font-medium'>Discount (%)</p>
-            <input type='number' value={courseData?.discount || 0} onChange={(e) => setCourseData({...courseData, discount: e.target.value})} className='w-full border border-gray-400 rounded-md p-2' placeholder='0' />
+          <div className="flex-1">
+            <p className="text-gray-600 font-medium">Discount (%)</p>
+            <input
+              type="number"
+              value={courseData?.discount || 0}
+              onChange={(e) => setCourseData({ ...courseData, discount: e.target.value })}
+              className="w-full border border-gray-400 rounded-md p-2"
+              placeholder="0"
+            />
           </div>
         </div>
 
-        {/* Thumbnail Upload */}
-        <div className='flex items-center gap-4'>
-          <label className='cursor-pointer bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-2'>
-            <img src={assets.file_upload_icon} alt="" className='w-4' />
+        <div className="flex items-center gap-4">
+          <label className="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-2">
+            <img src={assets.file_upload_icon} alt="" className="w-4" />
             Upload Thumbnail
-            <input type='file' onChange={(e) => setImage(e.target.files[0])} accept="image/*" hidden />
+            <input type="file" onChange={(e) => setImage(e.target.files[0])} accept="image/*" hidden />
           </label>
-          <img className='h-12 rounded' src={image ? URL.createObjectURL(image) : courseData?.courseThumbnail} alt="" />
+          <img className="h-12 rounded" src={image ? URL.createObjectURL(image) : courseData?.courseThumbnail} alt="" />
         </div>
 
-        {/* Course Features */}
-        <div className='space-y-2'>
-          <p className='text-gray-600 font-medium'>Course Features</p>
-          <div className='flex gap-2'>
-            <input type='text' value={featureInput} onChange={(e) => setFeatureInput(e.target.value)} placeholder='Add a feature' className='flex-1 border border-gray-400 rounded-md p-2' />
-            <button type='button' onClick={() => handleFeature('add')} className='bg-blue-600 text-white px-4 py-2 rounded'>Add</button>
+        <div className="space-y-2">
+          <p className="text-gray-600 font-medium">Course Features</p>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={featureInput}
+              onChange={(e) => setFeatureInput(e.target.value)}
+              placeholder="Add a feature"
+              className="flex-1 border border-gray-400 rounded-md p-2"
+            />
+            <button
+              type="button"
+              onClick={() => handleFeature("add")}
+              className="bg-blue-600 text-white px-4 py-2 rounded"
+            >
+              Add
+            </button>
           </div>
-          <ul className='space-y-2'>
+          <ul className="space-y-2">
             {courseFeatures.map((feature, index) => (
-              <li key={index} className='flex justify-between items-center bg-gray-100 p-2 rounded'>
+              <li key={index} className="flex justify-between items-center bg-gray-100 p-2 rounded">
                 <span>{feature}</span>
-                <button type='button' onClick={() => handleFeature('remove', index)} className='text-red-500'>Remove</button>
+                <button
+                  type="button"
+                  onClick={() => handleFeature("remove", index)}
+                  className="text-red-500"
+                >
+                  Remove
+                </button>
               </li>
             ))}
           </ul>
         </div>
 
-        {/* Chapters Section */}
-        <div className='space-y-4'>
-          {chapters.map((chapter, index) => (
-            <div key={chapter.chapterId} className="bg-white border rounded-lg overflow-hidden">
-              <div className='flex justify-between items-center p-4 bg-gray-100'>
-                <div className='flex items-center gap-2 cursor-pointer' onClick={() => handleChapter('toggle', chapter.chapterId)}>
-                  <img src={assets.dropdown_icon} alt="" width={12} className={`${chapter.collapsed ? "-rotate-90" : ""} transition-transform`} />
-                  <span className='font-semibold'>{index + 1}. {chapter.chapterTitle}</span>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800">Modules</h3>
+              <p className="text-sm text-gray-500">Drag to reorder modules and lessons within each module.</p>
+            </div>
+            <button
+              type="button"
+              onClick={createModule}
+              className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700"
+            >
+              + Add Module
+            </button>
+          </div>
+
+          {modules.map((module, moduleIndex) => (
+            <div
+              key={module.chapterId}
+              draggable
+              onDragStart={() => setDraggedModuleIndex(moduleIndex)}
+              onDragOver={(event) => event.preventDefault()}
+              onDrop={() => reorderModules(moduleIndex)}
+              className="bg-white border rounded-lg overflow-hidden"
+            >
+              <div className="flex justify-between items-center p-4 bg-gray-100">
+                <div
+                  className="flex items-center gap-3 cursor-pointer"
+                  onClick={() => toggleModule(module.chapterId)}
+                >
+                  <span className="text-gray-400 cursor-grab text-lg">☰</span>
+                  <img
+                    src={assets.dropdown_icon}
+                    alt=""
+                    width={12}
+                    className={`${module.collapsed ? "-rotate-90" : ""} transition-transform`}
+                  />
+                  <span className="font-semibold">
+                    {moduleIndex + 1}. {module.chapterTitle}
+                  </span>
+                  <span className="rounded-full bg-white px-2 py-1 text-[10px] font-semibold uppercase text-gray-500">
+                    {module.chapterContent.length} lessons
+                  </span>
                 </div>
-                <img src={assets.cross_icon} className='cursor-pointer w-3' onClick={() => handleChapter('remove', chapter.chapterId)} alt="remove" />
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      openLessonModal(module.chapterId);
+                    }}
+                    className="text-sm font-medium text-blue-600 hover:underline"
+                  >
+                    + Lesson
+                  </button>
+                  <img
+                    src={assets.cross_icon}
+                    className="cursor-pointer w-3"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      removeModule(module.chapterId);
+                    }}
+                    alt="remove"
+                  />
+                </div>
               </div>
-              {!chapter.collapsed && (
-                <div className='p-4 space-y-2'>
-                  {chapter.chapterContent.map((lec, i) => (
-                    <div key={i} className='flex justify-between items-center text-sm border-b pb-2'>
-                      <span>{i + 1}. {lec.lectureTitle} ({lec.lectureDuration} min)</span>
-                      <div className='flex gap-3'>
-                        <span 
-                          className='text-blue-500 cursor-pointer hover:underline'
-                          onClick={() => handleEditLecture(chapter.chapterId, lec)}
+
+              {!module.collapsed && (
+                <div className="p-4 space-y-2">
+                  {module.chapterContent.map((lesson, lessonIndex) => (
+                    <div
+                      key={lesson.lessonId}
+                      draggable
+                      onDragStart={() =>
+                        setDraggedLesson({
+                          moduleId: module.chapterId,
+                          lessonIndex,
+                          lessonId: lesson.lessonId,
+                        })
+                      }
+                      onDragOver={(event) => event.preventDefault()}
+                      onDrop={() => reorderLessons(module.chapterId, lessonIndex)}
+                      className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className="text-gray-400 cursor-grab">☰</span>
+                        <div className="min-w-0">
+                          <p className="truncate font-medium text-gray-800">
+                            {lessonIndex + 1}. {lesson.lectureTitle || lesson.lessonTitle}
+                          </p>
+                          <p className="text-[11px] text-gray-500">
+                            {lesson.lectureType || lesson.lessonType || "video"} • {lesson.lectureStatus || lesson.lessonStatus || "draft"} •{" "}
+                            {lesson.lectureDuration || lesson.lessonDuration || 0} min
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3 text-[11px] font-semibold uppercase">
+                        {(lesson.previewMode || lesson.isPreviewFree) && (
+                          <span className="rounded-full bg-green-100 px-2 py-1 text-green-700">Preview</span>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => openLessonModal(module.chapterId, lesson)}
+                          className="text-blue-600 hover:underline"
                         >
                           Edit
-                        </span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => deleteLesson(module.chapterId, lesson.lessonId)}
+                          className="text-red-500 hover:underline"
+                        >
+                          Delete
+                        </button>
                       </div>
                     </div>
                   ))}
-                  <div className='text-blue-600 cursor-pointer text-sm font-medium pt-2' onClick={() => { setCurrentChapterId(chapter.chapterId); setShowPopup(true); }}>
-                    + Add Lecture
-                  </div>
                 </div>
               )}
             </div>
           ))}
-          <div className='cursor-pointer text-center p-3 border-2 border-dashed border-gray-400 rounded-lg text-gray-600' onClick={() => handleChapter('add')}>
-            + Add Chapter
-          </div>
         </div>
 
-        <button type='submit' className='bg-black text-white px-8 py-2.5 rounded font-bold uppercase'>
+        <button type="submit" className="bg-black text-white px-8 py-2.5 rounded font-bold uppercase">
           UPDATE COURSE
         </button>
       </form>
 
-      {/* Lecture Popup Modal */}
-      {showPopup && (
-        <div className='fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50'>
-          <div className='bg-white p-6 rounded-lg w-full max-w-md relative'>
-            <h2 className='text-xl font-bold mb-4'>{isEditingLecture ? 'Edit Lecture' : 'Add Lecture'}</h2>
-            <div className='space-y-3'>
-              <input type='text' placeholder='Lecture Title' className='w-full border p-2 rounded' value={lectureDetails.lectureTitle} onChange={e => setLectureDetails({...lectureDetails, lectureTitle: e.target.value})} />
-              <input type='number' placeholder='Duration (min)' className='w-full border p-2 rounded' value={lectureDetails.lectureDuration} onChange={e => setLectureDetails({...lectureDetails, lectureDuration: e.target.value})} />
-              <input type='text' placeholder='Video URL' className='w-full border p-2 rounded' value={lectureDetails.lectureVideoUrl} onChange={e => setLectureDetails({...lectureDetails, lectureVideoUrl: e.target.value})} />
-              <label className='flex items-center gap-2'>
-                <input type='checkbox' checked={lectureDetails.isPreview} onChange={e => setLectureDetails({...lectureDetails, isPreview: e.target.checked})} />
-                Free Preview?
-              </label>
-              <button onClick={saveLecture} className='w-full bg-blue-600 text-white py-2 rounded'>
-                {isEditingLecture ? 'Update Lecture' : 'Add Lecture'}
-              </button>
-            </div>
-            <img onClick={resetLecturePopup} src={assets.cross_icon} className='absolute top-4 right-4 cursor-pointer w-4' alt="close" />
-          </div>
-        </div>
-      )}
+      <LessonEditorModal
+        open={lessonModalOpen}
+        mode={lessonMode}
+        initialLesson={activeLesson}
+        fallbackOrder={
+          activeModuleId
+            ? (modules.find((module) => module.chapterId === activeModuleId)?.chapterContent.length || 0) + 1
+            : 1
+        }
+        onClose={closeLessonModal}
+        onSave={saveLesson}
+      />
     </div>
   );
 };

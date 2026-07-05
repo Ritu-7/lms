@@ -3,7 +3,14 @@ import Course from "../models/Course.js";
 import { v2 as cloudinary } from "cloudinary";
 import Purchase from "../models/Purchase.js";
 import User from "../models/User.js";
+import Assignment from "../models/Assignment.js";
+import AssignmentSubmission from "../models/AssignmentSubmission.js";
+import Quiz from "../models/Quiz.js";
+import QuizAttempt from "../models/QuizAttempt.js";
 import fs from "fs";
+import { resolveUserRole } from "../utils/roleUtils.js";
+import { replaceHierarchyForCourse } from "../services/courseHierarchyService.js";
+import { notifyCoursePublished } from "../services/notificationService.js";
 
 /* ===============================
    Update role to educator
@@ -25,7 +32,7 @@ export const updateRoleToEducator = async (req, res) => {
     // 2️⃣ MongoDB
     const user = await User.findOneAndUpdate(
       { clerkUserId: auth.userId },
-      { role: "educator" },
+      { role: resolveUserRole({ clerkUserId: auth.userId, email: "", existingRole: "educator" }) },
       { new: true }
     );
 
@@ -78,7 +85,11 @@ export const addCourse = async (req, res) => {
       educator: educator._id,
       courseThumbnail: imageUpload.secure_url,
       isPublished: false,
+      modules: [],
+      courseContent: [],
     });
+
+    await replaceHierarchyForCourse(course, parsedCourseData.courseContent || parsedCourseData.modules || []);
 
     res.status(201).json({
       success: true,
@@ -108,6 +119,12 @@ export const educatorDashboardData = async (req, res) => {
 
     const courses = await Course.find({ educator: educator._id });
     const courseIds = courses.map((c) => c._id);
+    const assignments = await Assignment.find({ educator: educator._id }).sort({ dueDate: 1 }).lean();
+    const assignmentIds = assignments.map((assignment) => assignment._id);
+    const submissions = await AssignmentSubmission.find({ assignment: { $in: assignmentIds } }).lean();
+    const quizzes = await Quiz.find({ educator: educator._id }).sort({ createdAt: -1 }).lean();
+    const quizIds = quizzes.map((quiz) => quiz._id);
+    const quizAttempts = await QuizAttempt.find({ quiz: { $in: quizIds } }).lean();
 
     const purchases = await Purchase.find({
       course: { $in: courseIds }, 
@@ -118,6 +135,11 @@ export const educatorDashboardData = async (req, res) => {
     .sort({ createdAt: -1 });
 
     const totalEarnings = purchases.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+    const assignmentSubmissionCount = submissions.filter((submission) => submission.status !== "not_submitted").length;
+    const assignmentGradedCount = submissions.filter((submission) => submission.status === "graded").length;
+    const upcomingAssignments = assignments.filter((assignment) => new Date(assignment.dueDate) >= new Date()).length;
+    const quizAttemptCount = quizAttempts.length;
+    const quizPassCount = quizAttempts.filter((attempt) => attempt.passed).length;
 
     const enrolledStudents = purchases.map((p) => ({
       // ✅ Use optional chaining to get the title safely
@@ -132,6 +154,13 @@ export const educatorDashboardData = async (req, res) => {
         totalEarnings,
         totalEnrolledStudents: enrolledStudents.length,
         enrolledStudentsData: enrolledStudents, 
+        totalAssignments: assignments.length,
+        assignmentSubmissionCount,
+        assignmentGradedCount,
+        upcomingAssignments,
+        totalQuizzes: quizzes.length,
+        quizAttemptCount,
+        quizPassCount,
       },
     });
   } catch (error) {
@@ -188,6 +217,12 @@ export const togglePublishCourse = async (req, res) => {
 
     course.isPublished = !course.isPublished;
     await course.save();
+
+    // ── Notification: course published ─────────────────────────────────
+    if (course.isPublished) {
+      const enrolledIds = (course.studentsEnrolled || []).map((id) => id.toString());
+      notifyCoursePublished(educator._id, courseId, course.courseTitle || "a course", enrolledIds);
+    }
 
     res.json({
       success: true,
@@ -249,8 +284,17 @@ export const editCourse = async (req, res) => {
       ? JSON.parse(req.body.courseData)
       : req.body;
 
+    const hasHierarchyPayload =
+      Object.prototype.hasOwnProperty.call(updates, "courseContent") ||
+      Object.prototype.hasOwnProperty.call(updates, "modules");
+
     Object.assign(course, updates);
-    await course.save();
+
+    if (hasHierarchyPayload) {
+      await replaceHierarchyForCourse(course, updates.courseContent || updates.modules || []);
+    } else {
+      await course.save();
+    }
 
     res.json({
       success: true,

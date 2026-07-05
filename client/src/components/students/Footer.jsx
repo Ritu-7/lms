@@ -1,56 +1,79 @@
 import React from 'react'
-import { assets } from '../../assets/assets'
+import Logo from '../common/Logo'
 
 const Footer = () => {
   return (
-    <footer className="w-full bg-gray-900 text-white mt-20">
-      
-      <div className="flex flex-col md:flex-row items-start justify-center gap-16 md:gap-36 px-8 md:px-36 py-10 border-b border-gray-700">
-        
-        {/* Logo & Description */}
-        <div className="flex flex-col md:items-start items-center w-full">
-          <img src={assets.logo_dark} alt="logo" />
-          <p className="mt-6 text-center md:text-left text-sm text-white/80">
-          Learn. Grow. Succeed — anytime, anywhere.
-          </p>
-        </div>
+    <footer className="w-full bg-slate-950 text-white pt-20 pb-10">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16 pb-16 border-b border-white/10">
+          
+          {/* Logo & Description */}
+          <div className="flex flex-col space-y-6">
+            <Logo light />
+            <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
+              LearnSphereAI is the next generation of learning. Empowering students and educators with AI-driven tools to master any skill, anywhere in the world.
+            </p>
+            <div className="flex gap-4">
+              {/* Social placeholders */}
+              {['facebook', 'twitter', 'instagram', 'linkedin'].map(social => (
+                <a key={social} href="#" className="h-8 w-8 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all duration-300">
+                  <span className="sr-only">{social}</span>
+                  <div className="h-4 w-4 bg-current rounded-sm" />
+                </a>
+              ))}
+            </div>
+          </div>
 
-        {/* Company Links */}
-        <div className="flex flex-col items-center w-full">
-          <h2 className="font-semibold mb-5 text-center">Company</h2>
-          <ul className="flex md:flex-col w-full justify-between md:space-y-2 text-sm text-white/80">
-            <li><a href="#" className="hover:text-white">Home</a></li>
-            <li><a href="#" className="hover:text-white">About</a></li>
-            <li><a href="#" className="hover:text-white">Contact Us</a></li>
-            <li><a href="#" className="hover:text-white">Privacy Policy</a></li>
-          </ul>
-        </div>
+          {/* Quick Links */}
+          <div>
+            <h3 className="font-space-grotesk text-lg font-bold mb-6">Quick Links</h3>
+            <ul className="space-y-4 text-sm text-slate-400">
+              <li><a href="/" className="hover:text-white transition-colors">Home</a></li>
+              <li><a href="/course-list" className="hover:text-white transition-colors">All Courses</a></li>
+              <li><a href="/about" className="hover:text-white transition-colors">About Us</a></li>
+              <li><a href="/contact" className="hover:text-white transition-colors">Contact</a></li>
+            </ul>
+          </div>
 
-        {/* Newsletter */}
-        <div className="hidden md:flex flex-col md:items-start items-center w-full">
-          <h2 className="font-semibold mb-5">Subscribe to our Newsletter</h2>
-          <p className="text-sm text-white/80">
-            Get the latest updates and offers.
-          </p>
+          {/* Platform */}
+          <div>
+            <h3 className="font-space-grotesk text-lg font-bold mb-6">Platform</h3>
+            <ul className="space-y-4 text-sm text-slate-400">
+              <li><a href="#" className="hover:text-white transition-colors">For Students</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">For Educators</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">AI Tutor</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Certifications</a></li>
+            </ul>
+          </div>
 
-          <div className="flex items-center gap-2 pt-4">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="px-4 py-2 rounded-l-md border border-gray-300 text-black focus:outline-none"
-            />
-            <button className="px-4 py-2 bg-blue-600 rounded-r-md hover:bg-blue-700">
-              Subscribe
-            </button>
+          {/* Newsletter */}
+          <div>
+            <h3 className="font-space-grotesk text-lg font-bold mb-6">Stay Updated</h3>
+            <p className="text-sm text-slate-400 mb-4">
+              Get the latest AI learning tips and course updates.
+            </p>
+            <div className="flex gap-2">
+              <input
+                type="email"
+                placeholder="Email address"
+                className="flex-1 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-sm outline-none focus:border-blue-500 transition-colors"
+              />
+              <button className="px-4 py-2 bg-blue-600 rounded-xl text-white text-sm font-semibold hover:bg-blue-700 transition-colors">
+                Join
+              </button>
+            </div>
           </div>
         </div>
 
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+          <p>© 2026 LearnSphereAI Inc. All rights reserved.</p>
+          <div className="flex gap-6">
+            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+            <a href="#" className="hover:text-white transition-colors">Cookie Settings</a>
+          </div>
+        </div>
       </div>
-
-      <p className="py-4 text-center text-xs md:text-sm text-white/60">
-        © 2025 LearnHub. All rights reserved.
-      </p>
-
     </footer>
   )
 }

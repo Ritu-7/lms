@@ -1,4 +1,5 @@
 import Course from "../models/Course.js";
+import { serializeCourseHierarchy } from "../services/courseHierarchyService.js";
 
 /* ===============================
    Get all published courses
@@ -6,7 +7,7 @@ import Course from "../models/Course.js";
 export const getAllCourse = async (req, res) => {
   try {
     const courses = await Course.find({ isPublished: true })
-      .select("-courseContent -enrolledStudents")
+      .select("-courseContent -modules -studentsEnrolled")
       .populate("educator", "name imageUrl");
 
     res.json({ success: true, data: courses });
@@ -30,38 +31,25 @@ export const getCourseId = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid Course ID format" });
     }
 
-    const courseData = await Course.findById(id)
+    const courseDoc = await Course.findById(id)
+      .populate({ path: "modules", populate: { path: "lessons" } })
       .populate("educator", "name imageUrl")
       .lean();
 
-    if (!courseData) {
+    if (!courseDoc) {
       return res.status(404).json({
         success: false,
         message: "Course not found",
       });
     }
 
-    // 🔒 2. Safely hide non-preview lecture URLs
-    // Added optional chaining (?.) and existence checks
-    if (courseData.courseContent && Array.isArray(courseData.courseContent)) {
-      courseData.courseContent.forEach((chapter) => {
-        if (chapter.chapterContent && Array.isArray(chapter.chapterContent)) {
-          chapter.chapterContent.forEach((lecture) => {
-            if (!lecture.isPreviewFree) {
-              lecture.lectureUrl = ""; 
-            }
-          });
-        }
-      });
-    }
+    const courseData = serializeCourseHierarchy(courseDoc, { hideRestrictedUrls: true });
 
     res.json({
       success: true,
       data: courseData,
     });
   } catch (error) {
-    // This console.log will tell you exactly what the 500 error is in your terminal
-    console.error("Error in getCourseId:", error);
     res.status(500).json({
       success: false,
       message: error.message,

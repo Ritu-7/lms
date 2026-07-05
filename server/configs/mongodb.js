@@ -1,56 +1,35 @@
 import mongoose from "mongoose";
+import { logger } from "../utils/logger.js";
 
 const connectDB = async () => {
   try {
-    // Connection Events
     mongoose.connection.on("connected", () => {
-      console.log("✅ MongoDB connected successfully");
+      logger.info("mongodb.connected");
     });
 
     mongoose.connection.on("error", (err) => {
-      console.error("❌ MongoDB connection error:", err);
+      logger.error("mongodb.connection_error", { message: err.message });
     });
 
     mongoose.connection.on("disconnected", () => {
-      console.warn("⚠️ MongoDB disconnected.");
+      logger.warn("mongodb.disconnected");
     });
 
     if (!process.env.MONGODB_URI) {
       throw new Error("MONGODB_URI is not defined in .env file");
     }
 
-    // Already connected
     if (mongoose.connection.readyState === 1) {
-      console.log("ℹ️ MongoDB already connected");
+      logger.info("mongodb.already_connected");
       return mongoose.connection;
     }
 
-    console.log("MONGODB_URI exists:", !!process.env.MONGODB_URI);
-    console.log("RAW URI:", JSON.stringify(process.env.MONGODB_URI));
-    console.log(
-      "Starts with mongodb+srv:// ?",
-      process.env.MONGODB_URI.startsWith("mongodb+srv://")
-    );
-
-    // Debug host only
-    try {
-      const host = process.env.MONGODB_URI.split("@")[1];
-      console.log("Mongo Host:", host);
-    } catch (err) {
-      console.log("Could not parse Mongo host");
-    }
-
-    // Connect
     await mongoose.connect(process.env.MONGODB_URI);
 
-    console.log("✅ Database connection established");
+    logger.info("mongodb.connection_established");
     return mongoose.connection;
-
   } catch (error) {
-    console.error(
-      "❌ Database connection failed during mongoose.connect:",
-      error.message
-    );
+    logger.error("mongodb.connection_failed", { message: error.message });
     throw error;
   }
 };

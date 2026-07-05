@@ -8,31 +8,35 @@ import humanizeDuration from "humanize-duration";
 import YouTube from "react-youtube";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useAuth, useClerk } from "@clerk/clerk-react";
+import { useAuth } from "@clerk/clerk-react";
+import { useAuthModal } from "../../contexts/AuthContext";
+import { motion, AnimatePresence } from "framer-motion";
+import { PlayCircle, FileText, ExternalLink, ChevronDown, CheckCircle2, Lock } from "lucide-react";
+import {
+  getResourceActionLabel,
+  normalizeResourceCollection,
+} from "../../utils/resourceUtils";
 
 const CourseDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const {
-    calculateRating,
     calculateChapterTime,
-    calculateCourseDuration,
-    calculateNoOfLectures,
     currency,
     backendURL,
     getToken,
-    userData,
+    enrolledCourses,
+    getCourseChapters,
   } = useContext(AppContext);
 
   const { userId } = useAuth();
-  const { openSignIn } = useClerk();
+  const { openAuth } = useAuthModal();
 
   const [courseData, setCourseData] = useState(null);
   const [openSection, setOpenSection] = useState({});
   const [playerData, setPlayerData] = useState(null);
 
-  // Fetch Course Data
   useEffect(() => {
     const fetchCourseDetail = async () => {
       try {
@@ -42,18 +46,20 @@ const CourseDetail = () => {
         } else {
           toast.error(data.message || "Course not found");
         }
-      } catch (error) {
+      } catch {
         toast.error("Failed to load course");
       }
     };
     fetchCourseDetail();
   }, [id, backendURL]);
 
-  // Enrollment / Purchase Logic
+  const isAlreadyEnrolled = enrolledCourses.some((course) => (typeof course === "string" ? course : course._id) === courseData?._id);
+  const courseChapters = getCourseChapters(courseData);
+
   const enrollCourse = async () => {
     try {
       if (!userId) {
-        openSignIn();
+        openAuth("student");
         return;
       }
 
@@ -96,7 +102,7 @@ const CourseDetail = () => {
             toast.success("Enrollment successful");
             navigate("/my-enrollments");
           }
-        } catch (error) {
+        } catch {
           toast.error("Payment verification failed.");
         }
       },
@@ -104,120 +110,203 @@ const CourseDetail = () => {
     new window.Razorpay(options).open();
   };
 
-  // Helper: Check Enrollment
-  const isAlreadyEnrolled = userData?.enrolledCourses?.includes(courseData?._id);
-
   const toggleSection = (i) => setOpenSection((p) => ({ ...p, [i]: !p[i] }));
+  const getLessonResources = (lesson = {}) =>
+    normalizeResourceCollection(
+      lesson.lectureResources,
+      lesson.lessonResources,
+      lesson.resources,
+      lesson.lectureAttachments,
+      lesson.lessonAttachments
+    );
+  const getLessonType = (lesson = {}) =>
+    lesson.lectureType || lesson.lessonType || lesson.contentType || getLessonResources(lesson)[0]?.resourceType || "video";
+  const getLessonUrl = (lesson = {}) =>
+    lesson.lectureUrl ||
+    lesson.lessonUrl ||
+    lesson.lessonVideoUrl ||
+    lesson.lessonPdfUrl ||
+    lesson.lessonExternalLink ||
+    getLessonResources(lesson)[0]?.resourceUrl ||
+    "";
 
   const getYoutubeVideoId = (url) => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#?]*).*/;
     const match = url?.match(regExp);
     return match && match[2].length === 11 ? match[2] : null;
   };
 
+  const renderPreview = (lesson) => {
+    const lessonType = getLessonType(lesson);
+    const lessonUrl = getLessonUrl(lesson);
+
+    if (lessonType === "pdf") {
+      return <iframe src={lesson.lessonPdfUrl || lessonUrl} title={lesson.lectureTitle} className="w-full aspect-video bg-white" />;
+    }
+
+    if (lessonType === "rich_text") {
+      return (
+        <div className="w-full aspect-video overflow-auto bg-white p-6 text-slate-800">
+          <div
+            className="prose prose-sm max-w-none text-slate-600"
+            dangerouslySetInnerHTML={{ __html: lesson.lectureRichTextContent || lesson.lessonRichTextContent || "" }}
+          />
+        </div>
+      );
+    }
+
+    if (lessonType === "external_link") {
+      return (
+        <div className="w-full aspect-video bg-white p-8 flex flex-col items-center justify-center gap-4 text-center">
+          <ExternalLink className="w-12 h-12 text-blue-600" />
+          <h3 className="text-xl font-semibold text-slate-900">{lesson.lectureTitle}</h3>
+          <a
+            href={lesson.lessonExternalLink || lessonUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700"
+          >
+            Open Link
+          </a>
+        </div>
+      );
+    }
+
+    if (lessonType === "quiz" || lessonType === "assignment") {
+      return (
+        <div className="w-full aspect-video bg-white p-8 flex flex-col items-center justify-center gap-4 text-center">
+          {lessonType === "quiz" ? <FileText className="w-12 h-12 text-blue-600" /> : <CheckCircle2 className="w-12 h-12 text-blue-600" />}
+          <h3 className="text-xl font-semibold text-slate-900">{lesson.lectureTitle}</h3>
+          {lesson.lessonExternalLink || lessonUrl ? (
+            <a
+              href={lesson.lessonExternalLink || lessonUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white"
+            >
+              {lessonType === "quiz" ? "Open Quiz" : "Open Assignment"}
+            </a>
+          ) : null}
+        </div>
+      );
+    }
+
+    const youtubeId = getYoutubeVideoId(lesson.lessonVideoUrl || lessonUrl);
+    if (youtubeId) {
+      return <YouTube videoId={youtubeId} iframeClassName="w-full aspect-video" opts={{ playerVars: { autoplay: 1 } }} />;
+    }
+
+    return <iframe src={lesson.lessonVideoUrl || lessonUrl} title={lesson.lectureTitle} className="w-full aspect-video" />;
+  };
+
   if (!courseData) return <Loading />;
 
-  const rating = Number(calculateRating(courseData)) || 0;
-
   return (
-    <>
-      <div className="flex md:flex-row flex-col gap-10 md:px-36 px-6 pt-20">
-        {/* LEFT SIDE */}
-        <div className="flex-1">
-          <h1 className="text-2xl font-semibold">{courseData.courseTitle}</h1>
-          <p className="mt-4 text-gray-600" dangerouslySetInnerHTML={{ __html: courseData.courseDescription }} />
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col lg:flex-row gap-12">
+        <div className="flex-1 space-y-8">
+          <h1 className="text-4xl font-bold font-space-grotesk text-slate-900 dark:text-white leading-tight">{courseData.courseTitle}</h1>
+          <div className="prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-slate-400" dangerouslySetInnerHTML={{ __html: courseData.courseDescription }} />
 
-          {/* Course Structure */}
-          <div className="mt-8">
-            <h2 className="text-xl font-semibold mb-4">Course Structure</h2>
-            {courseData.courseContent?.map((chapter, index) => (
-              <div key={index} className="border mb-3 rounded">
-                <div onClick={() => toggleSection(index)} className="flex justify-between p-4 cursor-pointer bg-gray-50">
-                  <p className="font-medium">Chapter {index + 1}: {chapter.chapterTitle}</p>
-                  <p className="text-sm text-gray-500">
-                    {chapter.chapterContent?.length || 0} lectures • {calculateChapterTime(chapter)}
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold font-space-grotesk text-slate-900 dark:text-white">Course Structure</h2>
+            {courseChapters.map((chapter, index) => (
+              <div key={index} className="border border-slate-200 dark:border-white/10 rounded-2xl bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
+                <button onClick={() => toggleSection(index)} className="flex w-full justify-between items-center p-6 text-left hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                  <p className="font-semibold text-slate-900 dark:text-white">
+                    Module {index + 1}: {chapter.chapterTitle}
                   </p>
-                </div>
+                  <div className="flex items-center gap-4 text-sm text-slate-500">
+                    <span>{chapter.chapterContent?.length || 0} lessons • {calculateChapterTime(chapter)}</span>
+                    <motion.div animate={{ rotate: openSection[index] ? 180 : 0 }}>
+                      <ChevronDown size={18} />
+                    </motion.div>
+                  </div>
+                </button>
 
-                {openSection[index] && (
-                  <ul className="p-4 border-t text-sm">
-                    {chapter.chapterContent?.map((lecture, i) => {
-                      // Logic: Full access if enrolled, else only free previews
-                      const canWatch = isAlreadyEnrolled || lecture.isPreviewFree;
+                <AnimatePresence>
+                  {openSection[index] && (
+                    <motion.ul 
+                      initial={{ height: 0 }}
+                      animate={{ height: 'auto' }}
+                      exit={{ height: 0 }}
+                      className="border-t border-slate-200 dark:border-white/10 p-6 space-y-4 bg-slate-50 dark:bg-slate-800/30 text-sm"
+                    >
+                      {chapter.chapterContent?.map((lecture, i) => {
+                        const lessonType = getLessonType(lecture);
+                        const canWatch = isAlreadyEnrolled || lecture.isPreviewFree || lecture.previewMode;
+                        const actionLabel = getResourceActionLabel(lessonType);
 
-                      return (
-                        <li key={i} className="flex justify-between items-center py-2">
-                          <div className="flex items-center gap-2">
-                            <img 
-                              src={canWatch ? assets.play_icon : assets.lock_icon} 
-                              className="w-4 h-4" 
-                              alt="status" 
-                            />
-                            <p className={!canWatch ? "text-gray-400" : "text-gray-800"}>
-                              {i + 1}. {lecture.lectureTitle}
-                            </p>
-                            {lecture.isPreviewFree && !isAlreadyEnrolled && (
-                              <span className="ml-2 text-[10px] px-2 py-0.5 bg-green-100 text-green-700 rounded uppercase font-bold">
-                                Preview
+                        return (
+                          <li key={i} className="flex justify-between items-center">
+                            <div className="flex items-center gap-3">
+                              {canWatch ? <PlayCircle className="w-4 h-4 text-blue-600" /> : <Lock className="w-4 h-4 text-slate-400" />}
+                              <p className={!canWatch ? "text-slate-500" : "text-slate-800 dark:text-slate-200"}>
+                                {i + 1}. {lecture.lectureTitle}
+                              </p>
+                              {lecture.isPreviewFree && !isAlreadyEnrolled && (
+                                <span className="text-[10px] px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-md uppercase font-bold">
+                                  Preview
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="flex items-center gap-4">
+                              {canWatch && (
+                                <button
+                                  onClick={() => setPlayerData({ ...lecture, chapter: index + 1, lecture: i + 1 })}
+                                  className="text-blue-600 dark:text-blue-400 text-sm font-semibold hover:underline"
+                                >
+                                  {actionLabel}
+                                </button>
+                              )}
+                              <span className="text-slate-400 text-xs tabular-nums">
+                                {humanizeDuration((lecture.lectureDuration || 0) * 60000, { units: ["h", "m"] })}
                               </span>
-                            )}
-                          </div>
-
-                          <div className="flex items-center gap-3">
-                            {canWatch && lecture.lectureUrl && (
-                              <span
-                                onClick={() => setPlayerData({ videoId: getYoutubeVideoId(lecture.lectureUrl) })}
-                                className="text-blue-600 cursor-pointer underline font-medium"
-                              >
-                                Watch
-                              </span>
-                            )}
-                            <span className="text-gray-500">
-                              {humanizeDuration(lecture.lectureDuration * 60000, { units: ["h", "m"] })}
-                            </span>
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )}
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </motion.ul>
+                  )}
+                </AnimatePresence>
               </div>
             ))}
           </div>
         </div>
 
-        {/* RIGHT SIDE (Card) */}
-        <div className="w-full md:w-[380px] shadow-lg rounded h-fit sticky top-20 bg-white">
-          {playerData ? (
-            <div className="relative">
-              <YouTube
-                videoId={playerData.videoId}
-                iframeClassName="w-full aspect-video"
-                opts={{ playerVars: { autoplay: 1 } }}
-              />
-              <button onClick={() => setPlayerData(null)} className="absolute top-2 right-2 bg-black/60 text-white px-2 py-1 text-xs rounded">
-                Close Preview
+        <div className="w-full lg:w-[380px] h-fit sticky top-24">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none overflow-hidden">
+            {playerData ? (
+              <div className="relative">
+                {renderPreview(playerData)}
+                <button
+                  onClick={() => setPlayerData(null)}
+                  className="absolute top-2 right-2 bg-black/60 text-white px-3 py-1 text-xs rounded-lg hover:bg-black/80"
+                >
+                  Close Preview
+                </button>
+              </div>
+            ) : (
+              <img src={courseData.courseThumbnail} alt="" className="w-full aspect-video object-cover" />
+            )}
+
+            <div className="p-6 space-y-6">
+              <p className="text-4xl font-bold font-space-grotesk text-slate-900 dark:text-white">
+                {currency} {(courseData.coursePrice - (courseData.discount * courseData.coursePrice) / 100).toFixed(2)}
+              </p>
+              <button
+                onClick={enrollCourse}
+                className="w-full bg-blue-600 text-white py-4 rounded-xl font-semibold hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-600/25"
+              >
+                {isAlreadyEnrolled ? "Go to Course" : "Enroll Now"}
               </button>
             </div>
-          ) : (
-            <img src={courseData.courseThumbnail} alt="" className="w-full" />
-          )}
-
-          <div className="p-5">
-            <p className="text-2xl font-semibold">
-              {currency} {(courseData.coursePrice - (courseData.discount * courseData.coursePrice) / 100).toFixed(2)}
-            </p>
-            <button
-              onClick={enrollCourse}
-              className="mt-4 w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 transition font-medium"
-            >
-              {isAlreadyEnrolled ? "Go to Course" : "Enroll Now"}
-            </button>
           </div>
         </div>
       </div>
       <Footer />
-    </>
+    </div>
   );
 };
 

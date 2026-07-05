@@ -1,136 +1,80 @@
-import dns from "node:dns";
-
-dns.setServers(["8.8.8.8", "8.8.4.4"]);
-console.log("DNS Servers:", dns.getServers());
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-
+import helmet from "helmet";
+import { rateLimit } from "express-rate-limit";
+import { clerkMiddleware } from "@clerk/express";
 import connectDB from "./configs/mongodb.js";
 import connectCloudinary from "./configs/cloudinary.js";
-
-import { clerkWebhook } from "./controllers/webhooks.js";
-
+import { clerkWebhook, razorpayWebhook } from "./controllers/webhooks.js";
 import educatorRouter from "./routes/educatorRoutes.js";
 import courseRouter from "./routes/courseRoute.js";
 import userRouter from "./routes/userRoutes.js";
-
-import { clerkMiddleware } from "@clerk/express";
+import platformRouter from "./routes/platformRoutes.js";
+import adminRouter from "./routes/adminRoutes.js";
+import assignmentRouter from "./routes/assignmentRoutes.js";
+import quizRouter from "./routes/quizRoutes.js";
+import certificateRouter from "./routes/certificateRoutes.js";
+import studyLibraryRouter from "./routes/studyLibraryRoutes.js";
+import notificationRouter from "./routes/notificationRoutes.js";
+import { requestContext } from "./middlewares/requestMiddleware.js";
+import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
+import { logger } from "./utils/logger.js";
 
 const app = express();
+app.disable("x-powered-by");
+app.set("trust proxy", 1);
+app.use(requestContext);
+app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 
-/* ===============================
-   Database & Services
-================================ */
-// Wrapped in an async IIFE to allow graceful, non-blocking connection attempts
-(async () => {
-  try {
-    await connectDB();
-    console.log("💾 MongoDB Connected Successfully");
-  } catch (error) {
-    console.error("❌ Database connection failed during startup!");
-    console.error(`Reason: ${error.message}`);
-    console.log("👉 Tip: Check your .env credentials or IP Whitelist in MongoDB Atlas.");
-  }
-
-  try {
-    await connectCloudinary();
-    console.log("☁️ Cloudinary Configured Successfully");
-  } catch (error) {
-    console.error("❌ Cloudinary configuration failed:", error.message);
-  }
-})();
-
-/* ===============================
-   CORS
-================================ */
-const allowedOrigins = [
-  'https://lms-hazel-rho-45.vercel.app', 
-  'http://localhost:5173'
-];
-
+const allowedOrigins = (process.env.CLIENT_URLS || "http://localhost:5173,https://lms-hazel-rho-45.vercel.app")
+  .split(",").map((origin) => origin.trim()).filter(Boolean);
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or Postman)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: (origin, callback) => !origin || allowedOrigins.includes(origin)
+    ? callback(null, true)
+    : callback(Object.assign(new Error("Origin is not allowed by CORS"), { statusCode: 403, isOperational: true })),
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Request-Id"],
 }));
 
-/* ===============================
-   Clerk Webhook (RAW BODY ONLY)
-   ⚠️ MUST be before express.json()
-================================ */
-app.post(
-  "/api/webhooks/clerk",
-  express.raw({ type: "application/json" }),
-  clerkWebhook
-);
+const apiLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: Number(process.env.RATE_LIMIT_MAX || 300), standardHeaders: "draft-8", legacyHeaders: false });
+const paymentLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: Number(process.env.PAYMENT_RATE_LIMIT_MAX || 20), standardHeaders: "draft-8", legacyHeaders: false });
 
-/* ===============================
-   Normal JSON Middleware
-================================ */
-app.use(express.json());
+app.post("/api/webhooks/clerk", express.raw({ type: "application/json" }), clerkWebhook);
+app.post("/api/webhooks/razorpay", express.raw({ type: "application/json" }), razorpayWebhook);
+app.use(express.json({ limit: "1mb" }));
+app.use(clerkMiddleware());
+app.use("/api", apiLimiter);
+app.use("/api/user/purchase", paymentLimiter);
+app.use("/api/user/verify-payment", paymentLimiter);
 
-/* ===============================
-   Clerk Auth Middleware
-================================ */
-app.use(clerkMiddleware({ debug: true }));
-
-/* ===============================
-   Routes
-================================ */
-app.get("/", (req, res) => {
-  res.send("API is running...");
-});
-
+app.get("/", (_req, res) => res.json({ success: true, message: "API is running" }));
 app.use("/api/courses", courseRouter);
 app.use("/api/user", userRouter);
 app.use("/api/educator", educatorRouter);
+app.use("/api/assignments", assignmentRouter);
+app.use("/api/quizzes", quizRouter);
+app.use("/api/certificates", certificateRouter);
+app.use("/api/study-library", studyLibraryRouter);
+app.use("/api/platform", platformRouter);
+app.use("/api/notifications", notificationRouter);
+app.use("/api/admin", adminRouter);
+app.use(notFound);
+app.use(errorHandler);
 
-/* ===============================
-   Database Fix Script
-================================ */
-import User from "./models/User.js"; 
-
-const fixDatabaseNames = async () => {
-  try {
-    const users = await User.find({ 
-      $or: [{ name: "User" }, { name: "" }] 
-    });
-
-    if (users.length > 0) {
-      for (let user of users) {
-        if (user.email) {
-          // If name is "User" or empty, use email prefix
-          user.name = user.email.split('@')[0]; 
-          await user.save();
-        }
-      }
-      console.log(`✅ Successfully fixed ${users.length} user records!`);
-    } else {
-      console.log("ℹ️ No 'User' names found to fix.");
-    }
-  } catch (error) {
-    console.error("❌ Fix script error:", error.message);
-  }
+export const startServer = async () => {
+  await connectDB();
+  await connectCloudinary();
+  const port = process.env.PORT || 5000;
+  return app.listen(port, () => logger.info("server.started", { port }));
 };
 
-// ✅ UNCOMMENT THE LINE BELOW, SAVE, AND RESTART YOUR SERVER IF NEEDED
-// fixDatabaseNames(); 
+if (process.env.NODE_ENV !== "test") {
+  startServer().catch((error) => {
+    logger.error("server.start_failed", { message: error.message });
+    process.exitCode = 1;
+  });
+}
 
-/* ===============================
-   Server Start
-================================ */
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () =>
-  console.log(`🚀 Server running on port ${PORT}`)
-);
+export default app;

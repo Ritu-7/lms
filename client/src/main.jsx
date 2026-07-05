@@ -5,6 +5,7 @@ import { ClerkProvider } from '@clerk/clerk-react'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import { AppContextProvider } from './context/AppContextProvider'
+import { AuthProvider } from './contexts/AuthContext'
 
 
 // Import your Publishable Key
@@ -18,9 +19,11 @@ createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl='/'>
-        <AppContextProvider>
-          <App />
-        </AppContextProvider>
+        <AuthProvider>
+          <AppContextProvider>
+            <App />
+          </AppContextProvider>
+        </AuthProvider>
       </ClerkProvider>
     </BrowserRouter>
   </React.StrictMode>

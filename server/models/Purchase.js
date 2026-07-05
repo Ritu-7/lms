@@ -43,6 +43,9 @@ const purchaseSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+purchaseSchema.index({ course: 1, status: 1 });
+purchaseSchema.index({ user: 1, createdAt: -1 });
+
 const Purchase =
   mongoose.models.Purchase ||
   mongoose.model("Purchase", purchaseSchema);

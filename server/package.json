@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "server": "nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "node --test"
   },
   "keywords": [],
   "author": "",
@@ -17,10 +18,13 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
+    "helmet": "^8.2.0",
     "mongodb": "4.1",
     "mongoose": "^9.1.4",
     "multer": "^2.0.2",
     "nodemon": "^3.1.11",
+    "pdfkit": "^0.19.1",
     "razorpay": "^2.9.6",
     "stripe": "^20.1.2",
     "svix": "^1.42.0"

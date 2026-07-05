@@ -1,40 +1,18 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { assets } from '../../assets/assets'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
-import { useClerk, UserButton, useUser } from '@clerk/clerk-react'
-import { AppContext } from '../../context/AppContext'
-import axios from 'axios'
-import { toast } from 'react-toastify'
+import { UserButton, useUser } from '@clerk/clerk-react'
+import { useAuthModal } from '../../contexts/AuthContext'
+import NotificationBell from '../notifications/NotificationBell'
 
 const SNavbar = () => {
   const location = useLocation()
   const navigate = useNavigate()
-  
-  const { isEducator, backendURL, getToken ,fetchUserData} = useContext(AppContext)
-  
+
+  const { openAuth } = useAuthModal()
+
   const isCourseListPage = location.pathname.includes('course-list')
-  const { openSignIn } = useClerk()
   const { user } = useUser()
-
-
-const becomeEducator = async () => {
-  try {
-    const token = await getToken();
-    const { data } = await axios.get(
-      `${backendURL}/api/educator/update-role`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-
-    if (data.success) {
-      toast.success("You are now an educator 🎉");
-      if (fetchUserData) await fetchUserData(); // Update the global state
-      navigate("/educator/dashboard");
-    } 
-  } catch (error) {
-    console.error(error); // This will show you exactly what's failing in Inspect > Console
-    toast.error(error.response?.data?.message || "Check console for CORS error");
-  }
-};
   return (
     <div className={`flex items-center justify-between px-4 sm:px-10 md:px-14 lg:px-36 border-b border-gray-500 py-4 ${isCourseListPage ? 'bg-white' : 'bg-cyan-100/70'}`}>
       
@@ -50,17 +28,19 @@ const becomeEducator = async () => {
       <div className="hidden md:flex items-center gap-5 text-gray-600">
         {user && (
           <>
-            <button onClick={becomeEducator} className="hover:text-black">
-              {isEducator ? 'Educator Dashboard' : 'Become an Educator'}
-            </button>
             <Link to="/my-enrollments" className="hover:text-black">My Enrollments</Link>
+            <Link to="/quizzes" className="hover:text-black">Quizzes</Link>
+            <Link to="/assignments" className="hover:text-black">Assignments</Link>
           </>
         )}
 
         {user ? (
-          <UserButton />
+          <div className="flex items-center gap-4">
+            <NotificationBell />
+            <UserButton />
+          </div>
         ) : (
-          <button onClick={() => openSignIn()} className="bg-blue-600 text-white px-5 py-2 rounded-full">
+          <button onClick={() => openAuth('student')} className="bg-blue-600 text-white px-5 py-2 rounded-full">
             Create Account
           </button>
         )}
@@ -70,17 +50,19 @@ const becomeEducator = async () => {
         <div className="flex items-center gap-1 sm:gap-2 max-sm:text-xs">
           {user && (
             <>
-              <button onClick={becomeEducator}>
-                {isEducator ? 'Educator' : 'Become Educator'}
-              </button>
               <Link to="/my-enrollments">Enrollments</Link>
+              <Link to="/quizzes">Quizzes</Link>
+              <Link to="/assignments">Assignments</Link>
             </>
           )}
         </div>
         {user ? (
-          <UserButton />
+          <div className="flex items-center gap-3">
+            <NotificationBell />
+            <UserButton />
+          </div>
         ) : (
-          <button onClick={() => openSignIn()}>
+          <button onClick={() => openAuth('student')}>
             <img src={assets.user_icon} alt="User Icon" className="w-8 h-8 cursor-pointer" />
           </button>
         )}
