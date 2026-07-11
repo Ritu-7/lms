@@ -61,6 +61,8 @@ import AdminNotifications from './pages/admin/Notifications.tsx'
 
 // Navbar
 import Navbar from './components/navbar/GlobalNavbar.jsx'
+import About from './pages/students/About.jsx'
+import Contact from './pages/students/Contact.jsx'
 
 // Styles & Toast
 import 'quill/dist/quill.snow.css'
@@ -102,7 +104,15 @@ const App = () => {
       
      
       <Routes>
-        
+           
+        {/* --- AUTHENTICATION ROUTES --- */}
+        <Route
+          path="/sso-callback"
+          element={<AuthenticateWithRedirectCallback />}
+        />
+        {/* --- Navbar ROUTES --- */}
+       <Route path="/about" element={<><Navbar /><About /></>} />
+<Route path="/contact" element={<><Navbar /><Contact /></>} />
         <Route
   path="/sso-callback"
   element={<AuthenticateWithRedirectCallback />}
