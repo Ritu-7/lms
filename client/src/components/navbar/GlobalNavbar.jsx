@@ -1,3 +1,4 @@
+// GlobalNavbar.jsx
 import React, { useState, useEffect, useRef, useContext } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useUser, useClerk } from '@clerk/clerk-react'
@@ -12,6 +13,11 @@ import AIToolsDropdown from './AIToolsDropdown'
 import ProfileDropdown from './ProfileDropdown'
 import MobileDrawer from './MobileDrawer'
 import Logo from '../common/Logo'
+
+const NAV_LINKS = [
+  { label: 'Home', path: '/' },
+  { label: 'Courses', path: '/course-list' },
+]
 
 const GlobalNavbar = () => {
   const location = useLocation()
@@ -61,13 +67,6 @@ const GlobalNavbar = () => {
 
   const isActive = (path) => location.pathname === path || location.pathname.startsWith(path + '/')
 
-  const navLinkClass = (path) =>
-    `relative text-sm font-medium transition-colors duration-200 ${
-      isActive(path)
-        ? 'text-blue-600 dark:text-blue-400'
-        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
-    }`
-
   return (
     <>
       <header
@@ -79,32 +78,52 @@ const GlobalNavbar = () => {
       >
         <div className="mx-auto flex h-16 max-w-[1400px] items-center gap-3 px-4 sm:px-6 lg:px-8">
           {/* ── Logo ─────────────────────────────────────────────── */}
-          <Link to="/" className="flex shrink-0 items-center mr-6">
+          <Link to="/" className="flex shrink-0 items-center mr-7">
             <Logo />
           </Link>
 
           {/* ── Desktop Nav Links ─────────────────────────────────── */}
-          <nav className="hidden lg:flex items-center gap-1">
-            <Link to="/" className={`${navLinkClass('/')} px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5`}>
-              Home
-            </Link>
-            <Link to="/course-list" className={`${navLinkClass('/course-list')} px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5`}>
-              Courses
-            </Link>
+          <nav className="hidden lg:flex items-center gap-0.5">
+            {NAV_LINKS.map((link) => {
+              const active = isActive(link.path)
+              return (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`relative px-3.5 py-2 text-sm font-medium rounded-lg transition-colors duration-200 ${
+                    active
+                      ? 'text-slate-900 dark:text-white'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/[0.06]'
+                  }`}
+                >
+                  {link.label}
+                  {active && (
+                    <motion.span
+                      layoutId="nav-underline"
+                      className="absolute inset-x-3 -bottom-[1px] h-[2px] rounded-full bg-blue-600 dark:bg-blue-400"
+                      transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                    />
+                  )}
+                </Link>
+              )
+            })}
 
             {/* Categories Mega Menu */}
             <div ref={categoriesRef} className="relative">
               <button
                 onClick={() => { setCategoriesOpen(o => !o); setAiToolsOpen(false) }}
-                className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-slate-100 dark:hover:bg-white/5 ${
-                  categoriesOpen ? 'text-blue-600 dark:text-blue-400' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                aria-expanded={categoriesOpen}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                  categoriesOpen
+                    ? 'text-slate-900 dark:text-white bg-slate-100/80 dark:bg-white/[0.06]'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/[0.06]'
                 }`}
               >
                 Categories
                 <motion.svg
                   animate={{ rotate: categoriesOpen ? 180 : 0 }}
                   transition={{ duration: 0.2 }}
-                  className="h-3.5 w-3.5 opacity-60"
+                  className="h-3.5 w-3.5 opacity-50"
                   fill="none" viewBox="0 0 24 24" stroke="currentColor"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -121,19 +140,22 @@ const GlobalNavbar = () => {
             <div ref={aiToolsRef} className="relative">
               <button
                 onClick={() => { setAiToolsOpen(o => !o); setCategoriesOpen(false) }}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-slate-100 dark:hover:bg-white/5 ${
-                  aiToolsOpen ? 'text-blue-600 dark:text-blue-400' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                aria-expanded={aiToolsOpen}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                  aiToolsOpen
+                    ? 'text-slate-900 dark:text-white bg-slate-100/80 dark:bg-white/[0.06]'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/[0.06]'
                 }`}
               >
-                <span className="flex h-2 w-2 relative">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-blue-500" />
                 </span>
                 AI Tools
                 <motion.svg
                   animate={{ rotate: aiToolsOpen ? 180 : 0 }}
                   transition={{ duration: 0.2 }}
-                  className="h-3.5 w-3.5 opacity-60"
+                  className="h-3.5 w-3.5 opacity-50"
                   fill="none" viewBox="0 0 24 24" stroke="currentColor"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -146,12 +168,29 @@ const GlobalNavbar = () => {
               </AnimatePresence>
             </div>
 
-            <Link to="/about" className={`${navLinkClass('/about')} px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5`}>
-              About
-            </Link>
-            <Link to="/contact" className={`${navLinkClass('/contact')} px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5`}>
-              Contact
-            </Link>
+            {[{ label: 'About', path: '/about' }, { label: 'Contact', path: '/contact' }].map((link) => {
+              const active = isActive(link.path)
+              return (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`relative px-3.5 py-2 text-sm font-medium rounded-lg transition-colors duration-200 ${
+                    active
+                      ? 'text-slate-900 dark:text-white'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/[0.06]'
+                  }`}
+                >
+                  {link.label}
+                  {active && (
+                    <motion.span
+                      layoutId="nav-underline"
+                      className="absolute inset-x-3 -bottom-[1px] h-[2px] rounded-full bg-blue-600 dark:bg-blue-400"
+                      transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                    />
+                  )}
+                </Link>
+              )
+            })}
           </nav>
 
           {/* ── Spacer ───────────────────────────────────────────── */}
@@ -160,19 +199,19 @@ const GlobalNavbar = () => {
           {/* ── Search ───────────────────────────────────────────── */}
           <button
             onClick={() => setSearchOpen(true)}
-            className="hidden sm:flex items-center gap-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-3.5 py-2 text-sm text-slate-400 dark:text-slate-500 transition hover:border-blue-200 dark:hover:border-blue-800 hover:bg-white dark:hover:bg-white/10 min-w-[180px] lg:min-w-[220px]"
+            className="hidden sm:flex items-center gap-2 rounded-full border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-white/[0.04] px-4 py-2 text-sm text-slate-400 dark:text-slate-500 transition-colors duration-200 hover:border-blue-200 dark:hover:border-blue-900/60 hover:bg-white dark:hover:bg-white/[0.07] min-w-[180px] lg:min-w-[240px]"
           >
             <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
             </svg>
             <span className="flex-1 text-left">Search courses…</span>
-            <kbd className="hidden lg:inline-flex items-center gap-0.5 rounded border border-slate-300 dark:border-white/15 px-1.5 py-0.5 text-[10px] font-mono text-slate-400 dark:text-slate-500">
+            <kbd className="hidden lg:inline-flex items-center gap-0.5 rounded-md border border-slate-300 dark:border-white/15 bg-white/60 dark:bg-white/5 px-1.5 py-0.5 text-[10px] font-mono text-slate-400 dark:text-slate-500">
               ⌘K
             </kbd>
           </button>
 
           {/* ── Right Actions ─────────────────────────────────────── */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             {user ? (
               <>
                 {/* Role-based quick links (desktop) */}
@@ -180,25 +219,23 @@ const GlobalNavbar = () => {
                   {isAdmin ? (
                     <Link
                       to="/admin"
-                      className="text-sm font-medium px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
+                      className="text-sm font-medium px-3.5 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/[0.06] transition-colors duration-200"
                     >
                       Admin Panel
                     </Link>
                   ) : isEducator ? (
                     <>
-                      <Link to="/educator/dashboard" className="text-sm font-medium px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+                      <Link to="/educator/dashboard" className="text-sm font-medium px-3.5 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/[0.06] transition-colors duration-200">
                         Dashboard
                       </Link>
-                      <Link to="/educator/add-course" className="text-sm font-medium px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+                      <Link to="/educator/add-course" className="text-sm font-medium px-3.5 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/[0.06] transition-colors duration-200">
                         Create Course
                       </Link>
                     </>
                   ) : (
-                    <>
-                      <Link to="/my-enrollments" className="text-sm font-medium px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
-                        My Learning
-                      </Link>
-                    </>
+                    <Link to="/my-enrollments" className="text-sm font-medium px-3.5 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/[0.06] transition-colors duration-200">
+                      My Learning
+                    </Link>
                   )}
                 </div>
 
@@ -214,13 +251,13 @@ const GlobalNavbar = () => {
               <div className="hidden sm:flex items-center gap-2">
                 <button
                   onClick={() => openAuth('student')}
-                  className="text-sm font-medium px-4 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
+                  className="text-sm font-medium px-4 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors duration-200"
                 >
                   Login
                 </button>
                 <button
                   onClick={() => openAuth('student')}
-                  className="text-sm font-semibold px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 shadow-sm shadow-blue-600/20 transition-all hover:shadow-blue-600/30 hover:shadow-md"
+                  className="text-sm font-semibold px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 shadow-sm shadow-blue-600/20 transition-all duration-200 hover:shadow-blue-600/30 hover:shadow-md"
                 >
                   Get Started
                 </button>
@@ -230,9 +267,9 @@ const GlobalNavbar = () => {
             {/* Mobile search icon */}
             <button
               onClick={() => setSearchOpen(true)}
-              className="sm:hidden flex items-center justify-center h-9 w-9 rounded-xl border border-slate-200 dark:border-white/10 text-slate-500 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
+              className="sm:hidden flex items-center justify-center h-9 w-9 rounded-xl border border-slate-200 dark:border-white/10 text-slate-500 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors duration-200"
             >
-              <svg className="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
               </svg>
             </button>
@@ -240,7 +277,7 @@ const GlobalNavbar = () => {
             {/* Mobile hamburger */}
             <button
               onClick={() => setDrawerOpen(true)}
-              className="lg:hidden flex items-center justify-center h-9 w-9 rounded-xl border border-slate-200 dark:border-white/10 text-slate-500 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
+              className="lg:hidden flex items-center justify-center h-9 w-9 rounded-xl border border-slate-200 dark:border-white/10 text-slate-500 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors duration-200"
               aria-label="Open menu"
             >
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
