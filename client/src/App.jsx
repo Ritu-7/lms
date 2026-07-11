@@ -24,6 +24,7 @@ import NotesGenerator from './pages/students/NotesGenerator.jsx'
 import CreditDashboard from './pages/students/CreditDashboard.jsx'
 import AIUsageAnalytics from './pages/students/AIUsageAnalytics.jsx'
 import AICodingAssistant from './pages/students/AICodingAssistant.jsx'
+import Bookmarks from './pages/students/Bookmarks.jsx'  
 
 // Educator pages
 import Educator from './pages/educator/Educator.jsx'
@@ -125,6 +126,7 @@ const App = () => {
         <Route path="/credits" element={<><Navbar /><CreditDashboard /></>} />
         <Route path="/ai-analytics" element={<><Navbar /><AIUsageAnalytics /></>} />
         <Route path="/ai-coding-assistant" element={<><Navbar /><AICodingAssistant /></>} />
+        <Route path="/bookmarks" element={<><Navbar /><Bookmarks /></>} />
 
         {/* --- EDUCATOR ROUTES --- */}
         <Route path="/educator" element={<RoleRoute roles={['educator', 'admin']}><Educator /></RoleRoute>}>

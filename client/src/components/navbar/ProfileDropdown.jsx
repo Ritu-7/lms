@@ -50,10 +50,10 @@ const ProfileDropdown = ({ user, isEducator, isAdmin, signOut }) => {
         { label: 'Settings', icon: '⚙️', href: '/admin/settings' }, // Shared settings placeholder
       ]
     : [
-        { label: 'Profile', icon: '👤', href: '/profile' }, // Placeholder
-        { label: 'My Learning', icon: '🎓', href: '/my-enrollments' },
+        // Placeholder
+        { label: 'Dashboard', icon: '🎓', href: '/my-enrollments' },
         { label: 'Certificates', icon: '📜', href: '/certificate/verify' },
-        { label: 'Bookmarks', icon: '🔖', href: '/my-enrollments' }, // Placeholder
+        { label: 'Bookmarks', icon: '🔖', href: '/bookmarks' }, // Placeholder
         { label: 'AI Tools', icon: '🧠', href: '/ai-tutor' },
         { label: 'Settings', icon: '⚙️', href: '/admin/settings' }, // Placeholder
       ]
@@ -119,19 +119,19 @@ const ProfileDropdown = ({ user, isEducator, isAdmin, signOut }) => {
             </div>
 
             {/* Menu items */}
-            <div className="p-1.5">
-              {menuItems.map((item) => (
-                <Link
-                  key={item.href}
-                  to={item.href}
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-colors"
-                >
-                  <span className="text-base leading-none w-5 text-center">{item.icon}</span>
-                  {item.label}
-                </Link>
-              ))}
-            </div>
+           <div className="p-1.5">
+  {menuItems.map((item, index) => (
+    <Link
+      key={`${item.href}-${index}`}
+      to={item.href}
+      onClick={() => setOpen(false)}
+      className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-colors"
+    >
+      <span className="text-base leading-none w-5 text-center">{item.icon}</span>
+      {item.label}
+    </Link>
+  ))}
+</div>
 
             {/* Sign out */}
             <div className="p-1.5 border-t border-slate-100 dark:border-white/5">
