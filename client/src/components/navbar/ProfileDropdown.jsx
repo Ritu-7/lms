@@ -52,10 +52,11 @@ const ProfileDropdown = ({ user, isEducator, isAdmin, signOut }) => {
     : [
         // Placeholder
         { label: 'Dashboard', icon: '🎓', href: '/my-enrollments' },
-        { label: 'Certificates', icon: '📜', href: '/certificate/verify' },
-        { label: 'Bookmarks', icon: '🔖', href: '/bookmarks' }, // Placeholder
+        { label: 'Certificates', icon: '📜', href: '/certificates' },
+        { label: 'Bookmarks', icon: '🔖', href: '/bookmarks' }, 
         { label: 'AI Tools', icon: '🧠', href: '/ai-tutor' },
-        { label: 'Settings', icon: '⚙️', href: '/admin/settings' }, // Placeholder
+        { label: 'Settings', icon: '⚙️', href: '/settings' },
+      
       ]
 
   const roleLabel = isAdmin ? 'Administrator' : isEducator ? 'Instructor' : 'Student'

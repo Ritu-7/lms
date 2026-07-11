@@ -183,16 +183,16 @@ const MobileDrawer = ({ onClose, user, isEducator, isAdmin, openAuth, signOut })
           {user && (
             <CollapseSection id="role" title={isAdmin ? '⊞ Admin' : isEducator ? '🎓 Instructor' : '📚 My Learning'} toggle={toggle} expandedSection={expandedSection}>
               <div className="px-3 space-y-0.5">
-                {roleLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    to={link.href}
-                    onClick={onClose}
-                    className="flex items-center rounded-xl px-4 py-2.5 text-sm text-slate-500 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-950/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+                {roleLinks.map((link, index) => (
+  <Link
+    key={`${link.href}-${index}`}
+    to={link.href}
+    onClick={onClose}
+    className="flex items-center rounded-xl px-4 py-2.5 text-sm text-slate-500 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-950/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+  >
+    {link.label}
+  </Link>
+))}
               </div>
             </CollapseSection>
           )}
