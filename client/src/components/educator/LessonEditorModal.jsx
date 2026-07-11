@@ -13,7 +13,8 @@ import {
   resourceToLegacyAttachment,
 } from "../../utils/resourceUtils";
 
-const buildDraft = (lesson = {}, fallbackOrder = 1) => {
+const buildDraft = (lessonInput, fallbackOrder = 1) => {
+  const lesson = lessonInput || {};
   const lessonType = lesson.lessonType || lesson.contentType || lesson.lectureType || "video";
   return {
     lessonId: lesson.lessonId || lesson.lectureId || "",
@@ -51,7 +52,7 @@ const defaultResourceDraft = () => ({
 const LessonEditorModal = ({ open, mode = "add", initialLesson, fallbackOrder = 1, onClose, onSave }) => {
   const { backendURL, getToken } = useContext(AppContext);
   const [lessonData, setLessonData] = useState(buildDraft(initialLesson, fallbackOrder));
-  const [attachmentDraft, setAttachmentDraft] = useState(defaultAttachmentDraft());
+  const [resourceDraft, setResourceDraft] = useState(defaultResourceDraft());
   const [uploading, setUploading] = useState("");
   const editorRef = useRef(null);
   const quillRef = useRef(null);
@@ -59,7 +60,7 @@ const LessonEditorModal = ({ open, mode = "add", initialLesson, fallbackOrder = 
   useEffect(() => {
     if (!open) return;
     setLessonData(buildDraft(initialLesson, fallbackOrder));
-    setAttachmentDraft(defaultAttachmentDraft());
+    setResourceDraft(defaultResourceDraft());
   }, [open, initialLesson, fallbackOrder]);
 
   useEffect(() => {
@@ -125,24 +126,23 @@ const LessonEditorModal = ({ open, mode = "add", initialLesson, fallbackOrder = 
         }));
       }
 
-      if (target === "attachment") {
+      if (target === "resource") {
+        const newResource = normalizeResourceRecord({
+          resourceId:
+            globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          resourceTitle: resourceDraft.resourceTitle || file.name,
+          resourceType: fileData.resourceType || resourceDraft.resourceType || "auto",
+          resourceUrl: fileData.url,
+          resourceFileName: fileData.fileName || file.name,
+          resourceMimeType: fileData.mimeType || file.type,
+          resourceSize: fileData.size || file.size || 0,
+        });
+
         setLessonData((prev) => ({
           ...prev,
-          lessonAttachments: [
-            ...prev.lessonAttachments,
-            {
-              attachmentId:
-                globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-              attachmentLabel: attachmentDraft.attachmentLabel || file.name,
-              attachmentUrl: fileData.url,
-              attachmentFileName: fileData.fileName || file.name,
-              attachmentMimeType: fileData.mimeType || file.type,
-              attachmentSize: fileData.size || file.size || 0,
-              attachmentResourceType: fileData.resourceType || "auto",
-            },
-          ],
+          lessonResources: [...prev.lessonResources, newResource],
         }));
-        setAttachmentDraft(defaultAttachmentDraft());
+        setResourceDraft(defaultResourceDraft());
       }
     } catch (error) {
       toast.error(error.response?.data?.message || error.message || "Asset upload failed");
@@ -152,6 +152,8 @@ const LessonEditorModal = ({ open, mode = "add", initialLesson, fallbackOrder = 
   const handleSubmit = (event) => {
     event.preventDefault();
     const richText = quillRef.current ? quillRef.current.root.innerHTML : lessonData.lessonRichTextContent;
+    const legacyAttachments = lessonData.lessonResources.map(resourceToLegacyAttachment);
+
     onSave({
       ...lessonData,
       lessonDuration: Number(lessonData.lessonDuration || 0),
@@ -167,6 +169,9 @@ const LessonEditorModal = ({ open, mode = "add", initialLesson, fallbackOrder = 
           : lessonData.lessonType === "external_link" || lessonData.lessonType === "quiz" || lessonData.lessonType === "assignment"
             ? lessonData.lessonExternalLink
             : lessonData.lessonVideoUrl,
+      resources: lessonData.lessonResources,
+      lessonAttachments: legacyAttachments,
+      lectureAttachments: legacyAttachments,
     });
   };
 
@@ -355,8 +360,8 @@ const LessonEditorModal = ({ open, mode = "add", initialLesson, fallbackOrder = 
             <div className="grid gap-3 md:grid-cols-[1fr_auto]">
               <input
                 type="text"
-                value={attachmentDraft.attachmentLabel}
-                onChange={(e) => setAttachmentDraft((prev) => ({ ...prev, attachmentLabel: e.target.value }))}
+                value={resourceDraft.resourceTitle}
+                onChange={(e) => setResourceDraft((prev) => ({ ...prev, resourceTitle: e.target.value }))}
                 className="rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-blue-500"
                 placeholder="Attachment label"
               />
@@ -366,21 +371,25 @@ const LessonEditorModal = ({ open, mode = "add", initialLesson, fallbackOrder = 
                   type="file"
                   hidden
                   accept=".pdf,.doc,.docx,.ppt,.pptx,.zip,.txt,image/*,video/*"
-                  onChange={(e) => handleAssetUpload(e.target.files?.[0], "attachment")}
+                  onChange={(e) => handleAssetUpload(e.target.files?.[0], "resource")}
                 />
               </label>
             </div>
 
-            {lessonData.lessonAttachments.length > 0 && (
+            {lessonData.lessonResources.length > 0 && (
               <div className="space-y-2">
-                {lessonData.lessonAttachments.map((attachment, index) => (
+                {lessonData.lessonResources.map((resource, index) => (
                   <div
-                    key={attachment.attachmentId || index}
+                    key={resource.resourceId || index}
                     className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 text-sm"
                   >
                     <div className="min-w-0">
-                      <p className="truncate font-medium text-gray-800">{attachment.attachmentLabel}</p>
-                      <p className="truncate text-xs text-gray-500">{attachment.attachmentUrl}</p>
+                      <p className="truncate font-medium text-gray-800">{resource.resourceTitle}</p>
+                      <p className="truncate text-xs text-gray-500">
+                        {getResourceBadgeLabel(resource)}
+                        {resource.resourceSize ? ` · ${formatResourceSize(resource.resourceSize)}` : ""}
+                        {resource.resourceUrl ? ` · ${resource.resourceUrl}` : ""}
+                      </p>
                     </div>
                     <button
                       type="button"
@@ -388,8 +397,8 @@ const LessonEditorModal = ({ open, mode = "add", initialLesson, fallbackOrder = 
                       onClick={() =>
                         setLessonData((prev) => ({
                           ...prev,
-                          lessonAttachments: prev.lessonAttachments.filter(
-                            (_, attachmentIndex) => attachmentIndex !== index
+                          lessonResources: prev.lessonResources.filter(
+                            (_, resourceIndex) => resourceIndex !== index
                           ),
                         }))
                       }

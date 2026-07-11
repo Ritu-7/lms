@@ -26,13 +26,7 @@ const AI_TOOLS = [
     badge: 'New',
     badgeColor: 'bg-emerald-500',
   },
-  {
-    label: 'Quiz Generator',
-    description: 'Auto-generate quizzes from your notes',
-    icon: '❓',
-    href: '/quizzes',
-    badge: null,
-  },
+ 
   {
     label: 'Notes Generator',
     description: 'Create smart notes for memorization',
