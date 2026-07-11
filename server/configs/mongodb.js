@@ -1,5 +1,9 @@
+import dns from "node:dns";
 import mongoose from "mongoose";
 import { logger } from "../utils/logger.js";
+
+// Force Google DNS
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
 const connectDB = async () => {
   try {
@@ -16,20 +20,16 @@ const connectDB = async () => {
     });
 
     if (!process.env.MONGODB_URI) {
-      throw new Error("MONGODB_URI is not defined in .env file");
-    }
-
-    if (mongoose.connection.readyState === 1) {
-      logger.info("mongodb.already_connected");
-      return mongoose.connection;
+      throw new Error("MONGODB_URI is not defined");
     }
 
     await mongoose.connect(process.env.MONGODB_URI);
 
     logger.info("mongodb.connection_established");
-    return mongoose.connection;
   } catch (error) {
-    logger.error("mongodb.connection_failed", { message: error.message });
+    logger.error("mongodb.connection_failed", {
+      message: error.message,
+    });
     throw error;
   }
 };
