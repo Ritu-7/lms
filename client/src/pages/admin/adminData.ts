@@ -34,6 +34,7 @@ export interface AdminTableRow {
   id: string
   cells: string[]
   status?: 'Active' | 'Pending' | 'Suspended' | 'Published' | 'Draft' | 'Scheduled'
+  meta?: Record<string, unknown>
 }
 
 export interface AdminActionItem {

@@ -60,27 +60,19 @@ export const useLogin = () => {
   const signInWithProvider = async (strategy: OAuthStrategy) => {
     if (!isLoaded || !signIn) return
 
-    const popup = typeof window !== 'undefined' ? window.open('', 'lms-auth-popup', 'width=560,height=720') : null
-
     try {
-      if (popup) {
-        await signIn.authenticateWithPopup({
-          popup,
-          strategy,
-          redirectUrl: window.location.href,
-          redirectUrlComplete: window.location.href,
-          continueSignIn: true,
-          continueSignUp: true,
-        })
-      } else {
-        await signIn.authenticateWithRedirect({
-          strategy,
-          redirectUrl: window.location.href,
-          redirectUrlComplete: window.location.href,
-          continueSignIn: true,
-          continueSignUp: true,
-        })
-      }
+      // Clerk v5 requires BOTH redirectUrl and redirectUrlComplete for oauth_<provider>
+      // strategies. redirectUrl is the intermediate route that completes the OAuth
+      // handshake (must render <AuthenticateWithRedirectCallback /> or call
+      // Clerk.handleRedirectCallback()); redirectUrlComplete is the final destination
+      // once the sign-in is fully established. Omitting redirectUrl is what produced
+      // the "verified not supported yet" error, since the SDK couldn't finalize the
+      // transfer/verification step correctly.
+      await signIn.authenticateWithRedirect({
+        strategy,
+        redirectUrl: '/sso-callback',
+        redirectUrlComplete: '/',
+      })
     } catch (error) {
       toast.error(getClerkErrorMessage(error))
       throw error

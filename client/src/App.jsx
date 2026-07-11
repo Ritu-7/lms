@@ -3,6 +3,8 @@ import { Routes, Route } from 'react-router-dom'
 import { useUser } from '@clerk/clerk-react'
 import axios from 'axios'
 import { AppContext } from './context/AppContext'
+import { AuthenticateWithRedirectCallback } from "@clerk/clerk-react";
+
 
 // Student pages
 import Home from './pages/students/Home.jsx'
@@ -94,7 +96,14 @@ const App = () => {
   return (
     <div className="text-default min-h-screen bg-white">
       <ToastContainer position="top-center" />
+      
+     
       <Routes>
+        
+        <Route
+  path="/sso-callback"
+  element={<AuthenticateWithRedirectCallback />}
+/>
         <Route path="/login" element={<Login />} />
         {/* --- STUDENT ROUTES --- */}
         <Route path="/" element={<><Navbar /><Home /></>} />

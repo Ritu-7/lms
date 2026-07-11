@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react'
 import { toast } from 'react-toastify'
 import type { AdminTableRow } from '../../pages/admin/adminData'
 
@@ -7,6 +6,7 @@ interface AdminTableProps {
   rows: AdminTableRow[]
   rowActions?: string[]
   emptyMessage?: string
+  onAction?: (action: string, row: AdminTableRow) => void | Promise<void>
 }
 
 const toneClassMap: Record<NonNullable<AdminTableRow['status']>, string> = {
@@ -23,6 +23,8 @@ const actionToneClassMap: Record<string, string> = {
   Edit: 'text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 dark:text-slate-300',
   Suspend: 'text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-900/20',
   Delete: 'text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20',
+  'Promote to Educator': 'text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20',
+  'Demote to Student': 'text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-900/20',
   Approve: 'text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20',
   Reject: 'text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20',
   Publish: 'text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20',
@@ -30,11 +32,17 @@ const actionToneClassMap: Record<string, string> = {
   Schedule: 'text-cyan-700 hover:bg-cyan-50 dark:hover:bg-cyan-900/20',
   Download: 'text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20',
   Generate: 'text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 dark:text-slate-300',
+  'View Profile': 'text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20',
 }
 
-const AdminTable = ({ columns, rows, rowActions, emptyMessage = 'No records available.' }: AdminTableProps) => {
-  const handleAction = (action: string, rowId: string) => {
-    toast.info(`${action} selected for ${rowId}`)
+const AdminTable = ({ columns, rows, rowActions, emptyMessage = 'No records available.', onAction }: AdminTableProps) => {
+  const handleAction = async (action: string, row: AdminTableRow) => {
+    if (onAction) {
+      await onAction(action, row)
+      return
+    }
+
+    toast.info(`${action} selected for ${row.id}`)
   }
 
   return (
@@ -73,7 +81,7 @@ const AdminTable = ({ columns, rows, rowActions, emptyMessage = 'No records avai
                         <button
                           key={`${row.id}-${action}`}
                           type="button"
-                          onClick={() => handleAction(action, row.id)}
+                          onClick={() => handleAction(action, row)}
                           className={`rounded-lg px-3 py-1 text-xs font-semibold transition ${actionToneClassMap[action] || 'text-slate-600 hover:bg-slate-50'}`}
                         >
                           {action}

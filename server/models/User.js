@@ -26,6 +26,11 @@ const userSchema = new mongoose.Schema(
       enum: ["student", "educator", "admin"],
       default: "student",
     },
+    status: {
+      type: String,
+      enum: ["active", "suspended"],
+      default: "active",
+    },
     enrolledCourses: [
       {
         type: mongoose.Schema.Types.ObjectId,

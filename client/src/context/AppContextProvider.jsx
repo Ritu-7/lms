@@ -121,6 +121,113 @@ export const AppContextProvider = ({ children }) => {
     }
   }, [backendURL, getToken]);
 
+  const fetchAdminUsers = useCallback(
+    async (params = {}) => {
+      try {
+        const token = await getToken();
+        if (!token) return [];
+
+        const { data } = await axios.get(`${backendURL}/api/admin/users`, {
+          headers: { Authorization: `Bearer ${token}` },
+          params,
+        });
+
+        if (data.success) {
+          return Array.isArray(data.users) ? data.users : [];
+        }
+
+        toast.error(data.message || "Failed to fetch users");
+        return [];
+      } catch (error) {
+        toast.error(error.response?.data?.message || error.message || "Failed to fetch users");
+        return [];
+      }
+    },
+    [backendURL, getToken]
+  );
+
+  const updateAdminUserRole = useCallback(
+    async (userId, role, options = {}) => {
+      try {
+        const token = await getToken();
+        if (!token) return null;
+
+        const { data } = await axios.patch(
+          `${backendURL}/api/admin/users/${userId}/role`,
+          { role, confirmAdminPromotion: Boolean(options.confirmAdminPromotion) },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        if (data.success) {
+          toast.success("User role updated");
+          await fetchAdminOverview();
+          return data.user || null;
+        }
+
+        toast.error(data.message || "Failed to update user role");
+        return null;
+      } catch (error) {
+        toast.error(error.response?.data?.message || error.message || "Failed to update user role");
+        return null;
+      }
+    },
+    [backendURL, fetchAdminOverview, getToken]
+  );
+
+  const updateAdminUserStatus = useCallback(
+    async (userId, status) => {
+      try {
+        const token = await getToken();
+        if (!token) return null;
+
+        const { data } = await axios.patch(
+          `${backendURL}/api/admin/users/${userId}/status`,
+          { status },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        if (data.success) {
+          toast.success("User status updated");
+          await fetchAdminOverview();
+          return data.user || null;
+        }
+
+        toast.error(data.message || "Failed to update user status");
+        return null;
+      } catch (error) {
+        toast.error(error.response?.data?.message || error.message || "Failed to update user status");
+        return null;
+      }
+    },
+    [backendURL, fetchAdminOverview, getToken]
+  );
+
+  const deleteAdminUser = useCallback(
+    async (userId) => {
+      try {
+        const token = await getToken();
+        if (!token) return false;
+
+        const { data } = await axios.delete(`${backendURL}/api/admin/users/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (data.success) {
+          toast.success("User deleted");
+          await fetchAdminOverview();
+          return true;
+        }
+
+        toast.error(data.message || "Failed to delete user");
+        return false;
+      } catch (error) {
+        toast.error(error.response?.data?.message || error.message || "Failed to delete user");
+        return false;
+      }
+    },
+    [backendURL, fetchAdminOverview, getToken]
+  );
+
   /*
      FETCH USER DATA (CLERK + DB)
   */
@@ -566,6 +673,10 @@ const calculateCourseDuration = (course) => {
 
     adminOverview,
     fetchAdminOverview,
+    fetchAdminUsers,
+    updateAdminUserRole,
+    updateAdminUserStatus,
+    deleteAdminUser,
 
     calculateRating,
     calculateChapterTime,

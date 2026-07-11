@@ -249,12 +249,7 @@ const GlobalNavbar = () => {
               </>
             ) : (
               <div className="hidden sm:flex items-center gap-2">
-                <button
-                  onClick={() => openAuth('student')}
-                  className="text-sm font-medium px-4 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors duration-200"
-                >
-                  Login
-                </button>
+             
                 <button
                   onClick={() => openAuth('student')}
                   className="text-sm font-semibold px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 shadow-sm shadow-blue-600/20 transition-all duration-200 hover:shadow-blue-600/30 hover:shadow-md"

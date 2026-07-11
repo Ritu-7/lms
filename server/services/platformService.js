@@ -221,8 +221,8 @@ export const getAdminOverview = async () => {
   const studentRows = students.slice(0, 10).map((student) =>
     buildTableRow(
       student._id.toString(),
-      [student.name || student.email || "", student.email || "", `${student.enrolledCourses?.length || 0}`, student.role === "admin" ? "Administrator" : "Student", "Active"],
-      "Active"
+      [student.name || student.email || "", student.email || "", `${student.enrolledCourses?.length || 0}`, student.role === "admin" ? "Administrator" : "Student", student.status === "suspended" ? "Suspended" : "Active"],
+      student.status === "suspended" ? "Suspended" : "Active"
     )
   );
 
@@ -231,8 +231,8 @@ export const getAdminOverview = async () => {
     const specialties = [...new Set(educatorCourses.map((course) => course.category).filter(Boolean))];
     return buildTableRow(
       educator._id.toString(),
-      [educator.name || educator.email || "", educator.email || "", specialties[0] || "Unspecified", "Approved", "Active"],
-      "Active"
+      [educator.name || educator.email || "", educator.email || "", specialties[0] || "Unspecified", "Approved", educator.status === "suspended" ? "Suspended" : "Active"],
+      educator.status === "suspended" ? "Suspended" : "Active"
     );
   });
 
