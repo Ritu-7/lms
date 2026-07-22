@@ -53,10 +53,10 @@ const scaleIn = {
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 const STATS = [
-  { label: 'Active Learners', value: '120K+', color: 'from-blue-500 to-indigo-500', icon: Users },
-  { label: 'Expert-Led Courses', value: '3,400+', color: 'from-violet-500 to-purple-500', icon: BookOpen },
-  { label: 'Certificates Issued', value: '85K+', color: 'from-emerald-500 to-teal-500', icon: Award },
-  { label: 'Countries Reached', value: '95+', color: 'from-amber-500 to-orange-500', icon: Globe },
+  { label: 'Active Learners', value: '9+', color: 'from-blue-500 to-indigo-500', icon: Users },
+  { label: 'Expert-Led Courses', value: '4+', color: 'from-violet-500 to-purple-500', icon: BookOpen },
+  { label: 'Certificates Issued', value: '10+', color: 'from-emerald-500 to-teal-500', icon: Award },
+  { label: 'Countries Reached', value: '10+', color: 'from-amber-500 to-orange-500', icon: Globe },
 ];
 
 const FEATURES = [
@@ -116,12 +116,8 @@ const WHY_CHOOSE = [
 ];
 
 const TEAM = [
-  { name: 'Aanya Sharma', role: 'Co-Founder & CEO', initials: 'AS', gradient: 'from-blue-500 to-indigo-600' },
-  { name: 'Rohan Mehta', role: 'Co-Founder & CTO', initials: 'RM', gradient: 'from-violet-500 to-purple-600' },
-  { name: 'Priya Kapoor', role: 'Head of AI Research', initials: 'PK', gradient: 'from-emerald-500 to-teal-600' },
-  { name: 'Vikram Singh', role: 'Head of Product', initials: 'VS', gradient: 'from-amber-500 to-orange-600' },
-  { name: 'Neha Joshi', role: 'Lead Educator Relations', initials: 'NJ', gradient: 'from-rose-500 to-pink-600' },
-  { name: 'Arjun Patel', role: 'Head of Engineering', initials: 'AP', gradient: 'from-cyan-500 to-blue-600' },
+  { name: 'Ritika', role: 'Co-Founder & CEO', initials: 'AS', gradient: 'from-blue-500 to-indigo-600' },
+
 ];
 
 const FAQS = [

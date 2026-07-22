@@ -106,8 +106,8 @@ const CONTACT_CHANNELS = [
     icon: Mail,
     title: 'Email Support',
     description: 'For general enquiries and support',
-    value: 'hello@learnsphereai.com',
-    href: 'mailto:hello@learnsphereai.com',
+    value: 'ritikamarotha9@gmail.com',
+    href: 'mailto:ritikamarotha9@gmail.com',
     color: 'bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400',
     border: 'border-blue-100 dark:border-blue-900/40',
   },
@@ -124,8 +124,8 @@ const CONTACT_CHANNELS = [
     icon: Phone,
     title: 'Phone Support',
     description: 'For urgent matters and enterprise sales',
-    value: '+91 98765 43210',
-    href: 'tel:+919876543210',
+    value: '+91 80039******',
+    href: 'tel:+9180039*****',
     color: 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400',
     border: 'border-emerald-100 dark:border-emerald-900/40',
   },
@@ -174,8 +174,6 @@ const SOCIAL_LINKS = [
   { icon: TwitterIcon, label: 'Twitter / X', handle: '@LearnSphereAI', href: '#', color: 'hover:text-sky-500' },
   { icon: LinkedinIcon, label: 'LinkedIn', handle: 'LearnSphereAI', href: '#', color: 'hover:text-blue-600' },
   { icon: GithubIcon, label: 'GitHub', handle: 'learnsphereai', href: '#', color: 'hover:text-slate-900 dark:hover:text-white' },
-  { icon: InstagramIcon, label: 'Instagram', handle: '@learnsphereai', href: '#', color: 'hover:text-pink-500' },
-  { icon: YoutubeIcon, label: 'YouTube', handle: 'LearnSphereAI', href: '#', color: 'hover:text-red-500' },
 ];
 
 const CONTACT_FAQS = [
@@ -549,9 +547,9 @@ const Contact = () => {
               <h3 className="mb-6 font-space-grotesk text-lg font-bold text-slate-900 dark:text-white">Contact Details</h3>
               <div className="space-y-5">
                 {[
-                  { icon: Mail, label: 'General Enquiries', value: 'hello@learnsphereai.com', href: 'mailto:hello@learnsphereai.com' },
-                  { icon: Mail, label: 'Technical Support', value: 'tech@learnsphereai.com', href: 'mailto:tech@learnsphereai.com' },
-                  { icon: Phone, label: 'Phone (India)', value: '+91 98765 43210', href: 'tel:+919876543210' },
+                  { icon: Mail, label: 'General Enquiries', value: 'ritikamarotha9@gmail.com', href: 'mailto:ritikamarotha9@gmail.com' }, // { icon: Mail, label: 'General Enquiries', value: 'nsphereai.com', href: 'mailto:nsphereai.com' },
+                  { icon: Mail, label: 'Technical Support', value: 'ritikamarotha9@gmail.com', href: 'mailto:ritikamarotha9@gmail.com' },
+                  { icon: Phone, label: 'Phone (India)', value: '+91 80039*****', href: 'tel:+9180039*****' },
                   { icon: Clock, label: 'Business Hours', value: 'Mon–Sat, 9 AM–6 PM IST', href: null },
                 ].map((item) => {
                   const Icon = item.icon;
@@ -775,7 +773,7 @@ const Contact = () => {
               className="mt-4 text-slate-500 dark:text-slate-400"
             >
               Quick answers to the most common questions. Still need help?{' '}
-              <a href="mailto:hello@learnsphereai.com" className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">
+              <a href="mailto:ritikamarotha9@gmail.com" className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">
                 Email us directly.
               </a>
             </motion.p>
