@@ -13,7 +13,7 @@ import React, {
   useContext,
   useCallback,
 } from 'react'
-import { useUser } from '@clerk/clerk-react'
+import { useAuth, useUser } from '@clerk/clerk-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -48,9 +48,7 @@ import {
   MessageSquare,
 } from 'lucide-react'
 import { AppContext } from '../../context/AppContext'
-
-// ─── Constants ─────────────────────────────────────────────────────────────────
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || ''
+import { aiRequest } from '../../utils/aiClient'
 
 const AI_MODELS = [
   {
@@ -168,62 +166,6 @@ const getCourseTitle = (course) =>
 
 const formatTime = () =>
   new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-
-// ─── Gemini API Call ──────────────────────────────────────────────────────────
-async function callGeminiAPI(messages, model = 'gemini-2.0-flash') {
-  if (!GEMINI_API_KEY) {
-    throw new Error('NO_API_KEY')
-  }
-
-  // Convert our message history to Gemini's format
-  const contents = messages.map((m) => ({
-    role: m.role === 'user' ? 'user' : 'model',
-    parts: [{ text: m.content }],
-  }))
-
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents,
-        generationConfig: {
-          temperature: 0.7,
-          topK: 40,
-          topP: 0.95,
-          maxOutputTokens: 4096,
-        },
-        systemInstruction: {
-          parts: [
-            {
-              text: `You are LearnSphereAI's expert AI Tutor — a knowledgeable, patient, and encouraging learning assistant.
-Your role is to help students understand course material deeply. You:
-- Explain concepts clearly with relevant examples and analogies
-- Use markdown formatting: headers, bullet points, bold, code blocks
-- Write code examples with proper syntax highlighting using \`\`\`language blocks
-- Generate quizzes, flashcards, and study notes when asked
-- Are concise but thorough — avoid unnecessary repetition
-- Acknowledge when you're uncertain rather than guessing
-- Encourage the learner and celebrate their curiosity
-Always format mathematical expressions using LaTeX notation.`,
-            },
-          ],
-        },
-      }),
-    }
-  )
-
-  if (!res.ok) {
-    const errBody = await res.json().catch(() => ({}))
-    throw new Error(errBody?.error?.message || `API error ${res.status}`)
-  }
-
-  const data = await res.json()
-  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text
-  if (!text) throw new Error('Empty response from AI')
-  return text
-}
 
 // ─── MessageContent — Markdown + Math + Code Blocks ──────────────────────────
 const CopyButton = ({ text }) => {
@@ -514,27 +456,7 @@ const WelcomeScreen = ({ onSendMessage, enrolledCourses, user }) => {
 
 // ─── No API Key Banner ────────────────────────────────────────────────────────
 const NoApiKeyBanner = () => (
-  <div className="mx-4 mb-3">
-    <div className="flex items-start gap-3 rounded-xl border border-amber-200 dark:border-amber-800/50 bg-amber-50 dark:bg-amber-950/30 px-4 py-3">
-      <AlertTriangle size={16} className="shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
-      <div className="text-xs leading-relaxed">
-        <span className="font-semibold text-amber-800 dark:text-amber-300">
-          AI Tutor is not configured.{' '}
-        </span>
-        <span className="text-amber-700 dark:text-amber-400">
-          Add{' '}
-          <code className="font-mono bg-amber-100 dark:bg-amber-900/40 px-1 rounded">
-            VITE_GEMINI_API_KEY
-          </code>{' '}
-          to your{' '}
-          <code className="font-mono bg-amber-100 dark:bg-amber-900/40 px-1 rounded">
-            .env
-          </code>{' '}
-          file to enable AI conversations.
-        </span>
-      </div>
-    </div>
-  </div>
+  null
 )
 
 // ─── Sidebar History Item ─────────────────────────────────────────────────────
@@ -568,6 +490,7 @@ const HistoryItem = ({ session, isActive, onClick }) => (
 // ─── Main AITutor Component ───────────────────────────────────────────────────
 const AITutor = () => {
   const { enrolledCourses, userData } = useContext(AppContext)
+  const { getToken } = useAuth()
   const { user } = useUser()
 
 
@@ -598,7 +521,6 @@ const AITutor = () => {
 
   const currentCourse = enrolledCourses?.[0] || null
   const courseTitle = getCourseTitle(currentCourse)
-  const hasApiKey = Boolean(GEMINI_API_KEY)
 
   // Auto-scroll
   useEffect(() => {
@@ -639,13 +561,6 @@ const AITutor = () => {
     async (overrideText) => {
       const text = (overrideText ?? input).trim()
       if (!text || isLoading) return
-      if (!hasApiKey) {
-        setError(
-          'AI Tutor requires a VITE_GEMINI_API_KEY. Please configure your .env file.'
-        )
-        return
-      }
-
       setError(null)
       lastUserMessageRef.current = text
 
@@ -690,10 +605,18 @@ const AITutor = () => {
           (m) => !m.isError && (m.role === 'user' || m.role === 'assistant')
         )
 
-        const responseText = await callGeminiAPI(
-          historyForApi,
-          selectedModel.id
-        )
+        const { data } = await aiRequest({
+          backendURL: import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000',
+          getToken,
+          path: '/api/ai/tutor/chat',
+          data: {
+            messages: historyForApi,
+            model: selectedModel.id,
+            courseTitle,
+          },
+          retries: 1,
+        })
+        const responseText = data?.response || ''
 
         const assistantMsg = {
           id: `a_${Date.now()}`,
@@ -720,10 +643,7 @@ const AITutor = () => {
           return updated
         })
       } catch (err) {
-        const isNoKey = err.message === 'NO_API_KEY'
-        const errMsg = isNoKey
-          ? 'AI Tutor is not configured. Please add VITE_GEMINI_API_KEY to your .env file.'
-          : `Something went wrong: ${err.message}. Please try again.`
+        const errMsg = `Something went wrong: ${err.message}. Please try again.`
 
         const errorMsg = {
           id: `e_${Date.now()}`,
@@ -740,7 +660,7 @@ const AITutor = () => {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [input, isLoading, messages, activeSessionId, selectedModel, hasApiKey]
+    [courseTitle, getToken, input, isLoading, messages, activeSessionId, selectedModel]
   )
 
   // Retry last user message
@@ -1098,7 +1018,7 @@ const AITutor = () => {
         </div>
 
         {/* ── NO API KEY BANNER ── */}
-        {!hasApiKey && <NoApiKeyBanner />}
+        <NoApiKeyBanner />
 
         {/* ── INPUT AREA ── */}
         <div className="shrink-0 border-t border-slate-200 dark:border-white/[0.07] bg-white/90 dark:bg-slate-900/80 backdrop-blur-md px-3 sm:px-4 py-3">
@@ -1186,12 +1106,8 @@ const AITutor = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={
-                  hasApiKey
-                    ? 'Ask anything about your courses… (Enter to send, Shift+Enter for new line)'
-                    : 'Configure VITE_GEMINI_API_KEY to start chatting…'
-                }
-                disabled={!hasApiKey}
+                placeholder="Ask anything about your courses… (Enter to send, Shift+Enter for new line)"
+                disabled={false}
                 rows={1}
                 className="flex-1 resize-none bg-transparent text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 outline-none leading-6 py-1 max-h-40 overflow-y-auto disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ minHeight: '28px' }}
@@ -1212,7 +1128,7 @@ const AITutor = () => {
                 </button>
                 <button
                   onClick={() => handleSend()}
-                  disabled={!input.trim() || isLoading || !hasApiKey}
+                  disabled={!input.trim() || isLoading}
                   className="h-8 w-8 flex items-center justify-center rounded-lg bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-95 shadow-sm shadow-blue-600/25"
                   title="Send (Enter)"
                 >

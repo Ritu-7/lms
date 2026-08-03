@@ -1,50 +1,93 @@
 import React, { useState } from 'react'
-import { motion } from 'framer-motion'
+import { useAuth } from '@clerk/clerk-react'
+import { Loader2, AlertTriangle } from 'lucide-react'
+import { aiRequest } from '../../utils/aiClient'
 
 const NotesGenerator = () => {
-  const [notes, setNotes] = useState("# Introduction to React\n\nReact is a library for building user interfaces...")
-  
-  const aiData = {
-    summary: "React is a declarative, efficient, and flexible JavaScript library for building user interfaces.",
-    keyPoints: ["Declarative", "Component-based", "Learn once, write anywhere"],
-    formulas: ["render(Component, container)"],
-    examples: ["function Welcome(props) { return <h1>Hello, {props.name}</h1>; }"]
+  const { getToken } = useAuth()
+  const [notes, setNotes] = useState('')
+  const [title, setTitle] = useState('')
+  const [summary, setSummary] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
+
+  const handleGenerate = async () => {
+    if (!notes.trim()) {
+      setError('Paste source notes before generating a study version.')
+      return
+    }
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      const { data } = await aiRequest({
+        backendURL,
+        getToken,
+        path: '/api/ai/notes',
+        data: { title, sourceText: notes },
+        retries: 1,
+      })
+      setSummary(data)
+    } catch (err) {
+      setError(err.message)
+      setSummary(null)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <div className="flex flex-col h-[calc(100vh-64px)] bg-slate-50 font-['Outfit']">
-      {/* Top Bar */}
-      <div className="h-16 flex items-center justify-between px-6 bg-white border-b border-slate-200">
+      <div className="h-16 flex items-center justify-between px-6 bg-white border-b border-slate-200 gap-3">
         <h1 className="text-xl font-bold text-slate-800">Generated Study Notes</h1>
-        <div className="flex gap-2">
-          <button className="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-200">Copy</button>
-          <button className="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-200">PDF</button>
-          <button className="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-200">DOCX</button>
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700">Regenerate</button>
-        </div>
+        <button onClick={handleGenerate} className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 flex items-center gap-2">
+          {loading ? <Loader2 className="animate-spin" size={16} /> : null}
+          Regenerate
+        </button>
+      </div>
+
+      <div className="px-6 pt-4 grid gap-3 max-w-[1400px] mx-auto w-full">
+        <input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none"
+          placeholder="Source title"
+        />
+        <textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          className="w-full h-40 rounded-3xl border border-slate-200 bg-white p-6 outline-none text-slate-800 leading-relaxed"
+          placeholder="Paste source notes, lecture text, or transcript here"
+        />
       </div>
 
       <div className="flex flex-1 overflow-hidden p-6 gap-6">
-        {/* Editor Panel */}
         <div className="flex-1 bg-white rounded-3xl shadow-sm border border-slate-100 p-6 overflow-y-auto">
-          <textarea 
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            className="w-full h-full resize-none outline-none text-slate-800 leading-relaxed"
-          />
+          {error ? (
+            <div className="flex items-center gap-3 text-rose-600"><AlertTriangle size={16} />{error}</div>
+          ) : summary?.summary ? (
+            <textarea value={summary.summary} readOnly className="w-full h-full resize-none outline-none text-slate-800 leading-relaxed" />
+          ) : (
+            <div className="h-full flex items-center justify-center text-slate-400 text-sm">No generated notes yet. Paste source content and click Regenerate.</div>
+          )}
         </div>
 
-        {/* Sidebar Panel */}
         <div className="w-[350px] space-y-6 overflow-y-auto">
           <div className="bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
             <h2 className="font-bold text-slate-800 mb-2">Summary</h2>
-            <p className="text-sm text-slate-600">{aiData.summary}</p>
+            <p className="text-sm text-slate-600">{summary?.summary || 'No summary available yet.'}</p>
           </div>
           <div className="bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
             <h2 className="font-bold text-slate-800 mb-2">Key Points</h2>
-            <ul className="list-disc list-inside text-sm text-slate-600">
-              {aiData.keyPoints.map((p, i) => <li key={i}>{p}</li>)}
-            </ul>
+            {summary?.keyPoints?.length ? (
+              <ul className="list-disc list-inside text-sm text-slate-600">
+                {summary.keyPoints.map((point, index) => <li key={index}>{point}</li>)}
+              </ul>
+            ) : (
+              <p className="text-sm text-slate-500">No key points available.</p>
+            )}
           </div>
         </div>
       </div>
