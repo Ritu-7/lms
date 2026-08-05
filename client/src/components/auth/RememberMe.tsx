@@ -7,11 +7,11 @@ interface RememberMeProps {
 
 const RememberMe = ({ register }: RememberMeProps) => {
   return (
-    <label className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
+    <label className="flex items-center gap-3 text-sm text-slate-300">
       <input
         type="checkbox"
         {...register('rememberMe')}
-        className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-white/20"
+        className="h-4 w-4 rounded border-white/20 text-cyan-500 focus:ring-cyan-500"
       />
       <span>Keep me signed in</span>
     </label>

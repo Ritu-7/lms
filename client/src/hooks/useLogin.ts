@@ -18,6 +18,7 @@ export const useLogin = () => {
   const { closeAuth } = useAuthModal()
 
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [loginError, setLoginError] = useState<string | null>(null)
   const [isResetting, setIsResetting] = useState(false)
   const [resetStep, setResetStep] = useState<'email' | 'code'>('email')
   const [resetEmail, setResetEmail] = useState('')
@@ -29,6 +30,7 @@ export const useLogin = () => {
 
     const email = values.email.trim().toLowerCase()
     setIsSubmitting(true)
+    setLoginError(null)
 
     try {
       if (values.rememberMe && typeof window !== 'undefined') {
@@ -50,7 +52,9 @@ export const useLogin = () => {
 
       toast.success('Login attempt completed')
     } catch (error) {
-      toast.error(getClerkErrorMessage(error))
+      const msg = getClerkErrorMessage(error)
+      setLoginError(msg)
+      toast.error(msg)
       throw error
     } finally {
       setIsSubmitting(false)
@@ -143,5 +147,6 @@ export const useLogin = () => {
     isSubmitting,
     isResetting,
     storedEmail,
+    loginError,
   }
 }

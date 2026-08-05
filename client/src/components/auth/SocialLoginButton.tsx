@@ -28,7 +28,7 @@ const SocialLoginButton = ({ provider, onClick, isLoading = false }: SocialLogin
       type="button"
       onClick={onClick}
       disabled={isLoading}
-      className={`flex w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-70 dark:border-white/10 ${provider.accent}`}
+      className={`flex w-full items-center justify-center gap-3 rounded-2xl border border-white/10 px-4 py-3 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-70 ${provider.accent}`}
     >
       <span className="text-current">{icons[provider.key]}</span>
       <span>{isLoading ? 'Connecting...' : provider.label}</span>

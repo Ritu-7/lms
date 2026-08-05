@@ -38,6 +38,8 @@ import EditCourse from "./pages/educator/EditCourse";
 import EducatorAssignments from './pages/educator/Assignments.jsx'
 import EducatorQuizzes from './pages/educator/Quizzes.jsx'
 import Login from './pages/Login.tsx'
+import AdminLogin from './pages/admin/AdminLogin.tsx'
+import AccessDenied from './pages/AccessDenied.tsx'
 import AdminLayout from './pages/admin/AdminLayout.tsx'
 import AdminDashboard from './pages/admin/Dashboard.tsx'
 import AdminStudents from './pages/admin/Students.tsx'
@@ -118,6 +120,8 @@ const App = () => {
   element={<AuthenticateWithRedirectCallback />}
 />
         <Route path="/login" element={<Login />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/access-denied" element={<AccessDenied />} />
         {/* --- STUDENT ROUTES --- */}
         <Route path="/" element={<><Navbar /><Home /></>} />
         <Route path="/course-list" element={<><Navbar /><CourseList /></>} />

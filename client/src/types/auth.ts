@@ -92,6 +92,11 @@ export const AUTH_ROLES: AuthRoleConfig[] = [
   },
 ]
 
+/** Roles shown on the public /login page. Administrator logs in via /admin/login. */
+export const PUBLIC_AUTH_ROLES: AuthRoleConfig[] = AUTH_ROLES.filter(
+  (r) => r.key !== 'administrator',
+)
+
 export const SOCIAL_PROVIDERS: SocialProviderConfig[] = [
   { key: 'google', label: 'Google Workspace', strategy: 'oauth_google', accent: 'bg-white text-slate-900' },
   { key: 'github', label: 'GitHub', strategy: 'oauth_github', accent: 'bg-slate-900 text-white' },

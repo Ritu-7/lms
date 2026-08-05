@@ -4,13 +4,12 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuthModal } from '../../contexts/AuthContext'
-import { AUTH_ROLES, SOCIAL_PROVIDERS } from '../../types/auth'
+import { AUTH_ROLES, PUBLIC_AUTH_ROLES, SOCIAL_PROVIDERS } from '../../types/auth'
 import type { AuthRoleKey, LoginFormValues } from '../../types/auth'
 import { useLogin } from '../../hooks/useLogin'
 import Input from './Input'
 import PasswordInput from './PasswordInput'
 import SocialLoginButton from './SocialLoginButton'
-import Divider from './Divider'
 import RememberMe from './RememberMe'
 import ForgotPassword from './ForgotPassword'
 import LoadingOverlay from './LoadingOverlay'
@@ -24,7 +23,7 @@ const loginSchema = z.object({
     .regex(/[A-Z]/, 'Add one uppercase letter')
     .regex(/[a-z]/, 'Add one lowercase letter')
     .regex(/[0-9]/, 'Add one number'),
-  rememberMe: z.boolean().default(true),
+  rememberMe: z.boolean(),
 })
 
 interface LoginFormProps {
@@ -33,10 +32,8 @@ interface LoginFormProps {
 
 const LoginForm = ({ role }: LoginFormProps) => {
   const { selectRole } = useAuthModal()
-  const { completeLogin, signInWithProvider, isSubmitting, storedEmail } = useLogin()
+  const { completeLogin, signInWithProvider, isSubmitting, storedEmail, loginError } = useLogin()
   const [view, setView] = useState<'login' | 'reset'>('login')
-
-  const roleConfig = AUTH_ROLES.find((candidateRole) => candidateRole.key === role) || AUTH_ROLES[0]
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -64,9 +61,10 @@ const LoginForm = ({ role }: LoginFormProps) => {
       {view === 'reset' ? (
         <motion.div
           key="reset-view"
-          initial={{ opacity: 0, x: 24 }}
+          initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -24 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.28, ease: 'easeOut' }}
           className="relative"
         >
           <ForgotPassword onBack={() => setView('login')} />
@@ -74,37 +72,50 @@ const LoginForm = ({ role }: LoginFormProps) => {
       ) : (
         <motion.div
           key="login-view"
-          initial={{ opacity: 0, x: 24 }}
+          initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -24 }}
-          className="relative space-y-8"
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.28, ease: 'easeOut' }}
+          className="relative space-y-6"
         >
           {isSubmitting ? <LoadingOverlay /> : null}
 
-          <div className="space-y-2">
-            <h2 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white font-space-grotesk">Welcome back</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              {role === 'student' ? 'Continue your learning journey.' : role === 'instructor' ? 'Manage your courses and students.' : 'Oversee platform operations.'}
+          {/* ── Heading ───────────────────────────────── */}
+          <div className="space-y-1.5">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-300/80">
+              Secure sign in
+            </p>
+            <h2 className="font-space-grotesk text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              Welcome back
+            </h2>
+            <p className="text-sm leading-6 text-slate-300">
+              {role === 'student'
+                ? 'Continue your learning journey.'
+                : role === 'instructor'
+                  ? 'Manage your courses and students.'
+                  : 'Oversee platform operations.'}
             </p>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 p-1 bg-slate-100 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-white/10">
-            {AUTH_ROLES.map((r) => (
+          {/* ── Role selector ─────────────────────────── */}
+          <div className="grid grid-cols-2 gap-2 rounded-[22px] border border-white/10 bg-white/[0.04] p-1.5 shadow-inner shadow-black/20 backdrop-blur-sm">
+            {PUBLIC_AUTH_ROLES.map((r) => (
               <button
                 key={r.key}
                 type="button"
                 onClick={() => selectRole(r.key)}
-                className={`flex flex-col items-center justify-center gap-2 rounded-xl py-3 text-xs font-semibold transition-all ${
+                className={`flex flex-col items-center justify-center gap-1.5 rounded-[18px] py-3 text-xs font-semibold transition-all duration-200 ${
                   role === r.key
-                    ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm'
-                    : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
+                    ? 'bg-white text-slate-950 shadow-[0_8px_24px_rgba(15,23,42,0.25)]'
+                    : 'text-slate-400 hover:bg-white/[0.06] hover:text-white'
                 }`}
               >
-                <span className="capitalize">{r.key === 'administrator' ? 'Admin' : r.key}</span>
+                <span className="capitalize">{r.key}</span>
               </button>
             ))}
           </div>
 
+          {/* ── Form ──────────────────────────────────── */}
           <form onSubmit={handleSubmit} className="space-y-5">
             <Input
               label="Email address"
@@ -115,51 +126,79 @@ const LoginForm = ({ role }: LoginFormProps) => {
               {...form.register('email')}
             />
 
-            <div className="relative">
-              <PasswordInput
-                label="Password"
-                placeholder="••••••••"
-                error={form.formState.errors.password?.message}
-                autoComplete="current-password"
-                {...form.register('password')}
-              />
-              <button
-                type="button"
-                onClick={() => setView('reset')}
-                className="absolute right-0 top-0 text-sm font-medium text-blue-600 transition hover:text-blue-500 dark:text-blue-400"
-              >
-                Forgot?
-              </button>
-            </div>
+            <PasswordInput
+              label="Password"
+              placeholder="••••••••"
+              error={form.formState.errors.password?.message}
+              autoComplete="current-password"
+              {...form.register('password')}
+            />
 
-            <div className="flex items-center">
-              <RememberMe register={form.register} />
-            </div>
+            {/* Inline credential-error hint — only shown after a failed attempt */}
+            <AnimatePresence>
+              {loginError && !form.formState.errors.password ? (
+                <motion.p
+                  key="login-error-hint"
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.22, ease: 'easeOut' }}
+                  className="-mt-2 text-xs text-red-400"
+                >
+                  Incorrect email or password.{' '}
+                  <button
+                    type="button"
+                    onClick={() => setView('reset')}
+                    className="font-semibold text-cyan-300 underline-offset-2 transition hover:text-cyan-200 hover:underline"
+                  >
+                    Forgot your password?
+                  </button>
+                </motion.p>
+              ) : null}
+            </AnimatePresence>
 
+            {/* Remember me */}
+            <RememberMe register={form.register} />
+
+            {/* Submit */}
             <button
               type="submit"
               disabled={!form.formState.isValid || isSubmitting}
-              className="group flex w-full items-center justify-center gap-3 rounded-xl px-4 py-4 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/25 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group flex w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500 px-4 py-4 text-sm font-semibold text-white shadow-[0_12px_32px_rgba(37,99,235,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_48px_rgba(37,99,235,0.45)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <span>{isSubmitting ? 'Signing in...' : 'Sign in to LearnSphere'}</span>
+              {isSubmitting ? (
+                <>
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                  <span>Signing in…</span>
+                </>
+              ) : (
+                <span>Sign in to LearnSphere</span>
+              )}
             </button>
           </form>
 
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center" aria-hidden="true">
-              <div className="w-full border-t border-slate-200 dark:border-slate-800" />
-            </div>
-            <div className="relative flex justify-center text-xs font-medium uppercase leading-6">
-              <span className="bg-white px-4 text-slate-500 dark:bg-slate-950 dark:text-slate-400">or continue with</span>
-            </div>
+          {/* ── Divider ───────────────────────────────── */}
+          <div className="relative flex items-center gap-3" aria-hidden="true">
+            <div className="h-px flex-1 bg-white/10" />
+            <span className="text-xs font-medium uppercase tracking-widest text-slate-500">
+              or
+            </span>
+            <div className="h-px flex-1 bg-white/10" />
           </div>
 
+          {/* ── Social logins ─────────────────────────── */}
           <div className="grid gap-3 sm:grid-cols-2">
             {SOCIAL_PROVIDERS.map((provider) => (
-              <SocialLoginButton key={provider.key} provider={provider} onClick={() => signInWithProvider(provider.strategy)} isLoading={isSubmitting} />
+              <SocialLoginButton
+                key={provider.key}
+                provider={provider}
+                onClick={() => signInWithProvider(provider.strategy)}
+                isLoading={isSubmitting}
+              />
             ))}
           </div>
 
+          {/* ── Footer ────────────────────────────────── */}
           <AuthFooter />
         </motion.div>
       )}

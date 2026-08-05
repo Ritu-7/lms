@@ -16,8 +16,8 @@ const RoleRoute = ({ roles, children }: RoleRouteProps) => {
   const location = useLocation()
 
   if (!isLoaded || (isSignedIn && !userData)) return <Loading />
-  if (!isSignedIn) return <Navigate to="/" replace state={{ from: location.pathname }} />
-  if (!roles.includes(userData.role)) return <Navigate to="/" replace />
+  if (!isSignedIn) return <Navigate to="/login" replace state={{ from: location.pathname }} />
+  if (!roles.includes(userData.role)) return <Navigate to="/access-denied" replace />
   return children
 }
 

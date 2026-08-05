@@ -4,39 +4,59 @@ interface PasswordInputProps extends React.InputHTMLAttributes<HTMLInputElement>
   label: string
   hint?: string
   error?: string
+  /** Optional action rendered to the right of the label (e.g. "Forgot Password?") */
+  labelAction?: React.ReactNode
 }
 
-const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(({ label, hint, error, className = '', ...props }, ref) => {
-  const [showPassword, setShowPassword] = useState(false)
+const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
+  ({ label, hint, error, labelAction, className = '', ...props }, ref) => {
+    const [showPassword, setShowPassword] = useState(false)
 
-  return (
-    <label className="flex flex-col gap-2 text-left">
-      <div className="flex items-center justify-between gap-3">
-        <span className="text-sm font-medium text-slate-700 dark:text-slate-200">{label}</span>
-        <button
-          type="button"
-          onClick={() => setShowPassword((current) => !current)}
-          className="text-xs font-semibold text-indigo-600 transition hover:text-indigo-500 dark:text-indigo-300"
-        >
-          {showPassword ? 'Hide' : 'Show'}
-        </button>
+    return (
+      <div className="flex flex-col gap-1.5 text-left">
+        {/* Row: label + (Forgot Password? | Show/Hide) */}
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-sm font-medium text-slate-200">{label}</span>
+
+          <div className="flex shrink-0 items-center gap-3">
+            {labelAction ? <div>{labelAction}</div> : null}
+
+            {/* Vertical separator only when both exist */}
+            {labelAction ? (
+              <span className="h-3 w-px bg-white/15" aria-hidden="true" />
+            ) : null}
+
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              className="text-xs font-semibold leading-none text-slate-400 transition hover:text-cyan-300"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? 'Hide' : 'Show'}
+            </button>
+          </div>
+        </div>
+
+        {/* Input */}
+        <input
+          ref={ref}
+          type={showPassword ? 'text' : 'password'}
+          className={`w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300/60 focus:bg-white/[0.07] focus:ring-4 focus:ring-cyan-300/10 ${className}`}
+          {...props}
+        />
+
+        {/* Error / hint */}
+        {error ? (
+          <span className="text-xs font-medium text-red-400">{error}</span>
+        ) : (
+          <span className="text-xs text-slate-500">
+            {hint ?? 'Use a strong password with at least 8 characters.'}
+          </span>
+        )}
       </div>
-
-      <input
-        ref={ref}
-        type={showPassword ? 'text' : 'password'}
-        className={`w-full rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 dark:border-white/10 dark:bg-slate-950/70 dark:text-white ${className}`}
-        {...props}
-      />
-
-      {error ? (
-        <span className="text-xs font-medium text-red-500">{error}</span>
-      ) : (
-        <span className="text-xs text-slate-500 dark:text-slate-400">{hint || 'Use a strong password with at least 8 characters.'}</span>
-      )}
-    </label>
-  )
-})
+    )
+  },
+)
 
 PasswordInput.displayName = 'PasswordInput'
 
