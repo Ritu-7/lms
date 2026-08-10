@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useAuth } from '@clerk/clerk-react'
 import { Loader2, AlertTriangle } from 'lucide-react'
 import { aiRequest } from '../../utils/aiClient'
+import NoApiKeyState from '../../components/ai/NoApiKeyState'
 
 const NotesGenerator = () => {
   const { getToken } = useAuth()
@@ -31,7 +32,7 @@ const NotesGenerator = () => {
       })
       setSummary(data)
     } catch (err) {
-      setError(err.message)
+      setError({ message: err.message, isNoKey: err.statusCode === 403 })
       setSummary(null)
     } finally {
       setLoading(false)
@@ -66,7 +67,8 @@ const NotesGenerator = () => {
       <div className="flex flex-1 overflow-hidden p-6 gap-6">
         <div className="flex-1 bg-white rounded-3xl shadow-sm border border-slate-100 p-6 overflow-y-auto">
           {error ? (
-            <div className="flex items-center gap-3 text-rose-600"><AlertTriangle size={16} />{error}</div>
+            error.isNoKey ? <NoApiKeyState /> :
+            <div className="flex items-center gap-3 text-rose-600"><AlertTriangle size={16} />{error.message}</div>
           ) : summary?.summary ? (
             <textarea value={summary.summary} readOnly className="w-full h-full resize-none outline-none text-slate-800 leading-relaxed" />
           ) : (

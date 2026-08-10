@@ -3,6 +3,7 @@ import { useAuth } from '@clerk/clerk-react'
 import ReactPlayer from 'react-player'
 import { Download, ChevronRight, Loader2, AlertTriangle } from 'lucide-react'
 import { aiRequest } from '../../utils/aiClient'
+import NoApiKeyState from '../../components/ai/NoApiKeyState'
 
 const VideoSummary = () => {
   const { getToken } = useAuth()
@@ -40,7 +41,7 @@ const VideoSummary = () => {
       })
       setSummary(data)
     } catch (err) {
-      setError(err.message)
+      setError({ message: err.message, isNoKey: err.statusCode === 403 })
       setSummary(null)
     } finally {
       setLoading(false)
@@ -102,7 +103,8 @@ const VideoSummary = () => {
             {loading ? (
               <div className="py-10 flex items-center justify-center text-slate-500 gap-3"><Loader2 className="animate-spin" size={16} />Analyzing source text…</div>
             ) : error ? (
-              <div className="py-8 flex items-center gap-3 text-rose-600"><AlertTriangle size={16} />{error}</div>
+              error.isNoKey ? <NoApiKeyState /> :
+              <div className="py-8 flex items-center gap-3 text-rose-600"><AlertTriangle size={16} />{error.message}</div>
             ) : summary?.chapters?.length ? (
               <div className="space-y-3">
                 {summary.chapters.map((chapter, index) => (

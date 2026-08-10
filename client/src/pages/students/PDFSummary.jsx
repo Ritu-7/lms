@@ -6,6 +6,7 @@ import { FileUp, Sparkles, Download, Copy, BookOpen, Loader2, AlertTriangle } fr
 import 'react-pdf/dist/Page/AnnotationLayer.css'
 import 'react-pdf/dist/Page/TextLayer.css'
 import { aiRequest } from '../../utils/aiClient'
+import NoApiKeyState from '../../components/ai/NoApiKeyState'
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`
 
@@ -50,7 +51,7 @@ const PDFSummary = () => {
       })
       setSummaryData(data)
     } catch (err) {
-      setError(err.message)
+      setError({ message: err.message, isNoKey: err.statusCode === 403 })
     } finally {
       setProcessing(false)
     }
@@ -86,13 +87,17 @@ const PDFSummary = () => {
                 <p className="text-slate-600 dark:text-slate-400 font-medium">AI is analyzing your document…</p>
               </div>
             ) : error ? (
+              error.isNoKey ? (
+                <NoApiKeyState />
+              ) : (
               <div className="h-full flex flex-col items-center justify-center gap-4 text-center">
                 <div className="h-10 w-10 rounded-full bg-rose-100 dark:bg-rose-950/40 flex items-center justify-center">
                   <AlertTriangle className="w-5 h-5 text-rose-600" />
                 </div>
                 <p className="text-slate-700 dark:text-slate-200 font-semibold">Unable to generate summary</p>
-                <p className="text-sm text-slate-500 max-w-md">{error}</p>
+                <p className="text-sm text-slate-500 max-w-md">{error.message}</p>
               </div>
+              )
             ) : summaryData ? (
               <div className="space-y-6">
                 <div className="p-6 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700">

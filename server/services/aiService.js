@@ -18,15 +18,16 @@ const safeParseJson = (value) => {
   }
 };
 
-const requestGemini = async ({ model, contents, systemInstruction, generationConfig, responseMimeType }) => {
-  if (!GEMINI_API_KEY) {
-    const error = new Error("AI service is not configured");
-    error.statusCode = 503;
+const requestGemini = async ({ model, contents, systemInstruction, generationConfig, responseMimeType, userApiKey }) => {
+  const activeKey = userApiKey || GEMINI_API_KEY;
+  if (!activeKey) {
+    const error = new Error("NO_API_KEY");
+    error.statusCode = 403;
     throw error;
   }
 
   const resolvedModel = model || "gemini-2.0-flash";
-  const response = await fetch(`${GEMINI_BASE_URL}/models/${resolvedModel}:generateContent?key=${GEMINI_API_KEY}`, {
+  const response = await fetch(`${GEMINI_BASE_URL}/models/${resolvedModel}:generateContent?key=${activeKey}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -59,8 +60,8 @@ const extractGeminiText = (payload) => {
   return typeof text === "string" ? text.trim() : "";
 };
 
-const callGeminiText = async ({ model, contents, systemInstruction, generationConfig }) => {
-  const payload = await requestGemini({ model, contents, systemInstruction, generationConfig });
+const callGeminiText = async ({ model, contents, systemInstruction, generationConfig, userApiKey }) => {
+  const payload = await requestGemini({ model, contents, systemInstruction, generationConfig, userApiKey });
   const text = extractGeminiText(payload);
   if (!text) {
     const error = new Error("Empty response from AI");
@@ -70,7 +71,7 @@ const callGeminiText = async ({ model, contents, systemInstruction, generationCo
   return text;
 };
 
-const callGeminiJson = async ({ model, contents, systemInstruction, generationConfig }) => {
+const callGeminiJson = async ({ model, contents, systemInstruction, generationConfig, userApiKey }) => {
   const text = await callGeminiText({
     model,
     contents,
@@ -79,6 +80,7 @@ const callGeminiJson = async ({ model, contents, systemInstruction, generationCo
       ...generationConfig,
       responseMimeType: "application/json",
     },
+    userApiKey,
   });
 
   const parsed = safeParseJson(text);
@@ -96,7 +98,7 @@ Be concise when the user asks a short question and thorough when they ask for de
 If the question is ambiguous, ask one clarifying question before answering.
 ${courseTitle ? `The current course is: ${courseTitle}.` : ""}`;
 
-export const generateTutorReply = async ({ messages, model, courseTitle }) => {
+export const generateTutorReply = async ({ messages, model, courseTitle, userApiKey }) => {
   const contents = messages.map((message) => ({
     role: message.role === "user" ? "user" : "model",
     parts: [{ text: String(message.content || "") }],
@@ -107,6 +109,7 @@ export const generateTutorReply = async ({ messages, model, courseTitle }) => {
     contents,
     systemInstruction: buildTutorSystemPrompt(courseTitle),
     generationConfig: { temperature: 0.6, maxOutputTokens: 4096 },
+    userApiKey,
   });
 };
 
@@ -135,16 +138,17 @@ Content:
 ${sourceText}`;
 };
 
-export const generateStructuredSummary = async ({ model, title, sourceType, sourceText, mode }) => {
+export const generateStructuredSummary = async ({ model, title, sourceType, sourceText, mode, userApiKey }) => {
   return callGeminiJson({
     model,
     contents: [{ role: "user", parts: [{ text: buildSummaryPrompt({ title, sourceType, sourceText, mode }) }] }],
     systemInstruction: "You are a precise educational summarization engine.",
     generationConfig: { temperature: 0.2, maxOutputTokens: 4096 },
+    userApiKey,
   });
 };
 
-export const analyzeCode = async ({ model, code, language, tool }) => {
+export const analyzeCode = async ({ model, code, language, tool, userApiKey }) => {
   const prompt = `You are an expert ${language} engineer.
 Task: ${tool} the following code.
 Return markdown with clear headings, concrete findings, and corrected snippets when useful.
@@ -159,6 +163,7 @@ ${code}
     contents: [{ role: "user", parts: [{ text: prompt }] }],
     systemInstruction: `You analyze ${language} code carefully and explain only what is supported by the input.`,
     generationConfig: { temperature: 0.25, maxOutputTokens: 3072 },
+    userApiKey,
   });
 };
 

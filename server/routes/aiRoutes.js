@@ -8,6 +8,10 @@ import {
   runCodingTask,
   summarizePdf,
   summarizeVideo,
+  getKeyStatus,
+  saveKey,
+  deleteKey,
+  testKey,
 } from "../controllers/aiController.js";
 
 const aiRouter = express.Router();
@@ -21,5 +25,11 @@ aiRouter.post("/notes", generateNotes);
 aiRouter.post("/coding/analyze", analyzeCodingTask);
 aiRouter.post("/coding/run", runCodingTask);
 aiRouter.get("/analytics", getAIAnalytics);
+
+// BYOK Key Management
+aiRouter.get("/key/status", getKeyStatus);
+aiRouter.post("/key", saveKey);
+aiRouter.delete("/key", deleteKey);
+aiRouter.post("/key/test", testKey);
 
 export default aiRouter;

@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Play, Copy, MessageSquare, Bug, Zap, Activity, Terminal, Code2, CheckCircle2, AlertCircle, Cpu, X, Loader2, RotateCcw, Sparkles, ChevronRight } from 'lucide-react'
 import { aiRequest } from '../../utils/aiClient'
+import NoApiKeyState from '../../components/ai/NoApiKeyState'
 
 const TOOLS = [
   { id: 'explain', label: 'Explain', icon: MessageSquare, title: 'Code Explanation' },
@@ -77,19 +78,23 @@ const AiResultPanel = ({ result, loading, error, activeTool, onRetry }) => {
         )}
 
         {error && !loading && (
+          error.isNoKey ? (
+            <NoApiKeyState />
+          ) : (
           <div className="flex flex-col items-center justify-center h-full gap-4 text-center">
             <div className="h-10 w-10 rounded-xl bg-rose-900/30 border border-rose-700/40 flex items-center justify-center">
               <AlertCircle className="w-5 h-5 text-rose-400" />
             </div>
             <div>
               <p className="text-sm font-semibold text-rose-300">Analysis failed</p>
-              <p className="text-xs text-gray-600 mt-1 max-w-[200px]">{error}</p>
+              <p className="text-xs text-gray-600 mt-1 max-w-[200px]">{error.message}</p>
             </div>
             <button onClick={onRetry} className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-rose-900/30 border border-rose-700/40 text-rose-300 rounded-lg hover:bg-rose-900/50 transition-colors">
               <RotateCcw className="w-3 h-3" />
               Retry
             </button>
           </div>
+          )
         )}
 
         {!loading && !error && !result && (
@@ -153,7 +158,7 @@ const AICodingAssistant = () => {
       })
       setAnalysisResult(data.analysis)
     } catch (err) {
-      setAnalysisError(err.message)
+      setAnalysisError({ message: err.message, isNoKey: err.statusCode === 403 })
     } finally {
       setIsAnalyzing(false)
     }

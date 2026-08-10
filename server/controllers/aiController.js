@@ -1,12 +1,12 @@
 import User from "../models/User.js";
 import AIUsageLog from "../models/AIUsageLog.js";
-import {
   analyzeCode,
   generateStructuredSummary,
   generateTutorReply,
   retryWithBackoff,
   runCodeViaPiston,
 } from "../services/aiService.js";
+import { encryptKey, decryptKey } from "../utils/encryption.js";
 
 const resolveCurrentUser = async (clerkUserId) => {
   const user = await User.findOne({ clerkUserId }).lean();
@@ -57,7 +57,9 @@ export const chatTutor = async (req, res, next) => {
       return res.status(400).json({ success: false, message: "Message history is required" });
     }
 
-    const responseText = await retryWithBackoff(() => generateTutorReply({ messages, model, courseTitle }), 1);
+    const userApiKey = decryptKey(user.encryptedGeminiKey);
+
+    const responseText = await retryWithBackoff(() => generateTutorReply({ messages, model, courseTitle, userApiKey }), 1);
     await logUsage({
       user,
       feature: "tutor_chat",
@@ -97,8 +99,10 @@ export const summarizePdf = async (req, res, next) => {
       return res.status(400).json({ success: false, message: "PDF text is required" });
     }
 
+    const userApiKey = decryptKey(user.encryptedGeminiKey);
+
     const summary = await retryWithBackoff(
-      () => generateStructuredSummary({ model, title: fileName, sourceType: "PDF document", sourceText: text, mode: "pdf summary" }),
+      () => generateStructuredSummary({ model, title: fileName, sourceType: "PDF document", sourceText: text, mode: "pdf summary", userApiKey }),
       1
     );
 
@@ -143,8 +147,10 @@ export const summarizeVideo = async (req, res, next) => {
       return res.status(400).json({ success: false, message: "Video transcript or source text is required" });
     }
 
+    const userApiKey = decryptKey(user.encryptedGeminiKey);
+
     const summary = await retryWithBackoff(
-      () => generateStructuredSummary({ model, title, sourceType: "video lecture", sourceText: cleanText, mode: "video summary" }),
+      () => generateStructuredSummary({ model, title, sourceType: "video lecture", sourceText: cleanText, mode: "video summary", userApiKey }),
       1
     );
 
@@ -189,8 +195,10 @@ export const generateNotes = async (req, res, next) => {
       return res.status(400).json({ success: false, message: "Source text is required" });
     }
 
+    const userApiKey = decryptKey(user.encryptedGeminiKey);
+
     const summary = await retryWithBackoff(
-      () => generateStructuredSummary({ model, title, sourceType: "study notes", sourceText, mode: "notes generator" }),
+      () => generateStructuredSummary({ model, title, sourceType: "study notes", sourceText, mode: "notes generator", userApiKey }),
       1
     );
 
@@ -234,7 +242,9 @@ export const analyzeCodingTask = async (req, res, next) => {
       return res.status(400).json({ success: false, message: "Code is required" });
     }
 
-    const analysis = await retryWithBackoff(() => analyzeCode({ model, code, language, tool }), 1);
+    const userApiKey = decryptKey(user.encryptedGeminiKey);
+
+    const analysis = await retryWithBackoff(() => analyzeCode({ model, code, language, tool, userApiKey }), 1);
     await logUsage({
       user,
       feature: "coding_assistant",
@@ -380,3 +390,79 @@ export const getAIAnalytics = async (req, res, next) => {
     next(error);
   }
 };
+
+// BYOK Key Management Controllers
+export const getKeyStatus = async (req, res, next) => {
+  try {
+    const user = await resolveCurrentUser(req.clerkUserId);
+    res.json({
+      success: true,
+      hasKey: !!user.encryptedGeminiKey,
+      addedAt: user.geminiKeyAddedAt || null,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const saveKey = async (req, res, next) => {
+  try {
+    const { apiKey } = req.body;
+    if (!apiKey || typeof apiKey !== "string") {
+      return res.status(400).json({ success: false, message: "API key is required" });
+    }
+
+    const encryptedKey = encryptKey(apiKey);
+    await User.findOneAndUpdate(
+      { clerkUserId: req.clerkUserId },
+      { encryptedGeminiKey: encryptedKey, geminiKeyAddedAt: new Date() }
+    );
+
+    res.json({ success: true, message: "API key saved securely" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteKey = async (req, res, next) => {
+  try {
+    await User.findOneAndUpdate(
+      { clerkUserId: req.clerkUserId },
+      { $unset: { encryptedGeminiKey: 1, geminiKeyAddedAt: 1 } }
+    );
+    res.json({ success: true, message: "API key removed" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const testKey = async (req, res, next) => {
+  try {
+    const { apiKey } = req.body;
+    if (!apiKey || typeof apiKey !== "string") {
+      return res.status(400).json({ success: false, message: "API key is required" });
+    }
+
+    // Call Gemini with a simple prompt to test the key
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ role: "user", parts: [{ text: "Respond with exactly one word: OK" }] }],
+        generationConfig: { maxOutputTokens: 10 },
+      }),
+    });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      return res.status(response.status).json({
+        success: false,
+        message: data.error?.message || "Invalid API key or connection failed",
+      });
+    }
+
+    res.json({ success: true, message: "Connection successful" });
+  } catch (error) {
+    next(error);
+  }
+};

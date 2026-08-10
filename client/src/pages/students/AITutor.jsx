@@ -49,6 +49,7 @@ import {
 } from 'lucide-react'
 import { AppContext } from '../../context/AppContext'
 import { aiRequest } from '../../utils/aiClient'
+import NoApiKeyState from '../../components/ai/NoApiKeyState'
 
 const AI_MODELS = [
   {
@@ -455,9 +456,7 @@ const WelcomeScreen = ({ onSendMessage, enrolledCourses, user }) => {
 }
 
 // ─── No API Key Banner ────────────────────────────────────────────────────────
-const NoApiKeyBanner = () => (
-  null
-)
+// (Replaced by the NoApiKeyState full-screen component)
 
 // ─── Sidebar History Item ─────────────────────────────────────────────────────
 const HistoryItem = ({ session, isActive, onClick }) => (
@@ -499,6 +498,7 @@ const AITutor = () => {
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [isNoKeyError, setIsNoKeyError] = useState(false)
 
   // ── Session / history (session-scoped, not persisted — no backend)
   const [sessions, setSessions] = useState([])
@@ -643,7 +643,11 @@ const AITutor = () => {
           return updated
         })
       } catch (err) {
-        const errMsg = `Something went wrong: ${err.message}. Please try again.`
+        const isNoKey = err.statusCode === 403
+        setIsNoKeyError(isNoKey)
+        const errMsg = isNoKey
+          ? 'No API key configured. Please set up your Gemini API key in AI Settings.'
+          : `Something went wrong: ${err.message}. Please try again.`
 
         const errorMsg = {
           id: `e_${Date.now()}`,
@@ -989,7 +993,9 @@ const AITutor = () => {
 
         {/* ── MESSAGES AREA ── */}
         <div className="flex-1 overflow-y-auto">
-          {messages.length === 0 ? (
+          {isNoKeyError && messages.length === 0 ? (
+            <NoApiKeyState />
+          ) : messages.length === 0 ? (
             <WelcomeScreen
               onSendMessage={handleSend}
               enrolledCourses={enrolledCourses}
@@ -1016,9 +1022,6 @@ const AITutor = () => {
             </div>
           )}
         </div>
-
-        {/* ── NO API KEY BANNER ── */}
-        <NoApiKeyBanner />
 
         {/* ── INPUT AREA ── */}
         <div className="shrink-0 border-t border-slate-200 dark:border-white/[0.07] bg-white/90 dark:bg-slate-900/80 backdrop-blur-md px-3 sm:px-4 py-3">

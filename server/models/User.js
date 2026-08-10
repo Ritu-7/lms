@@ -42,6 +42,14 @@ const userSchema = new mongoose.Schema(
       type: Object,
       default: {},
     },
+    encryptedGeminiKey: {
+      type: String,
+      default: null,
+    },
+    geminiKeyAddedAt: {
+      type: Date,
+      default: null,
+    },
   },
   { 
     timestamps: true,

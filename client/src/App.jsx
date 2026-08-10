@@ -27,6 +27,7 @@ import AICodingAssistant from './pages/students/AICodingAssistant.jsx'
 import Bookmarks from './pages/students/Bookmarks.jsx'  
 import Certificates from './pages/students/Certificates.jsx'
 import Settings from './pages/students/Settings.jsx'
+import AISettings from './pages/students/AISettings.jsx'
 
 // Educator pages
 import Educator from './pages/educator/Educator.jsx'
@@ -150,6 +151,15 @@ const App = () => {
     <>
       <Navbar />
       <Settings />
+    </>
+  }
+/>
+<Route
+  path="/settings/ai"
+  element={
+    <>
+      <Navbar />
+      <AISettings />
     </>
   }
 />

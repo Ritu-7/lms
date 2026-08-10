@@ -44,7 +44,9 @@ export const aiRequest = async ({
     }
   }
 
-  throw new Error(getErrorMessage(lastError))
+  const err = new Error(getErrorMessage(lastError))
+  err.statusCode = lastError?.response?.status || null
+  throw err
 }
 
 export const aiGetRequest = async ({ backendURL, getToken, path, params, retries = 1 }) =>
