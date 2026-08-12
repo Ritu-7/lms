@@ -1,11 +1,11 @@
 import User from "../models/User.js";
 import AIUsageLog from "../models/AIUsageLog.js";
-  analyzeCode,
+ import { analyzeCode,
   generateStructuredSummary,
   generateTutorReply,
   retryWithBackoff,
-  runCodeViaPiston,
-} from "../services/aiService.js";
+  runCodeViaPiston,}
+ from "../services/aiService.js";
 import { encryptKey, decryptKey } from "../utils/encryption.js";
 
 const resolveCurrentUser = async (clerkUserId) => {
@@ -465,4 +465,4 @@ export const testKey = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-};
+};

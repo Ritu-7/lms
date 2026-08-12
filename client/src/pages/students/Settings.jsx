@@ -17,6 +17,7 @@ import {
   Save,
   Shield,
   SlidersHorizontal,
+  Sparkles,
   Sun,
   Trash2,
   UserRound,
@@ -24,6 +25,7 @@ import {
 } from 'lucide-react';
 import { AppContext } from '../../context/AppContext';
 import Footer from '../../components/students/Footer';
+import { useNavigate } from 'react-router-dom';
 
 const MotionDiv = motion.div;
 
@@ -69,6 +71,7 @@ const defaultPreferences = {
 const settingsSections = [
   { id: 'profile', label: 'Profile', icon: UserRound },
   { id: 'account', label: 'Account', icon: SlidersHorizontal },
+  { id: 'ai', label: 'AI Features', icon: Sparkles },
   { id: 'password', label: 'Password', icon: KeyRound },
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'privacy', label: 'Privacy', icon: Shield },
@@ -118,6 +121,7 @@ const inputClass = 'w-full rounded-xl border border-slate-200 dark:border-white/
 const Settings = () => {
   const { userData } = useContext(AppContext);
   const { user, isLoaded } = useUser();
+  const navigate = useNavigate();
 
   const initialSettings = useMemo(() => ({
     ...defaultPreferences,
@@ -301,6 +305,29 @@ const Settings = () => {
               <div className="mt-6 grid gap-4 md:grid-cols-2">
                 <Toggle checked={formData.twoFactorEnabled} onChange={() => updateField('twoFactorEnabled', !formData.twoFactorEnabled)} label="Two-factor authentication" description="Add an extra layer of security to your student account." />
                 <Toggle checked={formData.marketingEmails} onChange={() => updateField('marketingEmails', !formData.marketingEmails)} label="Product tips and offers" description="Receive occasional LMS updates, tips, and promotions." />
+              </div>
+            </MotionDiv>
+
+            <MotionDiv id="ai" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6 shadow-sm">
+              <div className="flex items-start justify-between gap-4 border-b border-slate-200 dark:border-white/10 pb-5">
+                <div>
+                  <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-white">AI Features & Integrations</h2>
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Configure your personal Gemini API key for the AI Tutor, Summarizer, and more.</p>
+                </div>
+                <Sparkles className="text-blue-600 dark:text-blue-300" />
+              </div>
+              <div className="mt-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1">Gemini API Key Setup</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Manage your private BYOK (Bring Your Own Key) settings to unlock premium AI capabilities.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => navigate('/settings/ai')}
+                  className="shrink-0 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 px-5 py-2.5 text-sm font-semibold text-blue-700 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-colors"
+                >
+                  Configure AI Settings
+                </button>
               </div>
             </MotionDiv>
 
