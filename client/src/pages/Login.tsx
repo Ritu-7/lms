@@ -1,13 +1,21 @@
+import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useAuthModal } from '../contexts/AuthContext'
 import Home from './students/Home.jsx'
 import Navbar from '../components/navbar/GlobalNavbar.jsx'
 import Logo from '../components/common/Logo.jsx'
 import LoginForm from '../components/auth/LoginForm'
+import SignUpForm from '../components/auth/SignUpForm'
+
+type AuthView = 'login' | 'signup'
 
 const Login = () => {
   const { selectedRole } = useAuthModal()
+  const location = useLocation()
+  const [view, setView] = useState<AuthView>(
+    location.pathname === '/signup' ? 'signup' : 'login'
+  )
 
   return (
     <motion.div
@@ -46,8 +54,8 @@ const Login = () => {
               {/* Corner glow */}
               <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-indigo-500/10 blur-3xl" />
 
-              {/* Logo → home */}
-              <div className="mb-8">
+              {/* ── Logo + Tab toggle row ── */}
+              <div className="mb-7 flex items-center justify-between gap-4">
                 <Link
                   to="/"
                   className="inline-flex items-center rounded-2xl transition-transform duration-200 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70"
@@ -55,20 +63,61 @@ const Login = () => {
                 >
                   <Logo light />
                 </Link>
+
+                {/* Tab toggle pill */}
+                <div className="flex rounded-2xl border border-white/10 bg-white/[0.05] p-1 gap-1 backdrop-blur-sm">
+                  <button
+                    type="button"
+                    onClick={() => setView('login')}
+                    className={`rounded-xl px-4 py-2 text-xs font-semibold transition-all duration-200 ${
+                      view === 'login'
+                        ? 'bg-white text-slate-900 shadow-md'
+                        : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setView('signup')}
+                    className={`rounded-xl px-4 py-2 text-xs font-semibold transition-all duration-200 ${
+                      view === 'signup'
+                        ? 'bg-gradient-to-r from-indigo-600 to-cyan-500 text-white shadow-md'
+                        : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    Create Account
+                  </button>
+                </div>
               </div>
 
-              {/* Login form content */}
+              {/* Form area — animated toggle between login & signup */}
               <div className="w-full">
                 <AnimatePresence mode="wait">
-                  <motion.div
-                    key="login"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.3, ease: 'easeOut' }}
-                  >
-                    <LoginForm role={selectedRole} />
-                  </motion.div>
+                  {view === 'login' ? (
+                    <motion.div
+                      key="login"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.3, ease: 'easeOut' }}
+                    >
+                      <LoginForm
+                        role={selectedRole}
+                        onSwitchToSignUp={() => setView('signup')}
+                      />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="signup"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.3, ease: 'easeOut' }}
+                    >
+                      <SignUpForm onSwitchToLogin={() => setView('login')} />
+                    </motion.div>
+                  )}
                 </AnimatePresence>
               </div>
             </div>

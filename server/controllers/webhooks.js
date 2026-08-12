@@ -19,12 +19,27 @@ export const clerkWebhook = async (req, res) => {
     const name = `${data.first_name || ""} ${data.last_name || ""}`.trim() || "User";
 
     if (type === "user.created" || type === "user.updated") {
-      const existing = await User.findOne({ clerkUserId: data.id });
-      await User.findOneAndUpdate(
-        { clerkUserId: data.id },
-        { clerkUserId: data.id, name, email, imageUrl: data.image_url || "", role: resolveUserRole({ clerkUserId: data.id, email, existingRole: existing?.role }) },
-        { upsert: true, new: true, setDefaultsOnInsert: true }
-      );
+      let existing = await User.findOne({ clerkUserId: data.id });
+      if (!existing && email) {
+        existing = await User.findOne({ email });
+      }
+
+      const role = resolveUserRole({ clerkUserId: data.id, email, existingRole: existing?.role });
+
+      if (existing) {
+        await User.findByIdAndUpdate(
+          existing._id,
+          { clerkUserId: data.id, name, email, imageUrl: data.image_url || "", role }
+        );
+      } else {
+        await User.create({
+          clerkUserId: data.id,
+          name,
+          email,
+          imageUrl: data.image_url || "",
+          role
+        });
+      }
       logger.info("webhook.clerk_user_synced", { clerkUserId: data.id });
     } else if (type === "user.deleted") {
       await User.findOneAndDelete({ clerkUserId: data.id });

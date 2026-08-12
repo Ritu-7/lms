@@ -121,6 +121,7 @@ const App = () => {
   element={<AuthenticateWithRedirectCallback />}
 />
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Login />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/access-denied" element={<AccessDenied />} />
         {/* --- STUDENT ROUTES --- */}

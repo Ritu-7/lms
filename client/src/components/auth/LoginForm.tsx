@@ -28,9 +28,10 @@ const loginSchema = z.object({
 
 interface LoginFormProps {
   role: AuthRoleKey
+  onSwitchToSignUp?: () => void
 }
 
-const LoginForm = ({ role }: LoginFormProps) => {
+const LoginForm = ({ role, onSwitchToSignUp }: LoginFormProps) => {
   const { selectRole } = useAuthModal()
   const { completeLogin, signInWithProvider, isSubmitting, storedEmail, loginError } = useLogin()
   const [view, setView] = useState<'login' | 'reset'>('login')
@@ -197,6 +198,20 @@ const LoginForm = ({ role }: LoginFormProps) => {
               />
             ))}
           </div>
+
+          {/* ── Sign up nudge ──────────────────────────── */}
+          {onSwitchToSignUp && (
+            <p className="text-center text-sm text-slate-400">
+              Don&apos;t have an account?{' '}
+              <button
+                type="button"
+                onClick={onSwitchToSignUp}
+                className="font-semibold text-cyan-300 transition hover:text-cyan-200 hover:underline underline-offset-2"
+              >
+                Create account
+              </button>
+            </p>
+          )}
 
           {/* ── Footer ────────────────────────────────── */}
           <AuthFooter />
