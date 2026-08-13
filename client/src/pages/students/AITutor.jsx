@@ -200,8 +200,8 @@ const MessageContent = ({ text, isStreaming }) => {
             const match = /language-(\w+)/.exec(className || '')
             const codeText = String(children).replace(/\n$/, '')
             return !inline && match ? (
-              <div className="my-3 rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-950 not-prose">
-                <div className="flex items-center justify-between px-4 py-2 bg-slate-800 dark:bg-slate-900 border-b border-white/5">
+              <div className="my-3 rounded-xl overflow-hidden border border-slate-200 dark:border-dk-border bg-slate-950 not-prose">
+                <div className="flex items-center justify-between px-4 py-2 bg-slate-800 dark:bg-dk-surface border-b border-white/5">
                   <span className="text-xs font-mono font-medium text-slate-400">
                     {match[1]}
                   </span>
@@ -219,14 +219,14 @@ const MessageContent = ({ text, isStreaming }) => {
           },
           table({ children }) {
             return (
-              <div className="overflow-x-auto my-3 rounded-xl border border-slate-200 dark:border-white/10 not-prose">
+              <div className="overflow-x-auto my-3 rounded-xl border border-slate-200 dark:border-dk-border not-prose">
                 <table className="w-full text-sm text-left">{children}</table>
               </div>
             )
           },
           thead({ children }) {
             return (
-              <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wide">
+              <thead className="bg-slate-50 dark:bg-dk-surface-2/60 text-slate-700 dark:text-dk-text-2 text-xs uppercase tracking-wide">
                 {children}
               </thead>
             )
@@ -236,14 +236,14 @@ const MessageContent = ({ text, isStreaming }) => {
           },
           td({ children }) {
             return (
-              <td className="px-4 py-3 border-t border-slate-100 dark:border-white/5 text-slate-700 dark:text-slate-300">
+              <td className="px-4 py-3 border-t border-slate-100 dark:border-dk-border-2 text-slate-700 dark:text-dk-text-2">
                 {children}
               </td>
             )
           },
           blockquote({ children }) {
             return (
-              <blockquote className="border-l-4 border-blue-400 dark:border-blue-600 pl-4 my-2 text-slate-600 dark:text-slate-400 italic not-prose">
+              <blockquote className="border-l-4 border-blue-400 dark:border-blue-600 pl-4 my-2 text-slate-600 dark:text-dk-text-2 italic not-prose">
                 {children}
               </blockquote>
             )
@@ -301,7 +301,7 @@ const ChatBubble = ({ msg, onRetry, isLast }) => {
               ? 'bg-blue-600 text-white rounded-tr-sm leading-relaxed'
               : isError
               ? 'bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/50 text-rose-700 dark:text-rose-300 rounded-tl-sm'
-              : 'bg-white dark:bg-slate-800/80 border border-slate-100 dark:border-white/[0.08] text-slate-800 dark:text-slate-100 rounded-tl-sm'
+              : 'bg-white dark:bg-dk-surface-2/80 border border-slate-100 dark:border-white/[0.08] text-slate-800 dark:text-dk-text rounded-tl-sm'
           }`}
         >
           {isUser ? (
@@ -318,7 +318,7 @@ const ChatBubble = ({ msg, onRetry, isLast }) => {
         {/* Footer row */}
         <div className={`flex items-center gap-3 px-1 ${isUser ? 'flex-row-reverse' : ''}`}>
           {msg.timestamp && (
-            <span className="text-[10px] text-slate-400 dark:text-slate-500">
+            <span className="text-[10px] text-slate-400 dark:text-dk-text-3">
               {msg.timestamp}
             </span>
           )}
@@ -346,7 +346,7 @@ const TypingIndicator = () => (
     <div className="shrink-0 h-8 w-8 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center shadow-sm">
       <Brain size={14} className="text-white" />
     </div>
-    <div className="rounded-2xl rounded-tl-sm bg-white dark:bg-slate-800/80 border border-slate-100 dark:border-white/[0.08] px-4 py-3 shadow-sm">
+    <div className="rounded-2xl rounded-tl-sm bg-white dark:bg-dk-surface-2/80 border border-slate-100 dark:border-white/[0.08] px-4 py-3 shadow-sm">
       <div className="flex gap-1.5 items-center h-5">
         {[0, 1, 2].map((i) => (
           <motion.div
@@ -394,12 +394,12 @@ const WelcomeScreen = ({ onSendMessage, enrolledCourses, user }) => {
         transition={{ delay: 0.12, duration: 0.4 }}
         className="mb-8"
       >
-        <h1 className="text-2xl font-bold font-space-grotesk text-slate-900 dark:text-white mb-2">
+        <h1 className="text-2xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text mb-2">
           {user
             ? `Hello, ${user.firstName || 'there'}! 👋`
             : 'Hello! 👋'}
         </h1>
-        <p className="text-slate-500 dark:text-slate-400 text-sm max-w-md leading-relaxed">
+        <p className="text-slate-500 dark:text-dk-text-2 text-sm max-w-md leading-relaxed">
           I'm your AI Tutor — ask me anything about your courses. I can explain
           concepts, generate quizzes, summarize lessons, write code examples, and
           much more.
@@ -445,7 +445,7 @@ const WelcomeScreen = ({ onSendMessage, enrolledCourses, user }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.7 }}
-        className="mt-8 text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1.5"
+        className="mt-8 text-xs text-slate-400 dark:text-dk-text-3 flex items-center gap-1.5"
       >
         <Lock size={10} />
         AI-generated responses may be inaccurate. Always verify critical
@@ -472,12 +472,12 @@ const HistoryItem = ({ session, isActive, onClick }) => (
       className={`text-sm font-medium truncate ${
         isActive
           ? 'text-blue-700 dark:text-blue-300'
-          : 'text-slate-700 dark:text-slate-300'
+          : 'text-slate-700 dark:text-dk-text-2'
       }`}
     >
       {session.title}
     </p>
-    <p className="text-xs text-slate-400 dark:text-slate-500 truncate mt-0.5">
+    <p className="text-xs text-slate-400 dark:text-dk-text-3 truncate mt-0.5">
       {session.preview}
     </p>
     <p className="text-[10px] text-slate-300 dark:text-slate-600 mt-0.5">
@@ -758,7 +758,7 @@ const AITutor = () => {
         {sessions.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center px-4">
             <MessageSquare size={28} className="text-slate-300 dark:text-slate-600 mb-3" />
-            <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">
+            <p className="text-xs text-slate-400 dark:text-dk-text-3 font-medium">
               No conversations yet
             </p>
             <p className="text-xs text-slate-300 dark:text-slate-600 mt-1">
@@ -767,7 +767,7 @@ const AITutor = () => {
           </div>
         ) : (
           <>
-            <p className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+            <p className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-dk-text-3">
               Recent
             </p>
             <div className="space-y-0.5">
@@ -788,14 +788,14 @@ const AITutor = () => {
       {currentCourse && (
         <div className="shrink-0 p-3 border-t border-slate-100 dark:border-white/[0.06]">
           <div className="rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-slate-100 dark:border-white/[0.06] p-3">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-1.5">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-dk-text-3 mb-1.5">
               Active Course
             </p>
-            <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 line-clamp-2 leading-snug">
+            <p className="text-xs font-semibold text-slate-700 dark:text-dk-text-2 line-clamp-2 leading-snug">
               {courseTitle || 'Unnamed Course'}
             </p>
             {enrolledCourses.length > 1 && (
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1">
+              <p className="text-[10px] text-slate-400 dark:text-dk-text-3 mt-1">
                 +{enrolledCourses.length - 1} more enrolled
               </p>
             )}
@@ -807,7 +807,7 @@ const AITutor = () => {
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className="flex h-[calc(100vh-64px)] bg-slate-50 dark:bg-slate-950 overflow-hidden">
+    <div className="flex h-[calc(100vh-64px)] bg-slate-50 dark:bg-dk-base overflow-hidden">
       <input
         ref={fileInputRef}
         type="file"
@@ -824,7 +824,7 @@ const AITutor = () => {
             animate={{ width: 256, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.22, ease: 'easeInOut' }}
-            className="hidden lg:flex shrink-0 flex-col border-r border-slate-200 dark:border-white/[0.07] bg-white dark:bg-slate-900/80 overflow-hidden"
+            className="hidden lg:flex shrink-0 flex-col border-r border-slate-200 dark:border-white/[0.07] bg-white dark:bg-dk-surface/80 overflow-hidden"
           >
             <SidebarContent />
           </motion.aside>
@@ -849,10 +849,10 @@ const AITutor = () => {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ duration: 0.25, ease: 'easeInOut' }}
-              className="lg:hidden fixed left-0 top-16 bottom-0 z-50 w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-white/[0.07] overflow-hidden flex flex-col"
+              className="lg:hidden fixed left-0 top-16 bottom-0 z-50 w-72 bg-white dark:bg-dk-surface border-r border-slate-200 dark:border-white/[0.07] overflow-hidden flex flex-col"
             >
               <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-white/[0.06]">
-                <span className="text-sm font-semibold text-slate-800 dark:text-white">
+                <span className="text-sm font-semibold text-slate-800 dark:text-dk-text">
                   Conversations
                 </span>
                 <button
@@ -874,20 +874,20 @@ const AITutor = () => {
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
 
         {/* ── TOP BAR ── */}
-        <div className="shrink-0 flex items-center gap-2 px-3 sm:px-4 py-2.5 border-b border-slate-200 dark:border-white/[0.07] bg-white/90 dark:bg-slate-900/80 backdrop-blur-md z-10">
+        <div className="shrink-0 flex items-center gap-2 px-3 sm:px-4 py-2.5 border-b border-slate-200 dark:border-white/[0.07] bg-white/90 dark:bg-dk-surface/80 backdrop-blur-md z-10">
 
           {/* Left: sidebar toggle + mobile history */}
           <div className="flex items-center gap-1">
             <button
               onClick={() => setLeftOpen((o) => !o)}
-              className="hidden lg:flex h-8 w-8 items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-white/[0.06] text-slate-500 dark:text-slate-400 transition-colors"
+              className="hidden lg:flex h-8 w-8 items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-white/[0.06] text-slate-500 dark:text-dk-text-2 transition-colors"
               title="Toggle sidebar"
             >
               <PanelLeft size={16} />
             </button>
             <button
               onClick={() => setMobileHistoryOpen(true)}
-              className="lg:hidden h-8 w-8 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-white/[0.06] text-slate-500 dark:text-slate-400 transition-colors relative"
+              className="lg:hidden h-8 w-8 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-white/[0.06] text-slate-500 dark:text-dk-text-2 transition-colors relative"
               title="Chat history"
             >
               <PanelLeft size={16} />
@@ -902,12 +902,12 @@ const AITutor = () => {
             {courseTitle ? (
               <div className="flex items-center gap-1.5 rounded-xl bg-slate-100 dark:bg-white/[0.06] px-3 py-1.5 min-w-0 max-w-xs">
                 <BookOpen size={12} className="shrink-0 text-blue-600 dark:text-blue-400" />
-                <span className="text-xs font-medium text-slate-600 dark:text-slate-300 truncate">
+                <span className="text-xs font-medium text-slate-600 dark:text-dk-text-2 truncate">
                   {courseTitle}
                 </span>
               </div>
             ) : (
-              <span className="text-xs text-slate-400 dark:text-slate-500">
+              <span className="text-xs text-slate-400 dark:text-dk-text-3">
                 No course selected
               </span>
             )}
@@ -919,7 +919,7 @@ const AITutor = () => {
           <div className="relative" ref={modelDropdownRef}>
             <button
               onClick={() => setModelOpen((o) => !o)}
-              className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.04] hover:bg-slate-50 dark:hover:bg-white/[0.07] px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 transition-colors"
+              className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-dk-border bg-white dark:bg-white/[0.04] hover:bg-slate-50 dark:hover:bg-white/[0.07] px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-dk-text-2 transition-colors"
             >
               {React.createElement(selectedModel.icon, {
                 size: 13,
@@ -942,7 +942,7 @@ const AITutor = () => {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 6, scale: 0.97 }}
                   transition={{ duration: 0.14 }}
-                  className="absolute right-0 top-full mt-1.5 z-50 w-56 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xl overflow-hidden"
+                  className="absolute right-0 top-full mt-1.5 z-50 w-56 rounded-xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-xl overflow-hidden"
                 >
                   <div className="p-1">
                     {AI_MODELS.map((m) => {
@@ -957,7 +957,7 @@ const AITutor = () => {
                           className={`flex items-center gap-3 w-full rounded-lg px-3 py-2.5 text-sm hover:bg-slate-50 dark:hover:bg-white/[0.05] transition-colors ${
                             selectedModel.id === m.id
                               ? 'text-blue-600 dark:text-blue-400'
-                              : 'text-slate-700 dark:text-slate-300'
+                              : 'text-slate-700 dark:text-dk-text-2'
                           }`}
                         >
                           <MIcon size={15} className={m.iconColor} />
@@ -965,7 +965,7 @@ const AITutor = () => {
                             <p className="font-medium text-sm leading-none">
                               {m.name}
                             </p>
-                            <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                            <p className="text-xs text-slate-400 dark:text-dk-text-3 mt-0.5">
                               {m.description}
                             </p>
                           </div>
@@ -984,7 +984,7 @@ const AITutor = () => {
           {/* New chat (top bar shortcut) */}
           <button
             onClick={startNewChat}
-            className="h-8 w-8 flex items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/[0.06] text-slate-500 dark:text-slate-400 transition-colors"
+            className="h-8 w-8 flex items-center justify-center rounded-lg border border-slate-200 dark:border-dk-border hover:bg-slate-100 dark:hover:bg-white/[0.06] text-slate-500 dark:text-dk-text-2 transition-colors"
             title="New chat"
           >
             <Plus size={15} />
@@ -1024,7 +1024,7 @@ const AITutor = () => {
         </div>
 
         {/* ── INPUT AREA ── */}
-        <div className="shrink-0 border-t border-slate-200 dark:border-white/[0.07] bg-white/90 dark:bg-slate-900/80 backdrop-blur-md px-3 sm:px-4 py-3">
+        <div className="shrink-0 border-t border-slate-200 dark:border-white/[0.07] bg-white/90 dark:bg-dk-surface/80 backdrop-blur-md px-3 sm:px-4 py-3">
           <div className="max-w-3xl mx-auto">
 
             {/* Attachment chips */}
@@ -1033,7 +1033,7 @@ const AITutor = () => {
                 {attachments.map((att, i) => (
                   <div
                     key={i}
-                    className="flex items-center gap-1.5 rounded-xl bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 px-3 py-1.5 text-xs text-slate-600 dark:text-slate-300"
+                    className="flex items-center gap-1.5 rounded-xl bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-dk-border px-3 py-1.5 text-xs text-slate-600 dark:text-dk-text-2"
                   >
                     <Paperclip size={11} className="text-slate-400 shrink-0" />
                     <span className="font-medium truncate max-w-[120px]">
@@ -1076,7 +1076,7 @@ const AITutor = () => {
             )}
 
             {/* Main input row */}
-            <div className="flex items-end gap-2 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800/60 shadow-sm focus-within:border-blue-400 dark:focus-within:border-blue-600/60 focus-within:ring-2 focus-within:ring-blue-500/10 dark:focus-within:ring-blue-500/10 transition-all px-3 py-2">
+            <div className="flex items-end gap-2 rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface-2/60 shadow-sm focus-within:border-blue-400 dark:focus-within:border-blue-600/60 focus-within:ring-2 focus-within:ring-blue-500/10 dark:focus-within:ring-blue-500/10 transition-all px-3 py-2">
 
               {/* Attach buttons */}
               <div className="flex items-center gap-0.5 pb-0.5">
@@ -1112,7 +1112,7 @@ const AITutor = () => {
                 placeholder="Ask anything about your courses… (Enter to send, Shift+Enter for new line)"
                 disabled={false}
                 rows={1}
-                className="flex-1 resize-none bg-transparent text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 outline-none leading-6 py-1 max-h-40 overflow-y-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 resize-none bg-transparent text-sm text-slate-800 dark:text-dk-text placeholder-slate-400 dark:placeholder-slate-500 outline-none leading-6 py-1 max-h-40 overflow-y-auto disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ minHeight: '28px' }}
                 onInput={(e) => {
                   e.target.style.height = 'auto'

@@ -110,14 +110,14 @@ const Students = () => {
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm outline-none focus:border-blue-500"
+            className="rounded-md border border-gray-300 bg-white dark:bg-dk-surface px-4 py-2 text-sm outline-none focus:border-blue-500"
             placeholder="Search students"
             aria-label="Search students"
           />
           <select
             value={statusFilter}
             onChange={(event) => setStatusFilter(event.target.value)}
-            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm outline-none focus:border-blue-500"
+            className="rounded-md border border-gray-300 bg-white dark:bg-dk-surface px-4 py-2 text-sm outline-none focus:border-blue-500"
             aria-label="Filter students"
           >
             <option value="all">All statuses</option>
@@ -139,7 +139,7 @@ const Students = () => {
 
       {selectedUser ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4 py-8">
-          <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl">
+          <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white dark:bg-dk-surface p-6 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h3 className="text-lg font-semibold text-gray-800">Student Profile</h3>
@@ -180,3 +180,4 @@ const Students = () => {
 }
 
 export default Students
+

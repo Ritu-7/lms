@@ -176,12 +176,12 @@ const Certificates = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-slate-50 dark:bg-dk-base">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <header className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <h1 className="text-3xl font-bold font-space-grotesk text-slate-900 dark:text-white">My Certificates</h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-2">View, download, and verify every certificate you have earned.</p>
+            <h1 className="text-3xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">My Certificates</h1>
+            <p className="text-slate-500 dark:text-dk-text-2 mt-2">View, download, and verify every certificate you have earned.</p>
           </div>
           <button
             onClick={fetchCertificates}
@@ -203,13 +203,13 @@ const Certificates = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6 shadow-sm"
+                className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm"
               >
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{stat.label}</p>
-                  <Icon size={20} className={`${stat.color} dark:text-white`} />
+                  <p className="text-sm font-medium text-slate-500 dark:text-dk-text-2">{stat.label}</p>
+                  <Icon size={20} className={`${stat.color} dark:text-dk-text`} />
                 </div>
-                <p className={`mt-2 text-3xl font-bold font-space-grotesk ${stat.color} dark:text-white`}>{stat.value}</p>
+                <p className={`mt-2 text-3xl font-bold font-space-grotesk ${stat.color} dark:text-dk-text`}>{stat.value}</p>
               </MotionDiv>
             );
           })}
@@ -219,28 +219,28 @@ const Certificates = () => {
           <>
             <div className="grid gap-6 sm:grid-cols-2 xl:hidden">
               {[...Array(4)].map((_, index) => (
-                <div key={index} className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6 shadow-sm animate-pulse">
-                  <div className="h-12 w-12 rounded-2xl bg-slate-200 dark:bg-slate-800" />
-                  <div className="mt-5 h-5 w-3/4 rounded bg-slate-200 dark:bg-slate-800" />
-                  <div className="mt-3 h-4 w-1/2 rounded bg-slate-200 dark:bg-slate-800" />
+                <div key={index} className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm animate-pulse">
+                  <div className="h-12 w-12 rounded-2xl bg-slate-200 dark:bg-dk-surface-2" />
+                  <div className="mt-5 h-5 w-3/4 rounded bg-slate-200 dark:bg-dk-surface-2" />
+                  <div className="mt-3 h-4 w-1/2 rounded bg-slate-200 dark:bg-dk-surface-2" />
                   <div className="mt-6 grid grid-cols-2 gap-3">
-                    <div className="h-10 rounded-xl bg-slate-200 dark:bg-slate-800" />
-                    <div className="h-10 rounded-xl bg-slate-200 dark:bg-slate-800" />
+                    <div className="h-10 rounded-xl bg-slate-200 dark:bg-dk-surface-2" />
+                    <div className="h-10 rounded-xl bg-slate-200 dark:bg-dk-surface-2" />
                   </div>
                 </div>
               ))}
             </div>
-            <div className="hidden xl:block rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-sm overflow-hidden animate-pulse">
-              <div className="p-6 border-b border-slate-200 dark:border-white/10">
-                <div className="h-6 w-48 rounded bg-slate-200 dark:bg-slate-800" />
+            <div className="hidden xl:block rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm overflow-hidden animate-pulse">
+              <div className="p-6 border-b border-slate-200 dark:border-dk-border">
+                <div className="h-6 w-48 rounded bg-slate-200 dark:bg-dk-surface-2" />
               </div>
               {[...Array(5)].map((_, index) => (
                 <div key={index} className="grid grid-cols-6 gap-6 border-b border-slate-100 dark:border-slate-800 px-6 py-5">
-                  <div className="col-span-2 h-5 rounded bg-slate-200 dark:bg-slate-800" />
-                  <div className="h-5 rounded bg-slate-200 dark:bg-slate-800" />
-                  <div className="h-5 rounded bg-slate-200 dark:bg-slate-800" />
-                  <div className="h-5 rounded bg-slate-200 dark:bg-slate-800" />
-                  <div className="h-9 rounded-xl bg-slate-200 dark:bg-slate-800" />
+                  <div className="col-span-2 h-5 rounded bg-slate-200 dark:bg-dk-surface-2" />
+                  <div className="h-5 rounded bg-slate-200 dark:bg-dk-surface-2" />
+                  <div className="h-5 rounded bg-slate-200 dark:bg-dk-surface-2" />
+                  <div className="h-5 rounded bg-slate-200 dark:bg-dk-surface-2" />
+                  <div className="h-9 rounded-xl bg-slate-200 dark:bg-dk-surface-2" />
                 </div>
               ))}
             </div>
@@ -248,19 +248,19 @@ const Certificates = () => {
         ) : error ? (
           <div className="rounded-2xl border border-rose-200 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-950/30 p-8 text-center">
             <TriangleAlert className="mx-auto text-rose-500" size={44} />
-            <h2 className="mt-4 text-xl font-bold font-space-grotesk text-slate-900 dark:text-white">Could not load certificates</h2>
-            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{error}</p>
+            <h2 className="mt-4 text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Could not load certificates</h2>
+            <p className="mt-2 text-sm text-slate-600 dark:text-dk-text-2">{error}</p>
             <button onClick={fetchCertificates} className="mt-6 rounded-xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white hover:bg-rose-700 transition-all">
               Try Again
             </button>
           </div>
         ) : certificates.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-slate-300 dark:border-white/10 bg-white dark:bg-slate-900 p-10 sm:p-16 text-center shadow-sm">
+          <div className="rounded-3xl border border-dashed border-slate-300 dark:border-dk-border bg-white dark:bg-dk-surface p-10 sm:p-16 text-center shadow-sm">
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300">
               <Award size={38} />
             </div>
-            <h2 className="mt-6 text-2xl font-bold font-space-grotesk text-slate-900 dark:text-white">No certificates earned yet</h2>
-            <p className="mx-auto mt-3 max-w-xl text-slate-500 dark:text-slate-400">
+            <h2 className="mt-6 text-2xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">No certificates earned yet</h2>
+            <p className="mx-auto mt-3 max-w-xl text-slate-500 dark:text-dk-text-2">
               Complete your enrolled courses to unlock verified certificates that you can share, download, and validate online.
             </p>
             <button
@@ -280,7 +280,7 @@ const Certificates = () => {
                   initial={{ opacity: 0, y: 18 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="group rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-xl"
+                  className="group rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-xl"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300">
@@ -291,15 +291,15 @@ const Certificates = () => {
                     </span>
                   </div>
 
-                  <h2 className="mt-5 text-lg font-bold font-space-grotesk text-slate-900 dark:text-white">{getCertificateName(certificate)}</h2>
-                  <p className="mt-2 text-sm font-medium text-slate-600 dark:text-slate-400">{getCourseTitle(certificate)}</p>
+                  <h2 className="mt-5 text-lg font-bold font-space-grotesk text-slate-900 dark:text-dk-text">{getCertificateName(certificate)}</h2>
+                  <p className="mt-2 text-sm font-medium text-slate-600 dark:text-dk-text-2">{getCourseTitle(certificate)}</p>
 
-                  <div className="mt-5 space-y-3 rounded-xl bg-slate-50 dark:bg-white/5 p-4">
-                    <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
+                  <div className="mt-5 space-y-3 rounded-xl bg-slate-50 dark:bg-dk-surface p-4">
+                    <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-dk-text-2">
                       <CalendarDays size={16} className="text-blue-600 dark:text-blue-300" />
                       <span>Issued {formatDate(certificate.issueDate || certificate.createdAt)}</span>
                     </div>
-                    <div className="flex items-start gap-3 text-sm text-slate-600 dark:text-slate-400">
+                    <div className="flex items-start gap-3 text-sm text-slate-600 dark:text-dk-text-2">
                       <BadgeCheck size={16} className="mt-0.5 text-emerald-600 dark:text-emerald-300" />
                       <span className="break-all">{certificate.verificationCode || certificate.certificateId || 'N/A'}</span>
                     </div>
@@ -310,7 +310,7 @@ const Certificates = () => {
                       <Eye size={14} />
                       View
                     </button>
-                    <button onClick={() => handleDownload(certificate)} className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-white/10 px-3 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-all hover:bg-slate-50 dark:hover:bg-white/5">
+                    <button onClick={() => handleDownload(certificate)} className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-dk-border px-3 py-2.5 text-xs font-semibold text-slate-700 dark:text-dk-text transition-all hover:bg-slate-50 dark:hover:bg-dk-surface-2">
                       <Download size={14} />
                       PDF
                     </button>
@@ -323,13 +323,13 @@ const Certificates = () => {
               ))}
             </div>
 
-            <div className="hidden xl:block rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
-              <div className="p-6 border-b border-slate-200 dark:border-white/10">
-                <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-white">Earned Certificates</h2>
+            <div className="hidden xl:block rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm overflow-hidden">
+              <div className="p-6 border-b border-slate-200 dark:border-dk-border">
+                <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Earned Certificates</h2>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
-                  <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 uppercase text-xs">
+                  <thead className="bg-slate-50 dark:bg-dk-surface-2/50 text-slate-500 uppercase text-xs">
                     <tr>
                       <th className="px-6 py-4">Certificate</th>
                       <th className="px-6 py-4">Course</th>
@@ -348,15 +348,15 @@ const Certificates = () => {
                               <Award size={22} />
                             </div>
                             <div>
-                              <h2 className="font-semibold text-slate-900 dark:text-white">{getCertificateName(certificate)}</h2>
-                              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">ID: {certificate.certificateId || 'N/A'}</p>
+                              <h2 className="font-semibold text-slate-900 dark:text-dk-text">{getCertificateName(certificate)}</h2>
+                              <p className="mt-1 text-xs text-slate-500 dark:text-dk-text-2">ID: {certificate.certificateId || 'N/A'}</p>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-5 text-slate-600 dark:text-slate-400">{getCourseTitle(certificate)}</td>
-                        <td className="px-6 py-5 text-slate-600 dark:text-slate-400">{formatDate(certificate.issueDate || certificate.createdAt)}</td>
+                        <td className="px-6 py-5 text-slate-600 dark:text-dk-text-2">{getCourseTitle(certificate)}</td>
+                        <td className="px-6 py-5 text-slate-600 dark:text-dk-text-2">{formatDate(certificate.issueDate || certificate.createdAt)}</td>
                         <td className="px-6 py-5">
-                          <span className="block max-w-[220px] truncate font-mono text-xs text-slate-600 dark:text-slate-400" title={certificate.verificationCode || certificate.certificateId || 'N/A'}>
+                          <span className="block max-w-[220px] truncate font-mono text-xs text-slate-600 dark:text-dk-text-2" title={certificate.verificationCode || certificate.certificateId || 'N/A'}>
                             {certificate.verificationCode || certificate.certificateId || 'N/A'}
                           </span>
                         </td>
@@ -370,7 +370,7 @@ const Certificates = () => {
                             <button onClick={() => handleView(certificate)} className="rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700">
                               View
                             </button>
-                            <button onClick={() => handleDownload(certificate)} className="rounded-xl border border-slate-200 dark:border-white/10 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-all hover:bg-slate-50 dark:hover:bg-white/5">
+                            <button onClick={() => handleDownload(certificate)} className="rounded-xl border border-slate-200 dark:border-dk-border px-4 py-2 text-xs font-semibold text-slate-700 dark:text-dk-text transition-all hover:bg-slate-50 dark:hover:bg-dk-surface-2">
                               Download PDF
                             </button>
                             <button onClick={() => handleVerify(certificate)} className="rounded-xl border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/20 px-4 py-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300 transition-all hover:bg-emerald-100 dark:hover:bg-emerald-950/40">

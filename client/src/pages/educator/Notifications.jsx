@@ -47,12 +47,12 @@ const EducatorNotifications = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50/50 dark:bg-dk-base py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 font-sans">Educator Notifications</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-dk-text font-sans">Educator Notifications</h1>
             <p className="text-sm text-gray-500 mt-1">
               Monitor course enrollments, assignment submissions, course approval/rejection status, reviews, and admin announcements.
             </p>
@@ -74,7 +74,7 @@ const EducatorNotifications = () => {
         </div>
 
         {/* Filters */}
-        <div className="border-b border-gray-200 mb-6 overflow-x-auto">
+        <div className="border-b border-gray-200 dark:border-dk-border mb-6 overflow-x-auto">
           <nav className="-mb-px flex space-x-6 min-w-max" aria-label="Tabs">
             {FILTER_TABS.map((tab) => (
               <button
@@ -94,7 +94,7 @@ const EducatorNotifications = () => {
         </div>
 
         {/* Notifications List */}
-        <div className="bg-white rounded-xl shadow-custom-card border border-gray-100 divide-y divide-gray-100 overflow-hidden">
+        <div className="bg-white dark:bg-dk-surface rounded-xl shadow-custom-card border border-gray-100 dark:border-dk-border divide-y divide-gray-100 dark:divide-dk-border overflow-hidden">
           {error && (
             <div className="p-6 text-center text-red-500">
               <p className="font-semibold">Error loading notifications</p>
@@ -165,7 +165,7 @@ const EducatorNotifications = () => {
           <div className="flex justify-center mt-6">
             <button
               onClick={loadMore}
-              className="px-6 py-2.5 border border-gray-200 rounded-full bg-white text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
+              className="px-6 py-2.5 border border-gray-200 rounded-full bg-white dark:bg-dk-surface text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
             >
               Load More
             </button>
@@ -177,3 +177,4 @@ const EducatorNotifications = () => {
 };
 
 export default EducatorNotifications;
+

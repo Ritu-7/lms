@@ -14,8 +14,8 @@ const Assignments = () => {
           <p className="mt-1 text-sm text-gray-500">Monitor assignments, deadlines, and course-level assessment workflows.</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <input className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm outline-none focus:border-blue-500" placeholder="Search assignments" aria-label="Search assignments" />
-          <select className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm outline-none focus:border-blue-500" aria-label="Filter assignments">
+          <input className="rounded-md border border-gray-300 bg-white dark:bg-dk-surface px-4 py-2 text-sm outline-none focus:border-blue-500" placeholder="Search assignments" aria-label="Search assignments" />
+          <select className="rounded-md border border-gray-300 bg-white dark:bg-dk-surface px-4 py-2 text-sm outline-none focus:border-blue-500" aria-label="Filter assignments">
             <option>All statuses</option>
             <option>Open</option>
             <option>Closed</option>
@@ -36,3 +36,4 @@ const Assignments = () => {
 }
 
 export default Assignments
+

@@ -20,7 +20,7 @@ const CallToAction = () => {
   }
 
   return (
-    <section className="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <section className="relative w-full py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
       {/* Background Gradient Blob */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-96 bg-blue-600/10 blur-[120px] rounded-full -z-10" />
       
@@ -30,11 +30,11 @@ const CallToAction = () => {
         viewport={{ once: true }}
         className="relative z-10 mx-auto max-w-4xl text-center space-y-8"
       >
-        <h2 className="text-3xl md:text-5xl font-bold font-space-grotesk text-slate-900 dark:text-white leading-tight">
+        <h2 className="text-3xl md:text-5xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text leading-tight">
           Ready to Elevate Your <span className="text-blue-600 dark:text-blue-400">Learning Experience?</span>
         </h2>
 
-        <p className="text-slate-500 dark:text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
+        <p className="text-slate-500 dark:text-dk-text-2 text-base md:text-lg max-w-2xl mx-auto">
           Access industry-ready courses, expert-led content, and smart learning tools — all in one powerful platform. Join thousands of learners today.
         </p>
 
@@ -47,7 +47,7 @@ const CallToAction = () => {
           </button>
 
           <Link
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 rounded-2xl text-slate-700 dark:text-slate-200 font-semibold border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-white/5 transition-all duration-200"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 rounded-2xl text-slate-700 dark:text-dk-text font-semibold border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface hover:bg-slate-50 dark:hover:bg-dk-surface-2 transition-all duration-200 shadow-sm"
             to="/course-list"
           >
             Explore Platform

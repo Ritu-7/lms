@@ -13,6 +13,7 @@ import AIToolsDropdown from './AIToolsDropdown'
 import ProfileDropdown from './ProfileDropdown'
 import MobileDrawer from './MobileDrawer'
 import Logo from '../common/Logo'
+import ThemeToggle from '../common/ThemeToggle'
 
 const NAV_LINKS = [
   { label: 'Home', path: '/' },
@@ -70,10 +71,10 @@ const GlobalNavbar = () => {
   return (
     <>
       <header
-        className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+        className={`sticky top-0 z-50 w-full border-b border-slate-200/50 dark:border-dk-border transition-all duration-300 ${
           scrolled
-            ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-[0_1px_0_0_rgba(0,0,0,0.06)] dark:shadow-[0_1px_0_0_rgba(255,255,255,0.06)]'
-            : 'bg-white/70 dark:bg-slate-900/70 backdrop-blur-md'
+            ? 'bg-white/80 dark:bg-dk-navbar backdrop-blur-xl shadow-[0_1px_0_0_rgba(0,0,0,0.06)]'
+            : 'bg-white/70 dark:bg-dk-navbar backdrop-blur-xl'
         }`}
       >
         <div className="mx-auto flex h-16 max-w-[1400px] items-center gap-3 px-4 sm:px-6 lg:px-8">
@@ -92,8 +93,8 @@ const GlobalNavbar = () => {
                   to={link.path}
                   className={`relative px-3.5 py-2 text-sm font-medium rounded-lg transition-colors duration-200 ${
                     active
-                      ? 'text-slate-900 dark:text-white'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/[0.06]'
+                      ? 'text-slate-900 dark:text-dk-text'
+                      : 'text-slate-600 dark:text-dk-muted hover:text-slate-900 dark:hover:text-dk-text hover:bg-slate-100/80 dark:hover:bg-dk-surface-2'
                   }`}
                 >
                   {link.label}
@@ -115,8 +116,8 @@ const GlobalNavbar = () => {
                 aria-expanded={categoriesOpen}
                 className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
                   categoriesOpen
-                    ? 'text-slate-900 dark:text-white bg-slate-100/80 dark:bg-white/[0.06]'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/[0.06]'
+                    ? 'text-slate-900 dark:text-dk-text bg-slate-100/80 dark:bg-dk-surface-2'
+                    : 'text-slate-600 dark:text-dk-muted hover:text-slate-900 dark:hover:text-dk-text hover:bg-slate-100/80 dark:hover:bg-dk-surface-2'
                 }`}
               >
                 Categories
@@ -143,8 +144,8 @@ const GlobalNavbar = () => {
                 aria-expanded={aiToolsOpen}
                 className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
                   aiToolsOpen
-                    ? 'text-slate-900 dark:text-white bg-slate-100/80 dark:bg-white/[0.06]'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/[0.06]'
+                    ? 'text-slate-900 dark:text-dk-text bg-slate-100/80 dark:bg-dk-surface-2'
+                    : 'text-slate-600 dark:text-dk-muted hover:text-slate-900 dark:hover:text-dk-text hover:bg-slate-100/80 dark:hover:bg-dk-surface-2'
                 }`}
               >
                 <span className="relative flex h-2 w-2">
@@ -176,8 +177,8 @@ const GlobalNavbar = () => {
                   to={link.path}
                   className={`relative px-3.5 py-2 text-sm font-medium rounded-lg transition-colors duration-200 ${
                     active
-                      ? 'text-slate-900 dark:text-white'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/[0.06]'
+                      ? 'text-slate-900 dark:text-dk-text'
+                      : 'text-slate-600 dark:text-dk-muted hover:text-slate-900 dark:hover:text-dk-text hover:bg-slate-100/80 dark:hover:bg-dk-surface-2'
                   }`}
                 >
                   {link.label}
@@ -199,13 +200,13 @@ const GlobalNavbar = () => {
           {/* ── Search ───────────────────────────────────────────── */}
           <button
             onClick={() => setSearchOpen(true)}
-            className="hidden sm:flex items-center gap-2 rounded-full border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-white/[0.04] px-4 py-2 text-sm text-slate-400 dark:text-slate-500 transition-colors duration-200 hover:border-blue-200 dark:hover:border-blue-900/60 hover:bg-white dark:hover:bg-white/[0.07] min-w-[180px] lg:min-w-[240px]"
+            className="hidden sm:flex items-center gap-2 rounded-full border border-slate-200 dark:border-dk-border bg-slate-50/80 dark:bg-dk-surface px-4 py-2 text-sm text-slate-400 dark:text-dk-text transition-colors duration-200 hover:border-blue-200 dark:hover:border-blue-900/60 hover:bg-white dark:bg-dk-surface dark:hover:bg-dk-surface-2 min-w-[180px] lg:min-w-[240px]"
           >
             <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
             </svg>
             <span className="flex-1 text-left">Search courses…</span>
-            <kbd className="hidden lg:inline-flex items-center gap-0.5 rounded-md border border-slate-300 dark:border-white/15 bg-white/60 dark:bg-white/5 px-1.5 py-0.5 text-[10px] font-mono text-slate-400 dark:text-slate-500">
+            <kbd className="hidden lg:inline-flex items-center gap-0.5 rounded-md border border-slate-300 dark:border-dk-border bg-white/60 dark:bg-dk-surface-2 px-1.5 py-0.5 text-[10px] font-mono text-slate-400 dark:text-dk-muted">
               ⌘K
             </kbd>
           </button>
@@ -219,21 +220,21 @@ const GlobalNavbar = () => {
                   {isAdmin ? (
                     <Link
                       to="/admin"
-                      className="text-sm font-medium px-3.5 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/[0.06] transition-colors duration-200"
+                      className="text-sm font-medium px-3.5 py-2 rounded-lg text-slate-600 dark:text-dk-muted hover:text-slate-900 dark:hover:text-dk-text hover:bg-slate-100/80 dark:hover:bg-dk-surface-2 transition-colors duration-200"
                     >
                       Admin Panel
                     </Link>
                   ) : isEducator ? (
                     <>
-                      <Link to="/educator/dashboard" className="text-sm font-medium px-3.5 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/[0.06] transition-colors duration-200">
+                      <Link to="/educator/dashboard" className="text-sm font-medium px-3.5 py-2 rounded-lg text-slate-600 dark:text-dk-muted hover:text-slate-900 dark:hover:text-dk-text hover:bg-slate-100/80 dark:hover:bg-dk-surface-2 transition-colors duration-200">
                         Dashboard
                       </Link>
-                      <Link to="/educator/add-course" className="text-sm font-medium px-3.5 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/[0.06] transition-colors duration-200">
+                      <Link to="/educator/add-course" className="text-sm font-medium px-3.5 py-2 rounded-lg text-slate-600 dark:text-dk-muted hover:text-slate-900 dark:hover:text-dk-text hover:bg-slate-100/80 dark:hover:bg-dk-surface-2 transition-colors duration-200">
                         Create Course
                       </Link>
                     </>
                   ) : (
-                    <Link to="/my-enrollments" className="text-sm font-medium px-3.5 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/[0.06] transition-colors duration-200">
+                    <Link to="/my-enrollments" className="text-sm font-medium px-3.5 py-2 rounded-lg text-slate-600 dark:text-dk-muted hover:text-slate-900 dark:hover:text-dk-text hover:bg-slate-100/80 dark:hover:bg-dk-surface-2 transition-colors duration-200">
                       My Learning
                     </Link>
                   )}
@@ -262,17 +263,20 @@ const GlobalNavbar = () => {
             {/* Mobile search icon */}
             <button
               onClick={() => setSearchOpen(true)}
-              className="sm:hidden flex items-center justify-center h-9 w-9 rounded-xl border border-slate-200 dark:border-white/10 text-slate-500 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors duration-200"
+              className="sm:hidden flex items-center justify-center h-9 w-9 rounded-xl border border-slate-200 dark:border-dk-border text-slate-500 hover:bg-slate-100 dark:hover:bg-dk-surface-2 transition-colors duration-200"
             >
               <svg className="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
               </svg>
             </button>
 
+            {/* Theme Toggle */}
+            <ThemeToggle variant="icon" />
+
             {/* Mobile hamburger */}
             <button
               onClick={() => setDrawerOpen(true)}
-              className="lg:hidden flex items-center justify-center h-9 w-9 rounded-xl border border-slate-200 dark:border-white/10 text-slate-500 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors duration-200"
+              className="lg:hidden flex items-center justify-center h-9 w-9 rounded-xl border border-slate-200 dark:border-dk-border text-slate-500 hover:bg-slate-100 dark:hover:bg-dk-surface-2 transition-colors duration-200"
               aria-label="Open menu"
             >
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -283,7 +287,7 @@ const GlobalNavbar = () => {
         </div>
 
         {/* Active route indicator bar */}
-        <div className="h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-white/10 to-transparent" />
+        <div className="h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-dk-border to-transparent" />
       </header>
 
       {/* ── Global Search Overlay ─────────────────────────────── */}

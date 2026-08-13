@@ -8,7 +8,7 @@ const AdminTopbar = () => {
   const { user } = useUser()
 
   return (
-    <header className="flex items-center justify-between border-b border-gray-200 px-4 py-3 md:px-8 bg-white">
+    <header className="flex items-center justify-between border-b border-gray-200 px-4 py-3 md:px-8 bg-white dark:bg-dk-surface">
       <Link to="/admin" className="flex items-center gap-3">
         <img src={assets.logo} alt="Logo" className="w-28 lg:w-32" />
         <span className="hidden rounded-full border border-gray-200 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 md:inline-flex">
@@ -32,3 +32,4 @@ const AdminTopbar = () => {
 }
 
 export default AdminTopbar
+

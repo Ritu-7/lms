@@ -179,8 +179,8 @@ const LessonEditorModal = ({ open, mode = "add", initialLesson, fallbackOrder = 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-3xl rounded-2xl bg-white shadow-2xl">
-        <div className="flex items-center justify-between border-b px-5 py-4">
+      <div className="w-full max-w-3xl rounded-2xl bg-white dark:bg-dk-surface shadow-2xl dark:border dark:border-dk-border">
+        <div className="flex items-center justify-between border-b dark:border-dk-border px-5 py-4">
           <div>
             <h2 className="text-lg font-semibold text-gray-900">
               {mode === "edit" ? "Edit Lesson" : "Add Lesson"}
@@ -247,7 +247,7 @@ const LessonEditorModal = ({ open, mode = "add", initialLesson, fallbackOrder = 
             </label>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4 rounded-xl bg-gray-50 p-4">
+          <div className="flex flex-wrap items-center gap-4 rounded-xl bg-gray-50 dark:bg-dk-base p-4">
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
               <input
                 type="checkbox"
@@ -332,7 +332,7 @@ const LessonEditorModal = ({ open, mode = "add", initialLesson, fallbackOrder = 
               <span className="text-sm font-medium text-gray-700">Rich text content</span>
               <span className="text-xs text-gray-500">Use this for notes, instructions, or embedded HTML.</span>
             </div>
-            <div ref={editorRef} className="min-h-40 rounded-lg border border-gray-300 bg-white" />
+            <div ref={editorRef} className="min-h-40 rounded-lg border border-gray-300 bg-white dark:bg-dk-surface" />
           </div>
 
           <label className="space-y-2">
@@ -351,7 +351,7 @@ const LessonEditorModal = ({ open, mode = "add", initialLesson, fallbackOrder = 
             />
           </label>
 
-          <div className="space-y-3 rounded-xl border border-gray-200 p-4">
+          <div className="space-y-3 rounded-xl border border-gray-200 dark:border-dk-border dark:bg-dk-surface p-4">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-semibold text-gray-800">Attachments</h3>
               <span className="text-xs text-gray-500">Upload PDFs, docs, slides, or supporting files.</span>

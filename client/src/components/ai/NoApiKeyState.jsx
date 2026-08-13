@@ -32,10 +32,10 @@ const NoApiKeyState = () => {
         transition={{ delay: 0.12, duration: 0.4 }}
         className="mb-8 max-w-md"
       >
-        <h2 className="text-2xl font-bold font-space-grotesk text-slate-900 dark:text-white mb-3">
+        <h2 className="text-2xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text mb-3">
           AI Features are Locked
         </h2>
-        <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">
+        <p className="text-slate-500 dark:text-dk-text-2 text-sm leading-relaxed mb-6">
           LearnSphereAI allows you to bring your own Gemini API key to unlock powerful AI capabilities. It's secure, private, and gives you full control.
         </p>
 
@@ -52,7 +52,7 @@ const NoApiKeyState = () => {
             href="https://aistudio.google.com/app/apikey"
             target="_blank"
             rel="noreferrer"
-            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-6 py-3 text-sm font-semibold transition-colors"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-slate-100 dark:bg-dk-surface-2 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-dk-text-2 px-6 py-3 text-sm font-semibold transition-colors"
           >
             Get API Key
             <ExternalLink size={16} />

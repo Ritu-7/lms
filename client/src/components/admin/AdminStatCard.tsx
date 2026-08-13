@@ -7,7 +7,7 @@ interface AdminStatCardProps {
 
 const AdminStatCard = ({ label, value, helper, icon }: AdminStatCardProps) => {
   return (
-    <div className="flex items-center gap-4 rounded-md border border-gray-500/20 bg-white p-6 shadow-sm">
+    <div className="flex items-center gap-4 rounded-md border border-gray-500/20 bg-white dark:bg-dk-surface p-6 shadow-sm">
       <img src={icon} alt="" className="w-12 shrink-0" />
       <div>
         <p className="text-2xl font-bold text-gray-800">{value}</p>
@@ -19,3 +19,4 @@ const AdminStatCard = ({ label, value, helper, icon }: AdminStatCardProps) => {
 }
 
 export default AdminStatCard
+

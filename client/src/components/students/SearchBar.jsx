@@ -22,7 +22,7 @@ const SearchBar = ({ data }) => {
     >
       <form
         onSubmit={onSearchHandler}
-        className="group flex items-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-1.5 shadow-xl shadow-slate-200/50 dark:shadow-none transition-all duration-300 focus-within:border-blue-400 dark:focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10"
+        className="group flex items-center bg-white dark:bg-dk-surface border border-slate-200 dark:border-dk-border rounded-2xl p-1.5 shadow-xl shadow-slate-200/50 dark:shadow-none transition-all duration-300 focus-within:border-blue-400 dark:focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10"
       >
         <div className="flex items-center justify-center pl-4 text-slate-400 group-focus-within:text-blue-500 transition-colors">
           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -35,7 +35,7 @@ const SearchBar = ({ data }) => {
           value={input}
           type="text"
           placeholder="Search for courses, skills, or mentors..."
-          className="flex-1 bg-transparent border-none outline-none px-4 py-3 text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm sm:text-base"
+          className="flex-1 bg-transparent border-none outline-none px-4 py-3 text-slate-700 dark:text-dk-text placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm sm:text-base"
         />
 
         <button

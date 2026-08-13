@@ -14,8 +14,8 @@ const Enrollments = () => {
           <p className="mt-1 text-sm text-gray-500">Track learner purchases, enrollment states, and access status.</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <input className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm outline-none focus:border-blue-500" placeholder="Search enrollments" aria-label="Search enrollments" />
-          <select className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm outline-none focus:border-blue-500" aria-label="Filter enrollments">
+          <input className="rounded-md border border-gray-300 bg-white dark:bg-dk-surface px-4 py-2 text-sm outline-none focus:border-blue-500" placeholder="Search enrollments" aria-label="Search enrollments" />
+          <select className="rounded-md border border-gray-300 bg-white dark:bg-dk-surface px-4 py-2 text-sm outline-none focus:border-blue-500" aria-label="Filter enrollments">
             <option>All statuses</option>
             <option>Paid</option>
             <option>Pending</option>
@@ -36,3 +36,4 @@ const Enrollments = () => {
 }
 
 export default Enrollments
+

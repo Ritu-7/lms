@@ -19,18 +19,18 @@ const CourseList = () => {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-slate-50 dark:bg-dk-base">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
           <div>
-            <h1 className="text-4xl font-bold font-space-grotesk text-slate-900 dark:text-white">
+            <h1 className="text-4xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">
               Course Catalog
             </h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-2">
+            <p className="text-slate-500 dark:text-dk-text-2 mt-2">
               <span className="cursor-pointer hover:text-blue-600 transition-colors" onClick={() => navigate("/")}>Home</span>
               <span className="mx-2">/</span>
-              <span className="text-slate-900 dark:text-slate-200">Catalog</span>
+              <span className="text-slate-900 dark:text-dk-text">Catalog</span>
             </p>
           </div>
 
@@ -72,7 +72,7 @@ const CourseList = () => {
               </motion.div>
             ))
           ) : (
-            <div className="col-span-full py-20 text-center text-slate-500 dark:text-slate-400">
+            <div className="col-span-full py-20 text-center text-slate-500 dark:text-dk-text-2">
               <p>No courses found matching your search.</p>
               <button 
                 onClick={() => navigate("/course-list")}

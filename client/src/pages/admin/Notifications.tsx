@@ -127,19 +127,19 @@ const AdminNotifications = () => {
 
       {/* Analytics widgets */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm flex flex-col">
+        <div className="bg-white dark:bg-dk-surface p-5 rounded-lg border border-gray-200 shadow-sm flex flex-col">
           <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Sent</span>
           <span className="text-2xl font-bold text-gray-800 mt-2">
             {loadingAnalytics ? '...' : analytics?.totalCount || 0}
           </span>
         </div>
-        <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm flex flex-col">
+        <div className="bg-white dark:bg-dk-surface p-5 rounded-lg border border-gray-200 shadow-sm flex flex-col">
           <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Unread Alerts</span>
           <span className="text-2xl font-bold text-blue-600 mt-2">
             {loadingAnalytics ? '...' : analytics?.unreadCount || 0}
           </span>
         </div>
-        <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm flex flex-col">
+        <div className="bg-white dark:bg-dk-surface p-5 rounded-lg border border-gray-200 shadow-sm flex flex-col">
           <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">High Priority</span>
           <span className="text-2xl font-bold text-red-500 mt-2">
             {loadingAnalytics
@@ -147,7 +147,7 @@ const AdminNotifications = () => {
               : analytics?.byPriority?.find((p) => p._id === 'high')?.count || 0}
           </span>
         </div>
-        <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm flex flex-col">
+        <div className="bg-white dark:bg-dk-surface p-5 rounded-lg border border-gray-200 shadow-sm flex flex-col">
           <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Broadcast Target</span>
           <span className="text-2xl font-bold text-green-600 mt-2">
             {loadingAnalytics
@@ -192,7 +192,7 @@ const AdminNotifications = () => {
                   <select
                     value={recipientRole}
                     onChange={(e) => setRecipientRole(e.target.value)}
-                    className="w-full text-sm border border-gray-300 rounded px-3 py-2 bg-white"
+                    className="w-full text-sm border border-gray-300 rounded px-3 py-2 bg-white dark:bg-dk-surface"
                   >
                     <option value="all">All Users</option>
                     <option value="student">Students</option>
@@ -206,7 +206,7 @@ const AdminNotifications = () => {
                   <select
                     value={type}
                     onChange={(e) => setType(e.target.value)}
-                    className="w-full text-sm border border-gray-300 rounded px-3 py-2 bg-white"
+                    className="w-full text-sm border border-gray-300 rounded px-3 py-2 bg-white dark:bg-dk-surface"
                   >
                     <option value="announcement">Announcement</option>
                     <option value="course">Course</option>
@@ -224,7 +224,7 @@ const AdminNotifications = () => {
                   <select
                     value={priority}
                     onChange={(e) => setPriority(e.target.value)}
-                    className="w-full text-sm border border-gray-300 rounded px-3 py-2 bg-white"
+                    className="w-full text-sm border border-gray-300 rounded px-3 py-2 bg-white dark:bg-dk-surface"
                   >
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
@@ -271,3 +271,4 @@ const AdminNotifications = () => {
 }
 
 export default AdminNotifications
+

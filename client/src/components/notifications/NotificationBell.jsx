@@ -68,7 +68,7 @@ const NotificationBell = () => {
       {/* Bell button */}
       <button
         onClick={toggleDropdown}
-        className="relative p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
+        className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-dk-surface-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
         aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}
       >
         <svg
@@ -77,7 +77,7 @@ const NotificationBell = () => {
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="w-6 h-6 text-gray-600"
+          className="w-6 h-6 text-gray-600 dark:text-dk-text-2"
         >
           <path
             strokeLinecap="round"

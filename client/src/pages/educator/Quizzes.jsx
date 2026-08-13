@@ -302,21 +302,21 @@ const Quizzes = () => {
   if (loading && !quizzes.length) return <Loading />;
 
   return (
-    <div className="min-h-screen bg-gray-50/30 p-4 md:p-8 space-y-8">
+    <div className="min-h-screen bg-gray-50/30 dark:bg-dk-base p-4 md:p-8 space-y-8 dark:text-dk-text">
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-gray-800">Quizzes</h1>
           <p className="mt-1 text-sm text-gray-500">Build timed quizzes, score objective questions instantly, and review attempts.</p>
         </div>
         <div className="flex flex-wrap gap-2 text-sm">
-          <span className="rounded-full bg-white px-3 py-1 border">{quizzes.length} quizzes</span>
-          <span className="rounded-full bg-white px-3 py-1 border">{attempts.length} attempts</span>
+          <span className="rounded-full bg-white dark:bg-dk-surface px-3 py-1 border">{quizzes.length} quizzes</span>
+          <span className="rounded-full bg-white dark:bg-dk-surface px-3 py-1 border">{attempts.length} attempts</span>
           <button onClick={resetForm} className="rounded-full bg-blue-600 px-4 py-1.5 text-white font-medium">New Quiz</button>
         </div>
       </div>
 
       <form onSubmit={saveQuiz} className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <div className="rounded-2xl border bg-white p-5 shadow-sm space-y-4">
+        <div className="rounded-2xl border dark:border-dk-border bg-white dark:bg-dk-surface p-5 shadow-sm space-y-4">
           <h2 className="text-lg font-semibold text-gray-900">{editingId ? "Edit quiz" : "Create quiz"}</h2>
           <div className="grid gap-4 md:grid-cols-2">
             <label className="space-y-2 md:col-span-2">
@@ -385,7 +385,7 @@ const Quizzes = () => {
             </div>
 
             {draft.questions.map((question, questionIndex) => (
-              <div key={question.questionId || questionIndex} className="rounded-xl border bg-white p-4 space-y-4">
+              <div key={question.questionId || questionIndex} className="rounded-xl border bg-white dark:bg-dk-surface p-4 space-y-4">
                 <div className="grid gap-3 md:grid-cols-[1fr_180px_120px]">
                   <input value={question.prompt} onChange={(e) => updateQuestion(questionIndex, "prompt", e.target.value)} placeholder={`Question ${questionIndex + 1}`} className="rounded-lg border px-3 py-2 outline-none focus:border-blue-500 md:col-span-1" />
                   <select value={question.questionType} onChange={(e) => updateQuestion(questionIndex, "questionType", e.target.value)} className="rounded-lg border px-3 py-2 outline-none focus:border-blue-500">
@@ -431,7 +431,7 @@ const Quizzes = () => {
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-2xl border bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border dark:border-dk-border bg-white dark:bg-dk-surface p-5 shadow-sm">
             <h2 className="text-lg font-semibold text-gray-900">Quiz details</h2>
             {selectedQuiz ? (
               <div className="mt-4 space-y-3 text-sm text-gray-600">
@@ -447,7 +447,7 @@ const Quizzes = () => {
             ) : <p className="mt-3 text-sm text-gray-500">Select a quiz to review attempts.</p>}
           </div>
 
-          <div className="rounded-2xl border bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border dark:border-dk-border bg-white dark:bg-dk-surface p-5 shadow-sm">
             <h2 className="text-lg font-semibold text-gray-900">Attempts</h2>
             <div className="mt-4 space-y-3">
               {attempts.length > 0 ? attempts.map((attempt) => (
@@ -480,7 +480,7 @@ const Quizzes = () => {
         </div>
       </form>
 
-      <div className="rounded-2xl border bg-white shadow-sm overflow-hidden">
+      <div className="rounded-2xl border dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm overflow-hidden">
         <table className="w-full text-left text-sm">
           <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
             <tr>
@@ -518,3 +518,4 @@ const Quizzes = () => {
 };
 
 export default Quizzes;
+

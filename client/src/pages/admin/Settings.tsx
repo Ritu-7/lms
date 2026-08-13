@@ -15,7 +15,7 @@ const Settings = () => {
       <AdminSection title="Configuration" description="Core platform settings across the admin console.">
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {adminOverview.settingsSections.map((section) => (
-            <div key={section} className="rounded-md border border-gray-500/20 bg-white p-5 shadow-sm">
+            <div key={section} className="rounded-md border border-gray-500/20 bg-white dark:bg-dk-surface p-5 shadow-sm">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-base font-semibold text-gray-800">{section}</h2>
                 <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">Manage</span>
@@ -36,3 +36,4 @@ const Settings = () => {
 }
 
 export default Settings
+

@@ -135,14 +135,14 @@ const Player = () => {
         <iframe
           src={lesson.lessonPdfUrl || lessonUrl}
           title={lesson.lectureTitle || lesson.lessonTitle}
-          className="w-full aspect-video bg-white"
+          className="w-full aspect-video bg-white dark:bg-dk-surface"
         />
       );
     }
 
     if (lessonType === "rich_text") {
       return (
-        <div className="w-full aspect-video overflow-auto bg-white p-5 text-left">
+        <div className="w-full aspect-video overflow-auto bg-white dark:bg-dk-surface p-5 text-left">
           <div
             className="prose prose-sm max-w-none text-gray-700"
             dangerouslySetInnerHTML={{ __html: lesson.lectureRichTextContent || lesson.lessonRichTextContent || "" }}
@@ -153,7 +153,7 @@ const Player = () => {
 
     if (lessonType === "external_link") {
       return (
-        <div className="w-full aspect-video bg-white p-6 flex flex-col items-start justify-center gap-4">
+        <div className="w-full aspect-video bg-white dark:bg-dk-surface p-6 flex flex-col items-start justify-center gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-blue-600">External Resource</p>
             <h3 className="mt-2 text-xl font-semibold text-gray-900">{lesson.lectureTitle || lesson.lessonTitle}</h3>
@@ -175,7 +175,7 @@ const Player = () => {
 
     if (lessonType === "quiz" || lessonType === "assignment") {
       return (
-        <div className="w-full aspect-video bg-white p-6 flex flex-col items-start justify-center gap-4">
+        <div className="w-full aspect-video bg-white dark:bg-dk-surface p-6 flex flex-col items-start justify-center gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-blue-600">
               {lessonType === "quiz" ? "Quiz" : "Assignment"}
@@ -229,7 +229,7 @@ const Player = () => {
             href={lessonUrl}
             target="_blank"
             rel="noreferrer"
-            className="rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-gray-900"
+            className="rounded-full bg-white dark:bg-dk-surface px-5 py-2.5 text-sm font-semibold text-gray-900"
           >
             Open Resource
           </a>
@@ -500,7 +500,7 @@ const Player = () => {
   if (!courseData) return null;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-slate-50 dark:bg-dk-base">
       <div className="flex flex-col xl:flex-row gap-6 max-w-[1700px] mx-auto p-4 sm:p-6 lg:p-8">
         {/* Main Content (Player) */}
         <div className="flex-1 space-y-6">
@@ -509,12 +509,12 @@ const Player = () => {
           </div>
           
           {playerData && isEnrolled && (
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="bg-white dark:bg-dk-surface border border-slate-200 dark:border-dk-border rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
               <div>
                 <p className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest">
                   Chapter {playerData.chapter} • Lesson {playerData.lecture} • {getLessonType(playerData).replace("_", " ")}
                 </p>
-                <h1 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-white mt-1">{playerData.lectureTitle}</h1>
+                <h1 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text mt-1">{playerData.lectureTitle}</h1>
               </div>
               <button
                 onClick={() => markLectureAsCompleted(playerData.lectureId)}
@@ -534,13 +534,13 @@ const Player = () => {
 
           {/* Sidebar Structure */}
         <div className="w-full xl:w-[400px] flex flex-col gap-6">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm overflow-hidden">
-            <h2 className="text-lg font-bold font-space-grotesk text-slate-900 dark:text-white mb-6">Course Content</h2>
+          <div className="bg-white dark:bg-dk-surface border border-slate-200 dark:border-dk-border rounded-2xl p-6 shadow-sm overflow-hidden">
+            <h2 className="text-lg font-bold font-space-grotesk text-slate-900 dark:text-dk-text mb-6">Course Content</h2>
             <div className="space-y-4">
               {courseChapters.map((chapter, index) => (
-                <div key={index} className="border border-slate-200 dark:border-white/10 rounded-xl overflow-hidden">
-                  <button onClick={() => toggleSection(index)} className="flex w-full justify-between items-center p-4 text-left bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                    <p className="font-semibold text-sm text-slate-900 dark:text-white">{chapter.chapterTitle}</p>
+                <div key={index} className="border border-slate-200 dark:border-dk-border rounded-xl overflow-hidden">
+                  <button onClick={() => toggleSection(index)} className="flex w-full justify-between items-center p-4 text-left bg-slate-50 dark:bg-dk-surface-2 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                    <p className="font-semibold text-sm text-slate-900 dark:text-dk-text">{chapter.chapterTitle}</p>
                     <ChevronDown size={16} className="text-slate-400" />
                   </button>
                   <AnimatePresence>
@@ -549,13 +549,13 @@ const Player = () => {
                         initial={{ height: 0 }}
                         animate={{ height: 'auto' }}
                         exit={{ height: 0 }}
-                        className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-white/10 p-4 space-y-2"
+                        className="bg-white dark:bg-dk-surface border-t border-slate-200 dark:border-dk-border p-4 space-y-2"
                       >
                         {chapter.chapterContent.map((lecture, i) => (
                           <li key={i} className="flex justify-between items-center text-sm">
                             <div className="flex items-center gap-2">
                               {isLessonCompleted(lecture.lectureId) ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> : <PlayCircle className="w-4 h-4 text-slate-400" />}
-                              <p className="text-slate-600 dark:text-slate-400">{lecture.lectureTitle}</p>
+                              <p className="text-slate-600 dark:text-dk-text-2">{lecture.lectureTitle}</p>
                             </div>
                             <button
                               onClick={() => setPlayerData({ ...lecture, chapter: index + 1, lecture: i + 1 })}
@@ -575,21 +575,21 @@ const Player = () => {
 
           {/* Library and Rating tools */}
           {playerData && isEnrolled && (
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
+            <div className="bg-white dark:bg-dk-surface border border-slate-200 dark:border-dk-border rounded-2xl p-6 shadow-sm">
               <h3 className="font-bold font-space-grotesk text-lg mb-4">Study Tools</h3>
               <div className="flex gap-2 mb-6">
-                <button onClick={() => setActiveLibraryTab("bookmarks")} className={`flex-1 text-sm font-semibold py-2 rounded-lg ${activeLibraryTab === "bookmarks" ? "bg-blue-600 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"}`}>Bookmarks</button>
-                <button onClick={() => setActiveLibraryTab("notes")} className={`flex-1 text-sm font-semibold py-2 rounded-lg ${activeLibraryTab === "notes" ? "bg-blue-600 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"}`}>Notes</button>
+                <button onClick={() => setActiveLibraryTab("bookmarks")} className={`flex-1 text-sm font-semibold py-2 rounded-lg ${activeLibraryTab === "bookmarks" ? "bg-blue-600 text-white" : "bg-slate-100 dark:bg-dk-surface-2 text-slate-600 dark:text-dk-text-2"}`}>Bookmarks</button>
+                <button onClick={() => setActiveLibraryTab("notes")} className={`flex-1 text-sm font-semibold py-2 rounded-lg ${activeLibraryTab === "notes" ? "bg-blue-600 text-white" : "bg-slate-100 dark:bg-dk-surface-2 text-slate-600 dark:text-dk-text-2"}`}>Notes</button>
               </div>
 
               {activeLibraryTab === "bookmarks" ? (
                 <div className="space-y-4">
-                  <input value={bookmarkPositionLabel} onChange={(e) => setBookmarkPositionLabel(e.target.value)} className="w-full rounded-xl border p-3 text-sm bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-white/10" placeholder="Bookmark label" />
-                  <textarea value={bookmarkNote} onChange={(e) => setBookmarkNote(e.target.value)} className="w-full rounded-xl border p-3 text-sm bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-white/10" placeholder="Bookmark note" />
+                  <input value={bookmarkPositionLabel} onChange={(e) => setBookmarkPositionLabel(e.target.value)} className="w-full rounded-xl border p-3 text-sm bg-slate-50 dark:bg-dk-surface-2 border-slate-200 dark:border-dk-border" placeholder="Bookmark label" />
+                  <textarea value={bookmarkNote} onChange={(e) => setBookmarkNote(e.target.value)} className="w-full rounded-xl border p-3 text-sm bg-slate-50 dark:bg-dk-surface-2 border-slate-200 dark:border-dk-border" placeholder="Bookmark note" />
                   <button onClick={saveBookmark} disabled={bookmarkSaving} className="w-full bg-blue-600 text-white py-2 rounded-xl text-sm font-semibold hover:bg-blue-700">Save Bookmark</button>
                 </div>
               ) : (
-                <textarea rows="6" value={noteText} onChange={(e) => setNoteText(e.target.value)} className="w-full rounded-xl border p-3 text-sm bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-white/10" placeholder="Private note..." />
+                <textarea rows="6" value={noteText} onChange={(e) => setNoteText(e.target.value)} className="w-full rounded-xl border p-3 text-sm bg-slate-50 dark:bg-dk-surface-2 border-slate-200 dark:border-dk-border" placeholder="Private note..." />
               )}
             </div>
           )}
@@ -601,3 +601,4 @@ const Player = () => {
 };
 
 export default Player;
+

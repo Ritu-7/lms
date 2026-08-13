@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import ThemeToggle from '../common/ThemeToggle'
 
 const CollapseSection = ({ id, title, children, toggle, expandedSection }) => (
-  <div className="border-b border-slate-100 dark:border-white/5">
+  <div className="border-b border-slate-100 dark:border-dk-border">
     <button
       onClick={() => toggle(id)}
-      className="flex items-center justify-between w-full py-3.5 px-4 text-sm font-medium text-slate-700 dark:text-slate-200"
+      className="flex items-center justify-between w-full py-3.5 px-4 text-sm font-medium text-slate-700 dark:text-dk-text"
     >
       {title}
       <motion.svg
@@ -98,28 +99,28 @@ const MobileDrawer = ({ onClose, user, isEducator, isAdmin, openAuth, signOut })
         animate={{ x: 0 }}
         exit={{ x: '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="fixed right-0 top-0 z-50 h-full w-full max-w-sm bg-white dark:bg-slate-900 shadow-2xl flex flex-col overflow-hidden"
+        className="fixed right-0 top-0 z-50 h-full w-full max-w-sm bg-white dark:bg-dk-surface shadow-2xl flex flex-col overflow-hidden"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-4 border-b border-slate-100 dark:border-white/5">
+        <div className="flex items-center justify-between px-4 py-4 border-b border-slate-100 dark:border-dk-border">
           {user ? (
             <div className="flex items-center gap-3">
               <img src={user.imageUrl} alt="" className="h-9 w-9 rounded-xl object-cover" />
               <div>
-                <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-tight">
+                <p className="text-sm font-semibold text-slate-800 dark:text-dk-text leading-tight">
                   {user.fullName || user.firstName || 'User'}
                 </p>
-                <p className="text-xs text-slate-400 dark:text-slate-500">
+                <p className="text-xs text-slate-400 dark:text-dk-muted">
                   {isAdmin ? 'Administrator' : isEducator ? 'Instructor' : 'Student'}
                 </p>
               </div>
             </div>
           ) : (
-            <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">Menu</p>
+            <p className="text-sm font-semibold text-slate-800 dark:text-dk-text">Menu</p>
           )}
           <button
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 dark:border-white/10 text-slate-500 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 dark:border-dk-border text-slate-500 hover:bg-slate-100 dark:hover:bg-dk-surface-2 transition-colors"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -141,7 +142,7 @@ const MobileDrawer = ({ onClose, user, isEducator, isAdmin, openAuth, signOut })
                 key={href}
                 to={href}
                 onClick={onClose}
-                className="flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                className="flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-slate-700 dark:text-dk-text hover:bg-slate-50 dark:hover:bg-dk-surface-2 transition-colors"
               >
                 {label}
               </Link>
@@ -156,7 +157,7 @@ const MobileDrawer = ({ onClose, user, isEducator, isAdmin, openAuth, signOut })
                   key={cat}
                   to={`/course-list/${encodeURIComponent(cat.toLowerCase())}`}
                   onClick={onClose}
-                  className="flex items-center rounded-xl px-4 py-2.5 text-sm text-slate-500 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-950/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  className="flex items-center rounded-xl px-4 py-2.5 text-sm text-slate-500 dark:text-dk-muted hover:bg-blue-50 dark:hover:bg-blue-950/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
                   {cat}
                 </Link>
@@ -171,7 +172,7 @@ const MobileDrawer = ({ onClose, user, isEducator, isAdmin, openAuth, signOut })
                   key={tool.href}
                   to={tool.href}
                   onClick={onClose}
-                  className="flex items-center rounded-xl px-4 py-2.5 text-sm text-slate-500 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-950/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  className="flex items-center rounded-xl px-4 py-2.5 text-sm text-slate-500 dark:text-dk-muted hover:bg-blue-50 dark:hover:bg-blue-950/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
                   {tool.label}
                 </Link>
@@ -188,7 +189,7 @@ const MobileDrawer = ({ onClose, user, isEducator, isAdmin, openAuth, signOut })
     key={`${link.href}-${index}`}
     to={link.href}
     onClick={onClose}
-    className="flex items-center rounded-xl px-4 py-2.5 text-sm text-slate-500 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-950/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+    className="flex items-center rounded-xl px-4 py-2.5 text-sm text-slate-500 dark:text-dk-text-2 hover:bg-blue-50 dark:hover:bg-blue-950/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
   >
     {link.label}
   </Link>
@@ -199,7 +200,10 @@ const MobileDrawer = ({ onClose, user, isEducator, isAdmin, openAuth, signOut })
         </div>
 
         {/* Footer actions */}
-        <div className="border-t border-slate-100 dark:border-white/5 p-4 space-y-2">
+        <div className="border-t border-slate-100 dark:border-dk-border p-4 space-y-2">
+          {/* Theme toggle — always visible */}
+          <ThemeToggle variant="row" />
+
           {user ? (
             <button
               onClick={handleSignOut}
@@ -214,7 +218,7 @@ const MobileDrawer = ({ onClose, user, isEducator, isAdmin, openAuth, signOut })
             <>
               <button
                 onClick={() => { onClose(); openAuth('student') }}
-                className="flex w-full items-center justify-center rounded-xl border border-slate-200 dark:border-white/10 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                className="flex w-full items-center justify-center rounded-xl border border-slate-200 dark:border-dk-border py-2.5 text-sm font-medium text-slate-700 dark:text-dk-text hover:bg-slate-50 dark:hover:bg-dk-surface-2 transition-colors"
               >
                 Login
               </button>

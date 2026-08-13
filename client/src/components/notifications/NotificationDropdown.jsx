@@ -5,11 +5,11 @@ import NotificationItem from "./NotificationItem";
 // ── Loading skeleton ─────────────────────────────────────────────────────────
 const SkeletonRow = () => (
   <div className="flex items-start gap-3 p-3 animate-pulse">
-    <div className="w-8 h-8 bg-gray-200 rounded-full flex-shrink-0" />
+    <div className="w-8 h-8 bg-gray-200 dark:bg-dk-surface-2 rounded-full flex-shrink-0" />
     <div className="flex-1 space-y-2">
-      <div className="h-3 bg-gray-200 rounded w-3/4" />
-      <div className="h-2.5 bg-gray-200 rounded w-full" />
-      <div className="h-2 bg-gray-200 rounded w-1/4" />
+      <div className="h-3 bg-gray-200 dark:bg-dk-surface-2 rounded w-3/4" />
+      <div className="h-2.5 bg-gray-200 dark:bg-dk-surface-2 rounded w-full" />
+      <div className="h-2 bg-gray-200 dark:bg-dk-surface-2 rounded w-1/4" />
     </div>
   </div>
 );
@@ -34,16 +34,16 @@ const NotificationDropdown = ({
 
   return (
     <div
-      className="absolute right-0 top-full mt-2 w-[380px] max-h-[480px] bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden
+      className="absolute right-0 top-full mt-2 w-[380px] max-h-[480px] bg-white dark:bg-dk-surface rounded-xl shadow-xl border border-gray-200 dark:border-dk-border z-50 overflow-hidden
         transform transition-all duration-200 origin-top-right animate-in"
       style={{ animationName: "dropdown-enter", animationDuration: "200ms" }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-dk-border-2">
         <div className="flex items-center gap-2">
-          <h3 className="text-base font-semibold text-gray-800">Notifications</h3>
+          <h3 className="text-base font-semibold text-gray-800 dark:text-dk-text">Notifications</h3>
           {unreadCount > 0 && (
-            <span className="bg-blue-100 text-blue-700 text-[11px] font-semibold px-2 py-0.5 rounded-full">
+            <span className="bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 text-[11px] font-semibold px-2 py-0.5 rounded-full">
               {unreadCount > 99 ? "99+" : unreadCount} new
             </span>
           )}
@@ -51,14 +51,14 @@ const NotificationDropdown = ({
         <button
           onClick={onMarkAllRead}
           disabled={unreadCount === 0}
-          className="text-xs text-blue-600 hover:text-blue-700 font-medium disabled:text-gray-300 disabled:cursor-not-allowed transition-colors"
+          className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium disabled:text-gray-300 dark:disabled:text-dk-text-3 disabled:cursor-not-allowed transition-colors"
         >
           Mark all read
         </button>
       </div>
 
       {/* Body */}
-      <div className="overflow-y-auto max-h-[360px] divide-y divide-gray-50">
+      <div className="overflow-y-auto max-h-[360px] divide-y divide-gray-50 dark:divide-dk-border-2">
         {isLoading && notifications.length === 0 ? (
           <>
             <SkeletonRow />
@@ -67,14 +67,14 @@ const NotificationDropdown = ({
           </>
         ) : displayItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-10 px-4">
-            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+            <div className="w-12 h-12 bg-gray-100 dark:bg-dk-surface-2 rounded-full flex items-center justify-center mb-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
-                className="w-6 h-6 text-gray-400"
+                className="w-6 h-6 text-gray-400 dark:text-dk-text-3"
               >
                 <path
                   strokeLinecap="round"
@@ -83,8 +83,8 @@ const NotificationDropdown = ({
                 />
               </svg>
             </div>
-            <p className="text-sm text-gray-400 font-medium">No notifications yet</p>
-            <p className="text-xs text-gray-300 mt-1">We'll let you know when something happens</p>
+            <p className="text-sm text-gray-400 dark:text-dk-text-3 font-medium">No notifications yet</p>
+            <p className="text-xs text-gray-300 dark:text-dk-text-3/70 mt-1">We'll let you know when something happens</p>
           </div>
         ) : (
           displayItems.map((notification) => (
@@ -104,11 +104,11 @@ const NotificationDropdown = ({
       </div>
 
       {/* Footer */}
-      <div className="border-t border-gray-100 px-4 py-2.5">
+      <div className="border-t border-gray-100 dark:border-dk-border-2 px-4 py-2.5">
         <Link
           to="/notifications"
           onClick={onClose}
-          className="text-sm text-blue-600 hover:text-blue-700 font-medium text-center block transition-colors"
+          className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium text-center block transition-colors"
         >
           View All Notifications
         </Link>

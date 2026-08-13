@@ -51,17 +51,17 @@ const AIToolsDropdown = ({ onClose }) => {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 8, scale: 0.98 }}
       transition={{ duration: 0.18, ease: 'easeOut' }}
-      className="absolute left-0 top-full mt-2 z-50 w-80 rounded-2xl border border-slate-200 dark:border-white/10 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-2xl shadow-black/10 dark:shadow-black/40 overflow-hidden"
+      className="absolute left-0 top-full mt-2 z-50 w-80 rounded-2xl border border-slate-200 dark:border-dk-border bg-white/90 dark:bg-dk-surface-2 backdrop-blur-xl shadow-2xl shadow-black/10 dark:shadow-black/40 overflow-hidden"
     >
       {/* Header */}
-      <div className="px-4 py-3 border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-slate-100 dark:border-dk-border flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 text-white">
             <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2a1 1 0 0 1 .894.553l2.184 4.424 4.883.71a1 1 0 0 1 .555 1.705l-3.533 3.443.834 4.862a1 1 0 0 1-1.45 1.054L12 16.347l-4.367 2.304a1 1 0 0 1-1.45-1.054l.834-4.862L3.484 9.392a1 1 0 0 1 .555-1.705l4.883-.71L11.106 2.553A1 1 0 0 1 12 2z" />
             </svg>
           </div>
-          <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">AI Tools</span>
+          <span className="text-sm font-semibold text-slate-800 dark:text-dk-text">AI Tools</span>
         </div>
         {/* Future: AI Credit Balance */}
         <div className="flex items-center gap-1.5 rounded-full bg-blue-50 dark:bg-blue-950/30 px-2.5 py-1 text-xs font-medium text-blue-600 dark:text-blue-400">
@@ -79,12 +79,12 @@ const AIToolsDropdown = ({ onClose }) => {
             key={tool.label}
             to={tool.href}
             onClick={onClose}
-            className="flex items-start gap-3 rounded-xl px-3 py-2.5 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group"
+            className="flex items-start gap-3 rounded-xl px-3 py-2.5 hover:bg-slate-50 dark:hover:bg-dk-surface transition-colors group"
           >
             <span className="mt-0.5 text-xl leading-none">{tool.icon}</span>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-slate-800 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <span className="text-sm font-medium text-slate-800 dark:text-dk-text group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                   {tool.label}
                 </span>
                 {tool.badge && (
@@ -93,9 +93,9 @@ const AIToolsDropdown = ({ onClose }) => {
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5 line-clamp-1">{tool.description}</p>
+              <p className="text-xs text-slate-400 dark:text-dk-muted mt-0.5 line-clamp-1">{tool.description}</p>
             </div>
-            <svg className="h-4 w-4 text-slate-300 dark:text-slate-600 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors mt-1 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="h-4 w-4 text-slate-300 dark:text-dk-muted group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors mt-1 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </Link>

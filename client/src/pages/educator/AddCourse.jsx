@@ -211,7 +211,7 @@ const AddCourse = () => {
   };
 
   return (
-    <div className="h-screen overflow-scroll flex flex-col items-start md:p-8 p-4 pt-8 bg-gray-50">
+    <div className="h-screen overflow-scroll flex flex-col items-start md:p-8 p-4 pt-8 bg-gray-50 dark:bg-dk-base text-gray-900 dark:text-dk-text">
       <form onSubmit={handleSubmit} className="w-full max-w-4xl space-y-5">
         <div className="flex flex-col gap-1">
           <p className="text-gray-600 font-medium">Course Title</p>
@@ -238,7 +238,7 @@ const AddCourse = () => {
 
         <div className="flex flex-col gap-1">
           <p className="text-gray-600 font-medium mb-2">Course Description</p>
-          <div ref={editorRef} className="h-40 bg-white" />
+          <div ref={editorRef} className="h-40 bg-white dark:bg-dk-surface" />
         </div>
 
         <div className="flex gap-4">
@@ -329,9 +329,9 @@ const AddCourse = () => {
               onDragStart={() => setDraggedModuleIndex(moduleIndex)}
               onDragOver={(event) => event.preventDefault()}
               onDrop={() => reorderModules(moduleIndex)}
-              className="bg-white border rounded-lg overflow-hidden"
+              className="bg-white dark:bg-dk-surface border dark:border-dk-border rounded-lg overflow-hidden"
             >
-              <div className="flex justify-between items-center p-4 bg-gray-100">
+              <div className="flex justify-between items-center p-4 bg-gray-100 dark:bg-dk-border/30">
                 <div
                   className="flex items-center gap-3 cursor-pointer"
                   onClick={() => toggleModule(module.chapterId)}
@@ -346,7 +346,7 @@ const AddCourse = () => {
                   <span className="font-semibold">
                     {moduleIndex + 1}. {module.chapterTitle}
                   </span>
-                  <span className="rounded-full bg-white px-2 py-1 text-[10px] font-semibold uppercase text-gray-500">
+                  <span className="rounded-full bg-white dark:bg-dk-surface px-2 py-1 text-[10px] font-semibold uppercase text-gray-500">
                     {module.chapterContent.length} lessons
                   </span>
                 </div>
@@ -384,7 +384,7 @@ const AddCourse = () => {
                       }
                       onDragOver={(event) => event.preventDefault()}
                       onDrop={() => reorderLessons(module.chapterId, lessonIndex)}
-                      className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm"
+                      className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 dark:border-dk-border bg-gray-50 dark:bg-dk-surface px-3 py-2 text-sm"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <span className="text-gray-400 cursor-grab">☰</span>
@@ -448,3 +448,4 @@ const AddCourse = () => {
 };
 
 export default AddCourse;
+

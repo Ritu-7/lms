@@ -61,7 +61,7 @@ const StrengthBar = ({ password }: { password: string }) => {
           <div
             key={i}
             className={`h-1 flex-1 rounded-full transition-all duration-300 ${
-              i < score ? color : 'bg-white/10'
+              i < score ? color : 'bg-slate-200 dark:bg-white/10'
             }`}
           />
         ))}
@@ -103,17 +103,17 @@ const VerifyStep = ({ email, code, setCode, onVerify, onBack, isVerifying, error
         </svg>
       </div>
       <div className="text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-300/80">Check your inbox</p>
-        <h2 className="mt-1 font-space-grotesk text-2xl font-bold text-white">Verify your email</h2>
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-blue-600 dark:text-cyan-300/80">Check your inbox</p>
+        <h2 className="mt-1 font-space-grotesk text-2xl font-bold text-slate-900 dark:text-white">Verify your email</h2>
         <p className="mt-1.5 text-sm text-slate-400">
-          We sent a 6-digit code to <span className="font-semibold text-slate-200">{email}</span>
+          We sent a 6-digit code to <span className="font-semibold text-slate-800 dark:text-slate-200">{email}</span>
         </p>
       </div>
     </div>
 
     {/* OTP input */}
     <div className="space-y-2">
-      <label className="block text-sm font-semibold text-slate-300">Verification code</label>
+      <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Verification code</label>
       <input
         type="text"
         inputMode="numeric"
@@ -121,7 +121,7 @@ const VerifyStep = ({ email, code, setCode, onVerify, onBack, isVerifying, error
         value={code}
         onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
         placeholder="000000"
-        className="w-full rounded-2xl border border-white/10 bg-white/[0.06] px-5 py-4 text-center text-2xl font-bold tracking-[0.5em] text-white placeholder:text-slate-600 focus:border-cyan-500/60 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition-all"
+        className="w-full rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.06] px-5 py-4 text-center text-2xl font-bold tracking-[0.5em] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:border-blue-400 dark:focus:border-cyan-500/60 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-cyan-500/20 transition-all"
         autoFocus
       />
       <AnimatePresence>
@@ -158,7 +158,7 @@ const VerifyStep = ({ email, code, setCode, onVerify, onBack, isVerifying, error
       <button
         type="button"
         onClick={onBack}
-        className="w-full rounded-2xl border border-white/10 py-3 text-sm font-semibold text-slate-400 transition hover:border-white/20 hover:text-slate-200"
+        className="w-full rounded-2xl border border-slate-200 dark:border-white/10 py-3 text-sm font-semibold text-slate-600 dark:text-slate-400 transition hover:border-slate-300 dark:hover:border-white/20 hover:text-slate-900 dark:hover:text-slate-200"
       >
         ← Back to sign up
       </button>
@@ -225,13 +225,13 @@ const SignUpForm = ({ onSwitchToLogin }: SignUpFormProps) => {
 
       {/* ── Heading ──────────────────────────────────────── */}
       <div className="space-y-1.5">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-300/80">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-blue-600 dark:text-cyan-300/80">
           Create account
         </p>
-        <h2 className="font-space-grotesk text-3xl font-bold tracking-tight text-white sm:text-4xl">
+        <h2 className="font-space-grotesk text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
           Join LearnSphereAI
         </h2>
-        <p className="text-sm leading-6 text-slate-400">
+        <p className="text-sm leading-6 text-slate-600 dark:text-slate-400">
           Start your learning journey today — completely free.
         </p>
       </div>
@@ -319,9 +319,9 @@ const SignUpForm = ({ onSwitchToLogin }: SignUpFormProps) => {
 
       {/* ── Divider ──────────────────────────────────────── */}
       <div className="relative flex items-center gap-3" aria-hidden="true">
-        <div className="h-px flex-1 bg-white/10" />
-        <span className="text-xs font-medium uppercase tracking-widest text-slate-500">or sign up with</span>
-        <div className="h-px flex-1 bg-white/10" />
+        <div className="h-px flex-1 bg-slate-200 dark:bg-white/10" />
+        <span className="text-xs font-medium uppercase tracking-widest text-slate-400 dark:text-slate-500">or sign up with</span>
+        <div className="h-px flex-1 bg-slate-200 dark:bg-white/10" />
       </div>
 
       {/* ── Social ───────────────────────────────────────── */}
@@ -337,12 +337,12 @@ const SignUpForm = ({ onSwitchToLogin }: SignUpFormProps) => {
       </div>
 
       {/* ── Switch to Login ───────────────────────────────── */}
-      <p className="text-center text-sm text-slate-400">
+      <p className="text-center text-sm text-slate-500 dark:text-slate-400">
         Already have an account?{' '}
         <button
           type="button"
           onClick={onSwitchToLogin}
-          className="font-semibold text-cyan-300 transition hover:text-cyan-200 hover:underline underline-offset-2"
+          className="font-semibold text-blue-600 dark:text-cyan-300 transition hover:text-blue-500 dark:hover:text-cyan-200 hover:underline underline-offset-2"
         >
           Sign in
         </button>

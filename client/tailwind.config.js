@@ -7,6 +7,19 @@ export default {
   ],
   theme: {
     extend: {
+      colors: {
+        'dk-base': 'var(--dk-base)',
+        'dk-surface': 'var(--dk-surface)',
+        'dk-surface-2': 'var(--dk-surface-2)',
+        'dk-border': 'var(--dk-border)',
+        'dk-border-2': 'var(--dk-border-2)',
+        'dk-text': 'var(--dk-text)',
+        'dk-text-2': 'var(--dk-text-2)',
+        'dk-text-3': 'var(--dk-text-3)',
+        'dk-accent': 'var(--dk-accent)',
+        'dk-accent-glow': 'var(--dk-accent-glow)',
+        'dk-navbar': 'var(--dk-navbar)',
+      },
       fontFamily: {
         outfit: ['Outfit', 'sans-serif'],
         'space-grotesk': ['Space Grotesk', 'sans-serif'],

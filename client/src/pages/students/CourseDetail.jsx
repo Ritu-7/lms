@@ -141,12 +141,12 @@ const CourseDetail = () => {
     const lessonUrl = getLessonUrl(lesson);
 
     if (lessonType === "pdf") {
-      return <iframe src={lesson.lessonPdfUrl || lessonUrl} title={lesson.lectureTitle} className="w-full aspect-video bg-white" />;
+      return <iframe src={lesson.lessonPdfUrl || lessonUrl} title={lesson.lectureTitle} className="w-full aspect-video bg-white dark:bg-dk-surface" />;
     }
 
     if (lessonType === "rich_text") {
       return (
-        <div className="w-full aspect-video overflow-auto bg-white p-6 text-slate-800">
+        <div className="w-full aspect-video overflow-auto bg-white dark:bg-dk-surface p-6 text-slate-800">
           <div
             className="prose prose-sm max-w-none text-slate-600"
             dangerouslySetInnerHTML={{ __html: lesson.lectureRichTextContent || lesson.lessonRichTextContent || "" }}
@@ -157,7 +157,7 @@ const CourseDetail = () => {
 
     if (lessonType === "external_link") {
       return (
-        <div className="w-full aspect-video bg-white p-8 flex flex-col items-center justify-center gap-4 text-center">
+        <div className="w-full aspect-video bg-white dark:bg-dk-surface p-8 flex flex-col items-center justify-center gap-4 text-center">
           <ExternalLink className="w-12 h-12 text-blue-600" />
           <h3 className="text-xl font-semibold text-slate-900">{lesson.lectureTitle}</h3>
           <a
@@ -174,7 +174,7 @@ const CourseDetail = () => {
 
     if (lessonType === "quiz" || lessonType === "assignment") {
       return (
-        <div className="w-full aspect-video bg-white p-8 flex flex-col items-center justify-center gap-4 text-center">
+        <div className="w-full aspect-video bg-white dark:bg-dk-surface p-8 flex flex-col items-center justify-center gap-4 text-center">
           {lessonType === "quiz" ? <FileText className="w-12 h-12 text-blue-600" /> : <CheckCircle2 className="w-12 h-12 text-blue-600" />}
           <h3 className="text-xl font-semibold text-slate-900">{lesson.lectureTitle}</h3>
           {lesson.lessonExternalLink || lessonUrl ? (
@@ -202,18 +202,18 @@ const CourseDetail = () => {
   if (!courseData) return <Loading />;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-slate-50 dark:bg-dk-base">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col lg:flex-row gap-12">
         <div className="flex-1 space-y-8">
-          <h1 className="text-4xl font-bold font-space-grotesk text-slate-900 dark:text-white leading-tight">{courseData.courseTitle}</h1>
-          <div className="prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-slate-400" dangerouslySetInnerHTML={{ __html: courseData.courseDescription }} />
+          <h1 className="text-4xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text leading-tight">{courseData.courseTitle}</h1>
+          <div className="prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-dk-text-2" dangerouslySetInnerHTML={{ __html: courseData.courseDescription }} />
 
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold font-space-grotesk text-slate-900 dark:text-white">Course Structure</h2>
+            <h2 className="text-2xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Course Structure</h2>
             {courseChapters.map((chapter, index) => (
-              <div key={index} className="border border-slate-200 dark:border-white/10 rounded-2xl bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
+              <div key={index} className="border border-slate-200 dark:border-dk-border rounded-2xl bg-white dark:bg-dk-surface shadow-sm overflow-hidden">
                 <button onClick={() => toggleSection(index)} className="flex w-full justify-between items-center p-6 text-left hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                  <p className="font-semibold text-slate-900 dark:text-white">
+                  <p className="font-semibold text-slate-900 dark:text-dk-text">
                     Module {index + 1}: {chapter.chapterTitle}
                   </p>
                   <div className="flex items-center gap-4 text-sm text-slate-500">
@@ -230,7 +230,7 @@ const CourseDetail = () => {
                       initial={{ height: 0 }}
                       animate={{ height: 'auto' }}
                       exit={{ height: 0 }}
-                      className="border-t border-slate-200 dark:border-white/10 p-6 space-y-4 bg-slate-50 dark:bg-slate-800/30 text-sm"
+                      className="border-t border-slate-200 dark:border-dk-border p-6 space-y-4 bg-slate-50 dark:bg-dk-surface-2/30 text-sm"
                     >
                       {chapter.chapterContent?.map((lecture, i) => {
                         const lessonType = getLessonType(lecture);
@@ -241,7 +241,7 @@ const CourseDetail = () => {
                           <li key={i} className="flex justify-between items-center">
                             <div className="flex items-center gap-3">
                               {canWatch ? <PlayCircle className="w-4 h-4 text-blue-600" /> : <Lock className="w-4 h-4 text-slate-400" />}
-                              <p className={!canWatch ? "text-slate-500" : "text-slate-800 dark:text-slate-200"}>
+                              <p className={!canWatch ? "text-slate-500" : "text-slate-800 dark:text-dk-text"}>
                                 {i + 1}. {lecture.lectureTitle}
                               </p>
                               {lecture.isPreviewFree && !isAlreadyEnrolled && (
@@ -276,7 +276,7 @@ const CourseDetail = () => {
         </div>
 
         <div className="w-full lg:w-[380px] h-fit sticky top-24">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none overflow-hidden">
+          <div className="bg-white dark:bg-dk-surface border border-slate-200 dark:border-dk-border rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none overflow-hidden">
             {playerData ? (
               <div className="relative">
                 {renderPreview(playerData)}
@@ -292,7 +292,7 @@ const CourseDetail = () => {
             )}
 
             <div className="p-6 space-y-6">
-              <p className="text-4xl font-bold font-space-grotesk text-slate-900 dark:text-white">
+              <p className="text-4xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">
                 {currency} {(courseData.coursePrice - (courseData.discount * courseData.coursePrice) / 100).toFixed(2)}
               </p>
               <button
@@ -311,3 +311,4 @@ const CourseDetail = () => {
 };
 
 export default CourseDetail;
+

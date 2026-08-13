@@ -52,11 +52,11 @@ const CategoriesMegaMenu = ({ onClose }) => {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 8, scale: 0.98 }}
       transition={{ duration: 0.16, ease: 'easeOut' }}
-      className="absolute left-0 top-full mt-2 z-50 flex w-[460px] overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl shadow-2xl shadow-black/10 dark:shadow-black/40"
+      className="absolute left-0 top-full mt-2 z-50 flex w-[460px] overflow-hidden rounded-2xl border border-slate-200 dark:border-dk-border bg-white/95 dark:bg-dk-surface-2 backdrop-blur-xl shadow-2xl shadow-black/10 dark:shadow-black/40"
     >
       {/* ── Left rail: category list ─────────────────────────── */}
-      <div className="w-[190px] shrink-0 border-r border-slate-100 dark:border-white/5 p-2">
-        <p className="px-2.5 pt-1.5 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+      <div className="w-[190px] shrink-0 border-r border-slate-100 dark:border-dk-border p-2">
+        <p className="px-2.5 pt-1.5 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-dk-muted">
           Categories
         </p>
         <div className="space-y-0.5">
@@ -68,7 +68,7 @@ const CategoriesMegaMenu = ({ onClose }) => {
               className={`group relative flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-[13px] font-medium transition-colors duration-150 ${
                 active === i
                   ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300'
-                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/[0.04]'
+                  : 'text-slate-600 dark:text-dk-muted hover:bg-slate-50 dark:hover:bg-dk-surface'
               }`}
             >
               {active === i && (
@@ -79,7 +79,7 @@ const CategoriesMegaMenu = ({ onClose }) => {
                 />
               )}
               <svg
-                className={`h-4 w-4 shrink-0 ${active === i ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'}`}
+                className={`h-4 w-4 shrink-0 ${active === i ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-dk-muted'}`}
                 fill="none" viewBox="0 0 24 24" stroke="currentColor"
               >
                 {icons[cat.slug]}
@@ -99,7 +99,7 @@ const CategoriesMegaMenu = ({ onClose }) => {
           <svg className="h-4 w-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             {icons[activeCategory.slug]}
           </svg>
-          <p className="text-[13px] font-semibold text-slate-800 dark:text-slate-100">
+          <p className="text-[13px] font-semibold text-slate-800 dark:text-dk-text">
             {activeCategory.title}
           </p>
         </div>
@@ -109,7 +109,7 @@ const CategoriesMegaMenu = ({ onClose }) => {
               key={item}
               to={`/course-list/${encodeURIComponent(item.toLowerCase())}`}
               onClick={onClose}
-              className="rounded-lg px-2.5 py-1.5 text-[13px] text-slate-500 dark:text-slate-400 transition-colors duration-150 hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400"
+              className="rounded-lg px-2.5 py-1.5 text-[13px] text-slate-500 dark:text-dk-muted transition-colors duration-150 hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400"
             >
               {item}
             </Link>
@@ -118,7 +118,7 @@ const CategoriesMegaMenu = ({ onClose }) => {
       </div>
 
       {/* ── Footer ────────────────────────────────────────────── */}
-      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between border-t border-slate-100 dark:border-white/5 bg-white/95 dark:bg-slate-900/95 px-4 py-2.5">
+      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between border-t border-slate-100 dark:border-dk-border bg-white/95 dark:bg-dk-surface-2 px-4 py-2.5">
       </div>
     </motion.div>
   )

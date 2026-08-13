@@ -49,13 +49,13 @@ const VideoSummary = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col">
-      <div className="h-16 flex items-center justify-between px-6 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-white/10 gap-4">
+    <div className="min-h-screen bg-slate-50 dark:bg-dk-base flex flex-col">
+      <div className="h-16 flex items-center justify-between px-6 bg-white dark:bg-dk-surface border-b border-slate-200 dark:border-dk-border gap-4">
         <div className="min-w-0">
-          <h1 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-white truncate">
+          <h1 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text truncate">
             {title || 'AI Video Summary'}
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">Generate summaries from real transcript text</p>
+          <p className="text-xs text-slate-500 dark:text-dk-text-2">Generate summaries from real transcript text</p>
         </div>
         <button
           onClick={handleGenerate}
@@ -70,20 +70,20 @@ const VideoSummary = () => {
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 px-4 py-3 text-sm outline-none"
+          className="w-full rounded-xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface px-4 py-3 text-sm outline-none"
           placeholder="Video title"
         />
         <input
           value={videoUrl}
           onChange={(e) => setVideoUrl(e.target.value)}
-          className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 px-4 py-3 text-sm outline-none"
+          className="w-full rounded-xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface px-4 py-3 text-sm outline-none"
           placeholder="Video URL"
         />
         <textarea
           value={sourceText}
           onChange={(e) => setSourceText(e.target.value)}
           rows={4}
-          className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 px-4 py-3 text-sm outline-none"
+          className="w-full rounded-xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface px-4 py-3 text-sm outline-none"
           placeholder="Paste transcript or lecture notes for the summary API"
         />
       </div>
@@ -98,8 +98,8 @@ const VideoSummary = () => {
             )}
           </div>
 
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-white/10">
-            <h2 className="font-bold font-space-grotesk text-lg mb-4 text-slate-900 dark:text-white">Chapter-wise Summary</h2>
+          <div className="bg-white dark:bg-dk-surface p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-dk-border">
+            <h2 className="font-bold font-space-grotesk text-lg mb-4 text-slate-900 dark:text-dk-text">Chapter-wise Summary</h2>
             {loading ? (
               <div className="py-10 flex items-center justify-center text-slate-500 gap-3"><Loader2 className="animate-spin" size={16} />Analyzing source text…</div>
             ) : error ? (
@@ -108,38 +108,38 @@ const VideoSummary = () => {
             ) : summary?.chapters?.length ? (
               <div className="space-y-3">
                 {summary.chapters.map((chapter, index) => (
-                  <div key={index} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                  <div key={index} className="p-4 bg-slate-50 dark:bg-dk-surface-2 rounded-xl">
                     <div className="flex items-center justify-between gap-4">
-                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{chapter.time || '00:00'} - {chapter.title}</span>
+                      <span className="text-sm font-medium text-slate-700 dark:text-dk-text-2">{chapter.time || '00:00'} - {chapter.title}</span>
                       <span className="text-xs text-blue-600 dark:text-blue-400 font-semibold cursor-pointer flex items-center gap-1">Jump to <ChevronRight size={14} /></span>
                     </div>
-                    <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{chapter.summary}</p>
+                    <p className="mt-2 text-sm text-slate-500 dark:text-dk-text-2">{chapter.summary}</p>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-slate-500 dark:text-slate-400">No chapter summary is available yet. Add transcript text and generate a summary.</p>
+              <p className="text-sm text-slate-500 dark:text-dk-text-2">No chapter summary is available yet. Add transcript text and generate a summary.</p>
             )}
           </div>
         </div>
 
-        <div className="w-full lg:w-[450px] bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200 dark:border-white/10 flex flex-col overflow-hidden">
-          <div className="flex border-b border-slate-200 dark:border-white/10">
+        <div className="w-full lg:w-[450px] bg-white dark:bg-dk-surface rounded-3xl shadow-sm border border-slate-200 dark:border-dk-border flex flex-col overflow-hidden">
+          <div className="flex border-b border-slate-200 dark:border-dk-border">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 py-4 text-sm font-semibold transition-colors ${activeTab === tab.id ? 'text-blue-600 border-b-2 border-blue-600' : 'text-slate-500 dark:text-slate-400'}`}
+                className={`flex-1 py-4 text-sm font-semibold transition-colors ${activeTab === tab.id ? 'text-blue-600 border-b-2 border-blue-600' : 'text-slate-500 dark:text-dk-text-2'}`}
               >
                 {tab.label}
               </button>
             ))}
           </div>
-          <div className="flex-1 overflow-y-auto p-6 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+          <div className="flex-1 overflow-y-auto p-6 text-sm text-slate-600 dark:text-dk-text-2 leading-relaxed">
             {activeTab === 'summary' && (summary?.summary ? <p>{summary.summary}</p> : <p>No summary yet. Generate one from a real transcript.</p>)}
             {activeTab === 'transcript' && (summary?.notes ? <p className="whitespace-pre-wrap">{summary.notes}</p> : <p>No transcript was returned.</p>)}
             {activeTab === 'notes' && (summary?.notes ? <p className="whitespace-pre-wrap">{summary.notes}</p> : <p>No notes were returned.</p>)}
-            {activeTab === 'flashcards' && (summary?.flashcards?.length ? <div className="space-y-3">{summary.flashcards.map((card, index) => <div key={index} className="rounded-xl border border-slate-200 dark:border-white/10 p-4"><p className="font-semibold text-slate-900 dark:text-white">{card.front}</p><p className="mt-2 text-slate-600 dark:text-slate-300">{card.back}</p></div>)}</div> : <p>No flashcards were returned.</p>)}
+            {activeTab === 'flashcards' && (summary?.flashcards?.length ? <div className="space-y-3">{summary.flashcards.map((card, index) => <div key={index} className="rounded-xl border border-slate-200 dark:border-dk-border p-4"><p className="font-semibold text-slate-900 dark:text-dk-text">{card.front}</p><p className="mt-2 text-slate-600 dark:text-dk-text-2">{card.back}</p></div>)}</div> : <p>No flashcards were returned.</p>)}
           </div>
         </div>
       </div>

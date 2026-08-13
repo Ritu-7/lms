@@ -15,9 +15,23 @@ body {
     color: #0f172a;
 }
 
+html.dark {
+    --dk-base: #09090B;
+    --dk-surface: #16161A;
+    --dk-surface-2: #1C1C21;
+    --dk-border: rgba(255, 255, 255, 0.09);
+    --dk-border-2: rgba(255, 255, 255, 0.14);
+    --dk-text: #F4F4F5;
+    --dk-text-2: #A1A1AA;
+    --dk-text-3: #71717A;
+    --dk-accent: #3B82F6;
+    --dk-accent-glow: rgba(59, 130, 246, 0.18);
+    --dk-navbar: rgba(9, 9, 11, 0.88);
+}
+
 html.dark body {
-    background: #020617;
-    color: #f8fafc;
+    background: var(--dk-base);
+    color: var(--dk-text);
 }
 
 @layer base{
@@ -52,3 +66,12 @@ html.dark body {
 .rich-text ul { margin-left: 30px; list-style-type: disc; }
 
 .rich-text li { margin-bottom: 8px; }
+
+/* ── Dark-mode rich text overrides ── */
+html.dark .rich-text { color: #A1A1AA; }
+html.dark .rich-text h1,
+html.dark .rich-text h2,
+html.dark .rich-text h3,
+html.dark .rich-text h4,
+html.dark .rich-text h5,
+html.dark .rich-text h6 { color: #F4F4F5; }

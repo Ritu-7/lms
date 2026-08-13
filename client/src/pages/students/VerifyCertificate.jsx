@@ -36,7 +36,7 @@ const VerifyCertificate = () => {
   return (
     <div className="min-h-screen bg-gray-50/30">
       <div className="mx-auto max-w-4xl px-4 py-12 md:px-8">
-        <div className="rounded-3xl border bg-white p-8 shadow-sm">
+        <div className="rounded-3xl border bg-white dark:bg-dk-surface p-8 shadow-sm">
           <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">Certificate Verification</p>
@@ -44,7 +44,7 @@ const VerifyCertificate = () => {
               <p className="mt-2 text-gray-600">{result?.courseTitle || "Course"}</p>
             </div>
             <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-6 text-center">
-              <div className="mx-auto flex h-32 w-32 items-center justify-center rounded-xl border-2 border-gray-300 bg-white text-sm font-bold text-gray-400">
+              <div className="mx-auto flex h-32 w-32 items-center justify-center rounded-xl border-2 border-gray-300 bg-white dark:bg-dk-surface text-sm font-bold text-gray-400">
                 QR
               </div>
               <p className="mt-3 text-xs text-gray-500">QR verification placeholder</p>
@@ -82,3 +82,4 @@ const VerifyCertificate = () => {
 };
 
 export default VerifyCertificate;
+

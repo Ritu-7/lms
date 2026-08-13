@@ -95,13 +95,13 @@ const Assignments = () => {
             <p className="mt-1 text-sm text-gray-500">Track deadlines, submit files, review feedback, and resubmit when requested.</p>
           </div>
           <div className="flex gap-2 text-sm">
-            <span className="rounded-full bg-white px-3 py-1 border">{assignments.length} assignments</span>
-            <span className="rounded-full bg-white px-3 py-1 border">{assignments.filter((assignment) => assignment.submission?.status === "needs_resubmission").length} resubmissions</span>
+            <span className="rounded-full bg-white dark:bg-dk-surface px-3 py-1 border">{assignments.length} assignments</span>
+            <span className="rounded-full bg-white dark:bg-dk-surface px-3 py-1 border">{assignments.filter((assignment) => assignment.submission?.status === "needs_resubmission").length} resubmissions</span>
           </div>
         </div>
 
         <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-          <div className="rounded-2xl border bg-white shadow-sm overflow-hidden">
+          <div className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm overflow-hidden">
             <div className="border-b px-5 py-4">
               <h2 className="text-lg font-semibold text-gray-900">Your assignments</h2>
             </div>
@@ -137,7 +137,7 @@ const Assignments = () => {
           <div className="space-y-6">
             {selectedAssignment ? (
               <>
-                <div className="rounded-2xl border bg-white p-5 shadow-sm">
+                <div className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-5 shadow-sm">
                   <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                     <div>
                       <h2 className="text-xl font-semibold text-gray-900">{selectedAssignment.title}</h2>
@@ -190,13 +190,13 @@ const Assignments = () => {
                   ) : null}
                 </div>
 
-                <form onSubmit={submitAssignment} className="rounded-2xl border bg-white p-5 shadow-sm space-y-4">
+                <form onSubmit={submitAssignment} className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-5 shadow-sm space-y-4">
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">Submit work</h3>
                     <p className="text-sm text-gray-500">Attach files and write a short response. Resubmissions are supported if your instructor requests them.</p>
                   </div>
                   <textarea rows="6" value={responseText} onChange={(e) => setResponseText(e.target.value)} className="w-full rounded-lg border px-3 py-2 outline-none focus:border-blue-500" placeholder="Your response or notes" />
-                  <input id="assignment-upload-files" type="file" multiple className="block w-full rounded-lg border bg-white px-3 py-2 text-sm" />
+                  <input id="assignment-upload-files" type="file" multiple className="block w-full rounded-lg border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface px-3 py-2 text-sm" />
                   <div className="flex flex-wrap gap-3">
                     <button type="submit" disabled={submitting} className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white disabled:opacity-60">
                       {submitting ? "Submitting..." : selectedAssignment.submission?.status === "needs_resubmission" ? "Resubmit Assignment" : "Submit Assignment"}
@@ -205,7 +205,7 @@ const Assignments = () => {
                   </div>
                 </form>
 
-                <div className="rounded-2xl border bg-white p-5 shadow-sm">
+                <div className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-5 shadow-sm">
                   <h3 className="text-lg font-semibold text-gray-900">Submission status</h3>
                   <div className="mt-4 grid gap-3 text-sm text-gray-600 md:grid-cols-2">
                     <p><span className="font-semibold text-gray-800">Score:</span> {selectedAssignment.submission?.totalScore || 0} / {selectedAssignment.submission?.maxScore || selectedAssignment.totalPoints || 0}</p>
@@ -220,7 +220,7 @@ const Assignments = () => {
                 </div>
               </>
             ) : (
-              <div className="rounded-2xl border bg-white p-10 text-center text-gray-500 shadow-sm">No assignment selected.</div>
+              <div className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-10 text-center text-gray-500 shadow-sm">No assignment selected.</div>
             )}
           </div>
         </div>
@@ -232,3 +232,4 @@ const Assignments = () => {
 };
 
 export default Assignments;
+

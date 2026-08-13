@@ -97,7 +97,7 @@ const CreditDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Stats Cards */}
         <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+          <div className="bg-white dark:bg-dk-surface p-6 rounded-xl border border-gray-200 shadow-sm">
             <p className="text-sm font-medium text-gray-500">Current Credits</p>
             <p className="text-3xl font-bold text-gray-800 mt-2">{creditStats.total.toLocaleString()}</p>
             <div className="mt-4 flex items-center text-xs text-blue-600 font-medium">
@@ -105,12 +105,12 @@ const CreditDashboard = () => {
               +20% from last month
             </div>
           </div>
-          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+          <div className="bg-white dark:bg-dk-surface p-6 rounded-xl border border-gray-200 shadow-sm">
             <p className="text-sm font-medium text-gray-500">Credits Used</p>
             <p className="text-3xl font-bold text-gray-800 mt-2">{creditStats.used.toLocaleString()}</p>
             <p className="mt-4 text-xs text-gray-400">25% of total quota</p>
           </div>
-          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+          <div className="bg-white dark:bg-dk-surface p-6 rounded-xl border border-gray-200 shadow-sm">
             <p className="text-sm font-medium text-gray-500">Credits Remaining</p>
             <p className="text-3xl font-bold text-blue-600 mt-2">{creditStats.remaining.toLocaleString()}</p>
             <p className="mt-4 text-xs text-gray-400">Valid until next cycle</p>
@@ -118,7 +118,7 @@ const CreditDashboard = () => {
         </div>
 
         {/* Progress Ring */}
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col items-center justify-center relative">
+        <div className="bg-white dark:bg-dk-surface p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col items-center justify-center relative">
           <p className="text-sm font-medium text-gray-500 absolute top-6">Usage Progress</p>
           <div className="h-48 w-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -151,7 +151,7 @@ const CreditDashboard = () => {
       {/* Middle Row: AI Usage & Activity */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Usage Chart */}
-        <div className="xl:col-span-2 bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+        <div className="xl:col-span-2 bg-white dark:bg-dk-surface p-6 rounded-xl border border-gray-200 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="font-semibold text-gray-800">Usage Trend</h3>
@@ -201,7 +201,7 @@ const CreditDashboard = () => {
         </div>
 
         {/* Recent AI Usage */}
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+        <div className="bg-white dark:bg-dk-surface p-6 rounded-xl border border-gray-200 shadow-sm">
           <div className="flex items-center gap-2 mb-6">
             <History className="w-5 h-5 text-gray-400" />
             <h3 className="font-semibold text-gray-800">Recent AI Usage</h3>
@@ -271,7 +271,7 @@ const CreditDashboard = () => {
         </div>
 
         {/* Transactions Table */}
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+        <div className="bg-white dark:bg-dk-surface p-6 rounded-xl border border-gray-200 shadow-sm">
           <div className="flex items-center gap-2 mb-6">
             <CreditCard className="w-5 h-5 text-gray-400" />
             <h3 className="font-semibold text-gray-800">Billing History</h3>
@@ -307,3 +307,4 @@ const CreditDashboard = () => {
 };
 
 export default CreditDashboard;
+

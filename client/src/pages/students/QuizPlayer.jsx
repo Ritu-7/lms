@@ -154,9 +154,9 @@ const QuizPlayer = () => {
             <p className="mt-1 text-sm text-gray-500">{activeQuiz.description}</p>
           </div>
           <div className="flex flex-wrap gap-2 text-sm">
-            <span className="rounded-full bg-white px-3 py-1 border">Pass {activeQuiz.passingScore || 70}%</span>
-            <span className="rounded-full bg-white px-3 py-1 border">{activeQuiz.timeLimitMinutes ? `${activeQuiz.timeLimitMinutes} min` : "No timer"}</span>
-            <span className="rounded-full bg-white px-3 py-1 border">Attempt {attempt?.attemptNumber || 1} / {activeQuiz.attemptLimit || 1}</span>
+            <span className="rounded-full bg-white dark:bg-dk-surface px-3 py-1 border">Pass {activeQuiz.passingScore || 70}%</span>
+            <span className="rounded-full bg-white dark:bg-dk-surface px-3 py-1 border">{activeQuiz.timeLimitMinutes ? `${activeQuiz.timeLimitMinutes} min` : "No timer"}</span>
+            <span className="rounded-full bg-white dark:bg-dk-surface px-3 py-1 border">Attempt {attempt?.attemptNumber || 1} / {activeQuiz.attemptLimit || 1}</span>
             {minutes !== null ? <span className="rounded-full bg-blue-600 px-3 py-1 text-white font-semibold">{minutes}:{seconds}</span> : null}
           </div>
         </div>
@@ -164,7 +164,7 @@ const QuizPlayer = () => {
         <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-4">
             {attempt?.status === "graded" || attempt?.status === "needs_review" || attempt?.status === "expired" ? (
-              <div className="rounded-2xl border bg-white p-5 shadow-sm">
+              <div className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-5 shadow-sm">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <h2 className="text-lg font-semibold text-gray-900">Result</h2>
@@ -186,7 +186,7 @@ const QuizPlayer = () => {
               </div>
             ) : null}
 
-            <div className="rounded-2xl border bg-white p-5 shadow-sm space-y-4">
+            <div className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-5 shadow-sm space-y-4">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900">Quiz questions</h2>
@@ -288,7 +288,7 @@ const QuizPlayer = () => {
           </div>
 
           <aside className="space-y-4">
-            <div className="rounded-2xl border bg-white p-5 shadow-sm">
+            <div className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-5 shadow-sm">
               <h2 className="text-lg font-semibold text-gray-900">Quiz history</h2>
               <div className="mt-4 space-y-3">
                 {historySummary.length > 0 ? historySummary.map((item, index) => (
@@ -305,7 +305,7 @@ const QuizPlayer = () => {
               </div>
             </div>
 
-            <div className="rounded-2xl border bg-white p-5 shadow-sm space-y-2 text-sm text-gray-600">
+            <div className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-5 shadow-sm space-y-2 text-sm text-gray-600">
               <h2 className="text-lg font-semibold text-gray-900">Quiz info</h2>
               <p><span className="font-semibold text-gray-800">Attempts allowed:</span> {activeQuiz.attemptLimit || 1}</p>
               <p><span className="font-semibold text-gray-800">Passing score:</span> {activeQuiz.passingScore || 70}%</p>
@@ -322,3 +322,4 @@ const QuizPlayer = () => {
 };
 
 export default QuizPlayer;
+

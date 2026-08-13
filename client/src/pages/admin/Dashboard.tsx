@@ -20,10 +20,10 @@ const Dashboard = () => {
     : []
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 md:p-8 space-y-10">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0D0D10] p-4 md:p-8 space-y-10">
       <div>
-        <h1 className="text-3xl font-bold font-space-grotesk text-slate-900 dark:text-white">Admin Dashboard</h1>
-        <p className="mt-2 text-slate-500 dark:text-slate-400">
+        <h1 className="text-3xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Admin Dashboard</h1>
+        <p className="mt-2 text-slate-500 dark:text-dk-text-2">
           Platform overview, operational health, and recent activity across the learning network.
         </p>
       </div>
@@ -53,7 +53,7 @@ const Dashboard = () => {
           title="Latest Enrollments"
           description="Most recent learner activity across the platform."
         >
-          <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
+          <div className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm overflow-hidden">
             <AdminTable
               columns={["Learner", "Course", "Payment", "Date", "Status"]}
               rows={adminOverview.enrollments}
@@ -67,7 +67,7 @@ const Dashboard = () => {
           title="Recent Students"
           description="Recently active student accounts and their learning state."
         >
-          <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
+          <div className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm overflow-hidden">
             <AdminTable
               columns={["Student", "Email", "Track", "Courses", "Status"]}
               rows={adminOverview.students}
@@ -82,7 +82,7 @@ const Dashboard = () => {
         title="Recent Payments"
         description="Latest transactions and billing status."
       >
-        <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
+        <div className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm overflow-hidden">
           <AdminTable
             columns={["User", "Amount", "Status", "Method"]}
             rows={adminOverview.payments}

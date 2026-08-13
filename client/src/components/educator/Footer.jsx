@@ -3,7 +3,7 @@ import { assets } from '../../assets/assets'
 
 const Footer = () => {
   return (
-    <footer className="w-full px-8 md:px-36 border-t border-gray-200 bg-white">
+    <footer className="w-full px-8 md:px-36 border-t border-gray-200 dark:border-dk-border bg-white dark:bg-dk-surface">
       <div className="flex md:flex-row flex-col-reverse items-center justify-between gap-4 py-8">
         
         {/* Left Side: Logo & Copyright */}
@@ -17,7 +17,7 @@ const Footer = () => {
           {/* Vertical Divider (Desktop Only) */}
           <div className="hidden md:block h-6 w-px bg-gray-300"></div>
 
-          <p className="text-center md:text-left text-xs md:text-sm text-gray-500 font-medium">
+          <p className="text-center md:text-left text-xs md:text-sm text-gray-500 dark:text-gray-400 font-medium">
             Copyright 2026 © Ritika Marotha. All rights reserved.
           </p>
         </div>

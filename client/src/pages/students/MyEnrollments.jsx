@@ -107,12 +107,12 @@ const MyEnrollments = () => {
   }, [fetchStudyLibrary, libraryQuery, userData]);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-slate-50 dark:bg-dk-base">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <header className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <h1 className="text-3xl font-bold font-space-grotesk text-slate-900 dark:text-white">My Learning</h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-2">Track your progress, assignments, and earned certificates.</p>
+            <h1 className="text-3xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">My Learning</h1>
+            <p className="text-slate-500 dark:text-dk-text-2 mt-2">Track your progress, assignments, and earned certificates.</p>
           </div>
           <button
             onClick={() => navigate('/assignments')}
@@ -135,22 +135,22 @@ const MyEnrollments = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
-              className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6 shadow-sm"
+              className="rounded-2xl border border-slate-200 dark:border-dk-border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface dark:bg-dk-surface p-6 shadow-sm"
             >
-              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{stat.label}</p>
-              <p className={`mt-2 text-3xl font-bold font-space-grotesk ${stat.color} dark:text-white`}>{stat.value}</p>
+              <p className="text-sm font-medium text-slate-500 dark:text-dk-text-2">{stat.label}</p>
+              <p className={`mt-2 text-3xl font-bold font-space-grotesk ${stat.color} dark:text-dk-text`}>{stat.value}</p>
             </motion.div>
           ))}
         </div>
 
         {/* Courses Table */}
-        <div className="mb-10 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
-          <div className="p-6 border-b border-slate-200 dark:border-white/10">
-            <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-white">Active Courses</h2>
+        <div className="mb-10 rounded-2xl border border-slate-200 dark:border-dk-border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface dark:bg-dk-surface shadow-sm overflow-hidden">
+          <div className="p-6 border-b border-slate-200 dark:border-dk-border">
+            <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Active Courses</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 uppercase text-xs">
+              <thead className="bg-slate-50 dark:bg-dk-surface text-slate-500 uppercase text-xs">
                 <tr>
                   <th className="px-6 py-4">Course</th>
                   <th className="px-6 py-4 hidden md:table-cell">Duration</th>
@@ -158,7 +158,7 @@ const MyEnrollments = () => {
                   <th className="px-6 py-4 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="divide-y divide-slate-100 dark:divide-dk-border">
                 {enrolledCourses.length > 0 ? (
                   enrolledCourses.map((course) => {
                     const stats = courseProgress[course._id] || { lectureCompleted: 0, totalLectures: 0 };
@@ -170,17 +170,17 @@ const MyEnrollments = () => {
                       <tr key={course._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
                         <td className="px-6 py-5">
                           <div className="flex items-center gap-4">
-                            <img src={course.courseThumbnail} className="w-16 h-10 object-cover rounded-lg border border-slate-200 dark:border-white/10" alt="" />
-                            <h2 className="font-semibold text-slate-900 dark:text-white">{course.courseTitle}</h2>
+                            <img src={course.courseThumbnail} className="w-16 h-10 object-cover rounded-lg border border-slate-200 dark:border-dk-border" alt="" />
+                            <h2 className="font-semibold text-slate-900 dark:text-dk-text">{course.courseTitle}</h2>
                           </div>
                         </td>
-                        <td className="px-6 py-5 hidden md:table-cell text-slate-600 dark:text-slate-400">
+                        <td className="px-6 py-5 hidden md:table-cell text-slate-600 dark:text-dk-text-2">
                           {calculateCourseDuration(course)}
                         </td>
                         <td className="px-6 py-5">
                           <div className="w-40">
                             <div className="flex justify-between text-xs mb-1">
-                              <span className="font-semibold text-slate-700 dark:text-slate-300">{percentage}%</span>
+                              <span className="font-semibold text-slate-700 dark:text-dk-text-2">{percentage}%</span>
                             </div>
                             <Line strokeWidth={4} percent={percentage} strokeColor={isFinished ? "#10b981" : "#2563eb"} trailColor="#e2e8f0" strokeLinecap="round" className="h-1.5" />
                           </div>
@@ -218,3 +218,4 @@ const MyEnrollments = () => {
 };
 
 export default MyEnrollments;
+

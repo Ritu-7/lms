@@ -26,6 +26,7 @@ import {
 import { AppContext } from '../../context/AppContext';
 import Footer from '../../components/students/Footer';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const MotionDiv = motion.div;
 
@@ -89,10 +90,10 @@ const languages = [
 const timezones = ['Asia/Kolkata', 'UTC', 'America/New_York', 'Europe/London', 'Asia/Singapore'];
 
 const Toggle = ({ checked, onChange, label, description }) => (
-  <div className="flex items-start justify-between gap-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-4">
+  <div className="flex items-start justify-between gap-4 rounded-xl border border-slate-200 dark:border-dk-border bg-slate-50 dark:bg-dk-surface p-4">
     <div>
-      <p className="text-sm font-semibold text-slate-900 dark:text-white">{label}</p>
-      {description && <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{description}</p>}
+      <p className="text-sm font-semibold text-slate-900 dark:text-dk-text">{label}</p>
+      {description && <p className="mt-1 text-xs text-slate-500 dark:text-dk-text-2">{description}</p>}
     </div>
     <button
       type="button"
@@ -108,7 +109,7 @@ const Toggle = ({ checked, onChange, label, description }) => (
 
 const Field = ({ label, icon: Icon, children }) => (
   <label className="block">
-    <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
+    <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-dk-text-2">
       {Icon && <Icon size={16} className="text-blue-600 dark:text-blue-300" />}
       {label}
     </span>
@@ -116,12 +117,13 @@ const Field = ({ label, icon: Icon, children }) => (
   </label>
 );
 
-const inputClass = 'w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-950 px-4 py-3 text-sm text-slate-900 dark:text-white outline-none transition-all placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10';
+const inputClass = 'w-full rounded-xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-base px-4 py-3 text-sm text-slate-900 dark:text-dk-text outline-none transition-all placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10';
 
 const Settings = () => {
   const { userData } = useContext(AppContext);
   const { user, isLoaded } = useUser();
   const navigate = useNavigate();
+  const { theme: currentTheme, setTheme } = useTheme();
 
   const initialSettings = useMemo(() => ({
     ...defaultPreferences,
@@ -186,26 +188,26 @@ const Settings = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="min-h-screen bg-slate-50 dark:bg-dk-base">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="mb-10 flex items-center justify-between gap-6">
             <div className="space-y-3 animate-pulse">
-              <div className="h-8 w-56 rounded bg-slate-200 dark:bg-slate-800" />
-              <div className="h-4 w-80 max-w-full rounded bg-slate-200 dark:bg-slate-800" />
+              <div className="h-8 w-56 rounded bg-slate-200 dark:bg-dk-surface-2" />
+              <div className="h-4 w-80 max-w-full rounded bg-slate-200 dark:bg-dk-surface-2" />
             </div>
-            <div className="hidden h-12 w-36 rounded-xl bg-slate-200 dark:bg-slate-800 md:block animate-pulse" />
+            <div className="hidden h-12 w-36 rounded-xl bg-slate-200 dark:bg-dk-surface-2 md:block animate-pulse" />
           </div>
           <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-            <div className="hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-4 shadow-sm lg:block animate-pulse">
-              {[...Array(7)].map((_, index) => <div key={index} className="mb-3 h-11 rounded-xl bg-slate-200 dark:bg-slate-800" />)}
+            <div className="hidden rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-4 shadow-sm lg:block animate-pulse">
+              {[...Array(7)].map((_, index) => <div key={index} className="mb-3 h-11 rounded-xl bg-slate-200 dark:bg-dk-surface-2" />)}
             </div>
             <div className="space-y-6">
               {[...Array(4)].map((_, index) => (
-                <div key={index} className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6 shadow-sm animate-pulse">
-                  <div className="h-6 w-48 rounded bg-slate-200 dark:bg-slate-800" />
+                <div key={index} className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm animate-pulse">
+                  <div className="h-6 w-48 rounded bg-slate-200 dark:bg-dk-surface-2" />
                   <div className="mt-6 grid gap-4 md:grid-cols-2">
-                    <div className="h-12 rounded-xl bg-slate-200 dark:bg-slate-800" />
-                    <div className="h-12 rounded-xl bg-slate-200 dark:bg-slate-800" />
+                    <div className="h-12 rounded-xl bg-slate-200 dark:bg-dk-surface-2" />
+                    <div className="h-12 rounded-xl bg-slate-200 dark:bg-dk-surface-2" />
                   </div>
                 </div>
               ))}
@@ -218,7 +220,7 @@ const Settings = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-slate-50 dark:bg-dk-base">
       <form onSubmit={handleSave} className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <header className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
@@ -226,15 +228,15 @@ const Settings = () => {
               <SlidersHorizontal size={16} />
               Student preferences
             </div>
-            <h1 className="text-3xl font-bold font-space-grotesk text-slate-900 dark:text-white">Settings</h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-2">Manage your profile, account security, notifications, and privacy preferences.</p>
+            <h1 className="text-3xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Settings</h1>
+            <p className="text-slate-500 dark:text-dk-text-2 mt-2">Manage your profile, account security, notifications, and privacy preferences.</p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3">
             <button
               type="button"
               onClick={handleCancel}
               disabled={saving}
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 px-6 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-70 transition-all"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface px-6 py-3 text-sm font-semibold text-slate-700 dark:text-dk-text hover:bg-slate-50 dark:hover:bg-dk-surface-2 disabled:cursor-not-allowed disabled:opacity-70 transition-all"
             >
               <X size={16} />
               Cancel
@@ -258,11 +260,11 @@ const Settings = () => {
 
         <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
           <aside className="hidden lg:block">
-            <div className="sticky top-24 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-3 shadow-sm">
+            <div className="sticky top-24 rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-3 shadow-sm">
               {settingsSections.map((section) => {
                 const Icon = section.icon;
                 return (
-                  <a key={section.id} href={`#${section.id}`} className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-blue-600 dark:hover:text-blue-300 transition-colors">
+                  <a key={section.id} href={`#${section.id}`} className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 dark:text-dk-text-2 hover:bg-slate-50 dark:hover:bg-dk-surface-2 hover:text-blue-600 dark:hover:text-blue-300 transition-colors">
                     <Icon size={16} />
                     {section.label}
                   </a>
@@ -272,18 +274,18 @@ const Settings = () => {
           </aside>
 
           <main className="space-y-6">
-            <MotionDiv id="profile" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6 shadow-sm">
-              <div className="flex items-start justify-between gap-4 border-b border-slate-200 dark:border-white/10 pb-5">
+            <MotionDiv id="profile" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm">
+              <div className="flex items-start justify-between gap-4 border-b border-slate-200 dark:border-dk-border pb-5">
                 <div>
-                  <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-white">Profile Information</h2>
-                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Keep your public learner profile accurate and recognizable.</p>
+                  <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Profile Information</h2>
+                  <p className="mt-1 text-sm text-slate-500 dark:text-dk-text-2">Keep your public learner profile accurate and recognizable.</p>
                 </div>
                 <UserRound className="text-blue-600 dark:text-blue-300" />
               </div>
               <div className="mt-6 grid gap-6 xl:grid-cols-[220px_1fr]">
-                <div className="rounded-2xl bg-slate-50 dark:bg-white/5 p-5 text-center">
+                <div className="rounded-2xl bg-slate-50 dark:bg-dk-surface p-5 text-center">
                   <img src={formData.photoUrl || 'https://ui-avatars.com/api/?name=Student'} alt="Profile" className="mx-auto h-28 w-28 rounded-3xl object-cover ring-4 ring-white dark:ring-slate-800 shadow-sm" />
-                  <button type="button" className="mt-4 inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-950 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/5">
+                  <button type="button" className="mt-4 inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-base px-4 py-2 text-xs font-semibold text-slate-700 dark:text-dk-text hover:bg-slate-50 dark:hover:bg-dk-surface-2">
                     <Camera size={14} /> Change Photo
                   </button>
                 </div>
@@ -300,26 +302,70 @@ const Settings = () => {
               </div>
             </MotionDiv>
 
-            <MotionDiv id="account" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6 shadow-sm">
-              <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-white">Account Settings</h2>
+            <MotionDiv id="account" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm">
+              <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Account Settings</h2>
               <div className="mt-6 grid gap-4 md:grid-cols-2">
                 <Toggle checked={formData.twoFactorEnabled} onChange={() => updateField('twoFactorEnabled', !formData.twoFactorEnabled)} label="Two-factor authentication" description="Add an extra layer of security to your student account." />
                 <Toggle checked={formData.marketingEmails} onChange={() => updateField('marketingEmails', !formData.marketingEmails)} label="Product tips and offers" description="Receive occasional LMS updates, tips, and promotions." />
               </div>
             </MotionDiv>
 
-            <MotionDiv id="ai" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6 shadow-sm">
-              <div className="flex items-start justify-between gap-4 border-b border-slate-200 dark:border-white/10 pb-5">
+            {/* ── Appearance ───────────────────────────────────────────── */}
+            <MotionDiv id="appearance" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06 }} className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm">
+              <div className="flex items-start justify-between gap-4 border-b border-slate-200 dark:border-dk-border pb-5">
                 <div>
-                  <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-white">AI Features & Integrations</h2>
-                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Configure your personal Gemini API key for the AI Tutor, Summarizer, and more.</p>
+                  <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Appearance</h2>
+                  <p className="mt-1 text-sm text-slate-500 dark:text-dk-text-2">Choose how LearnSphereAI looks for you. Changes apply instantly.</p>
+                </div>
+                <Sun className="text-blue-600 dark:text-blue-300" />
+              </div>
+              <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                {[
+                  { key: 'light', label: 'Light', Icon: Sun, desc: 'Clean and bright' },
+                  { key: 'system', label: 'System', Icon: SlidersHorizontal, desc: 'Follows your OS' },
+                  { key: 'dark',   label: 'Dark',   Icon: Moon, desc: 'Easy on the eyes' },
+                ].map(({ key, label, Icon, desc }) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setTheme(key)}
+                    className={`flex flex-col items-center gap-3 rounded-2xl border-2 p-5 text-center transition-all ${
+                      currentTheme === key
+                        ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/30 shadow-md shadow-blue-600/10'
+                        : 'border-slate-200 dark:border-dk-border hover:border-blue-300 dark:hover:border-blue-600/40 hover:bg-slate-50 dark:hover:bg-dk-surface-2'
+                    }`}
+                  >
+                    <span className={`flex h-11 w-11 items-center justify-center rounded-xl ${
+                      currentTheme === key
+                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
+                        : 'bg-slate-100 dark:bg-dk-surface-2 text-slate-500 dark:text-dk-text-2'
+                    }`}>
+                      <Icon size={20} />
+                    </span>
+                    <div>
+                      <p className={`text-sm font-bold ${ currentTheme === key ? 'text-blue-700 dark:text-blue-300' : 'text-slate-800 dark:text-dk-text' }`}>{label}</p>
+                      <p className="text-xs text-slate-500 dark:text-dk-text-2 mt-0.5">{desc}</p>
+                    </div>
+                    {currentTheme === key && (
+                      <CheckCircle2 size={16} className="text-blue-600 dark:text-blue-400" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </MotionDiv>
+
+            <MotionDiv id="ai" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm">
+              <div className="flex items-start justify-between gap-4 border-b border-slate-200 dark:border-dk-border pb-5">
+                <div>
+                  <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">AI Features & Integrations</h2>
+                  <p className="mt-1 text-sm text-slate-500 dark:text-dk-text-2">Configure your personal Gemini API key for the AI Tutor, Summarizer, and more.</p>
                 </div>
                 <Sparkles className="text-blue-600 dark:text-blue-300" />
               </div>
               <div className="mt-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1">Gemini API Key Setup</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Manage your private BYOK (Bring Your Own Key) settings to unlock premium AI capabilities.</p>
+                  <p className="text-sm font-semibold text-slate-800 dark:text-dk-text mb-1">Gemini API Key Setup</p>
+                  <p className="text-xs text-slate-500 dark:text-dk-text-2">Manage your private BYOK (Bring Your Own Key) settings to unlock premium AI capabilities.</p>
                 </div>
                 <button
                   type="button"
@@ -331,8 +377,8 @@ const Settings = () => {
               </div>
             </MotionDiv>
 
-            <MotionDiv id="password" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6 shadow-sm">
-              <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-white">Password Change</h2>
+            <MotionDiv id="password" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm">
+              <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Password Change</h2>
               <div className="mt-6 grid gap-5 md:grid-cols-3">
                 <Field label="Current Password" icon={Lock}><input className={inputClass} type="password" value={formData.currentPassword} onChange={(e) => updateField('currentPassword', e.target.value)} placeholder="••••••••" /></Field>
                 <Field label="New Password" icon={KeyRound}><input className={inputClass} type="password" value={formData.newPassword} onChange={(e) => updateField('newPassword', e.target.value)} placeholder="••••••••" /></Field>
@@ -340,8 +386,8 @@ const Settings = () => {
               </div>
             </MotionDiv>
 
-            <MotionDiv id="notifications" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6 shadow-sm">
-              <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-white">Notification Preferences</h2>
+            <MotionDiv id="notifications" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm">
+              <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Notification Preferences</h2>
               <div className="mt-6 grid gap-4 md:grid-cols-2">
                 <Toggle checked={formData.emailNotifications} onChange={() => updateField('emailNotifications', !formData.emailNotifications)} label="Email notifications" description="Send important learning updates to your inbox." />
                 <Toggle checked={formData.courseUpdates} onChange={() => updateField('courseUpdates', !formData.courseUpdates)} label="Course updates" description="Notify me when enrolled courses publish new content." />
@@ -351,19 +397,19 @@ const Settings = () => {
             </MotionDiv>
 
             <div className="grid gap-6 xl:grid-cols-2">
-              <MotionDiv initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6 shadow-sm">
-                <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-white">Theme</h2>
+              <MotionDiv initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm">
+                <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Theme</h2>
                 <div className="mt-6 grid gap-3 sm:grid-cols-3">
                   {[{ value: 'light', label: 'Light', icon: Sun }, { value: 'dark', label: 'Dark', icon: Moon }, { value: 'system', label: 'System', icon: SlidersHorizontal }].map((theme) => {
                     const Icon = theme.icon;
                     const active = formData.theme === theme.value;
-                    return <button key={theme.value} type="button" onClick={() => updateField('theme', theme.value)} className={`rounded-xl border p-4 text-left transition-all ${active ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-300' : 'border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5'}`}><Icon size={18} /><span className="mt-3 block text-sm font-semibold">{theme.label}</span></button>;
+                    return <button key={theme.value} type="button" onClick={() => updateField('theme', theme.value)} className={`rounded-xl border p-4 text-left transition-all ${active ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-300' : 'border-slate-200 dark:border-dk-border text-slate-600 dark:text-dk-text-2 hover:bg-slate-50 dark:hover:bg-dk-surface-2'}`}><Icon size={18} /><span className="mt-3 block text-sm font-semibold">{theme.label}</span></button>;
                   })}
                 </div>
               </MotionDiv>
 
-              <MotionDiv initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6 shadow-sm">
-                <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-white">Language</h2>
+              <MotionDiv initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm">
+                <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Language</h2>
                 <div className="mt-6">
                   <Field label="Preferred Language" icon={Globe2}>
                     <select className={inputClass} value={formData.language} onChange={(e) => updateField('language', e.target.value)}>
@@ -374,8 +420,8 @@ const Settings = () => {
               </MotionDiv>
             </div>
 
-            <MotionDiv id="privacy" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6 shadow-sm">
-              <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-white">Privacy Settings</h2>
+            <MotionDiv id="privacy" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm">
+              <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Privacy Settings</h2>
               <div className="mt-6 grid gap-4 md:grid-cols-2">
                 <Field label="Account Visibility" icon={Shield}>
                   <select className={inputClass} value={formData.accountVisibility} onChange={(e) => updateField('accountVisibility', e.target.value)}>
@@ -390,12 +436,12 @@ const Settings = () => {
               </div>
             </MotionDiv>
 
-            <MotionDiv id="connections" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6 shadow-sm">
-              <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-white">Connected Accounts</h2>
+            <MotionDiv id="connections" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm">
+              <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Connected Accounts</h2>
               <div className="mt-6 grid gap-4 md:grid-cols-2">
                 <Toggle checked={formData.connectedGoogle} onChange={() => updateField('connectedGoogle', !formData.connectedGoogle)} label="Google" description="Use Google for sign-in and account recovery." />
-                <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-4">
-                  <div className="mb-4 flex items-center gap-3"><GithubIcon size={18} className="text-slate-700 dark:text-slate-200" /><div><p className="text-sm font-semibold text-slate-900 dark:text-white">GitHub</p><p className="text-xs text-slate-500 dark:text-slate-400">Connect GitHub for developer courses and labs.</p></div></div>
+                <div className="rounded-xl border border-slate-200 dark:border-dk-border bg-slate-50 dark:bg-dk-surface p-4">
+                  <div className="mb-4 flex items-center gap-3"><GithubIcon size={18} className="text-slate-700 dark:text-dk-text" /><div><p className="text-sm font-semibold text-slate-900 dark:text-dk-text">GitHub</p><p className="text-xs text-slate-500 dark:text-dk-text-2">Connect GitHub for developer courses and labs.</p></div></div>
                   <button type="button" onClick={() => updateField('connectedGithub', !formData.connectedGithub)} className={`rounded-xl px-4 py-2 text-xs font-semibold transition-all ${formData.connectedGithub ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' : 'bg-blue-600 text-white hover:bg-blue-700'}`}>{formData.connectedGithub ? 'Disconnect' : 'Connect GitHub'}</button>
                 </div>
               </div>

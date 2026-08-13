@@ -96,7 +96,7 @@ const StudentNotifications = () => {
         </div>
 
         {/* Notifications List */}
-        <div className="bg-white rounded-xl shadow-custom-card border border-gray-100 divide-y divide-gray-100 overflow-hidden">
+        <div className="bg-white dark:bg-dk-surface rounded-xl shadow-custom-card border border-gray-100 divide-y divide-gray-100 overflow-hidden">
           {error && (
             <div className="p-6 text-center text-red-500">
               <p className="font-semibold">Error loading notifications</p>
@@ -167,7 +167,7 @@ const StudentNotifications = () => {
           <div className="flex justify-center mt-6">
             <button
               onClick={loadMore}
-              className="px-6 py-2.5 border border-gray-200 rounded-full bg-white text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
+              className="px-6 py-2.5 border border-gray-200 rounded-full bg-white dark:bg-dk-surface text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
             >
               Load More
             </button>
@@ -179,3 +179,4 @@ const StudentNotifications = () => {
 };
 
 export default StudentNotifications;
+

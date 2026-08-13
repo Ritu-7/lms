@@ -20,15 +20,15 @@ const timeAgo = (dateStr) => {
 
 // ── Icon background color by type ────────────────────────────────────────────
 const TYPE_STYLES = {
-  enrollment: "bg-green-100 text-green-600",
-  payment: "bg-purple-100 text-purple-600",
-  certificate: "bg-yellow-100 text-yellow-600",
-  assignment: "bg-orange-100 text-orange-600",
-  quiz: "bg-cyan-100 text-cyan-600",
-  announcement: "bg-red-100 text-red-600",
-  course: "bg-blue-100 text-blue-600",
-  AI: "bg-indigo-100 text-indigo-600",
-  system: "bg-gray-100 text-gray-600",
+  enrollment: "bg-green-100 text-green-600 dark:bg-green-950/40 dark:text-green-400",
+  payment: "bg-purple-100 text-purple-600 dark:bg-purple-950/40 dark:text-purple-400",
+  certificate: "bg-yellow-100 text-yellow-600 dark:bg-yellow-950/40 dark:text-yellow-400",
+  assignment: "bg-orange-100 text-orange-600 dark:bg-orange-950/40 dark:text-orange-400",
+  quiz: "bg-cyan-100 text-cyan-600 dark:bg-cyan-950/40 dark:text-cyan-400",
+  announcement: "bg-red-100 text-red-600 dark:bg-red-950/40 dark:text-red-400",
+  course: "bg-blue-100 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400",
+  AI: "bg-indigo-100 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-400",
+  system: "bg-gray-100 text-gray-600 dark:bg-dk-surface-2 dark:text-dk-text-2",
 };
 
 /**
@@ -80,8 +80,8 @@ const NotificationItem = ({
   return (
     <div
       onClick={handleClick}
-      className={`group flex items-start gap-3 ${compact ? "p-2.5" : "p-3.5"} rounded-lg transition-all duration-200 cursor-pointer hover:bg-gray-50 border-l-4 ${
-        isRead ? "bg-white border-transparent" : "bg-blue-50/40 border-blue-500"
+      className={`group flex items-start gap-3 ${compact ? "p-2.5" : "p-3.5"} rounded-lg transition-all duration-200 cursor-pointer hover:bg-gray-50 dark:hover:bg-dk-surface-2 border-l-4 ${
+        isRead ? "bg-white dark:bg-dk-surface border-transparent" : "bg-blue-50/40 dark:bg-blue-950/20 border-blue-500"
       }`}
     >
       {/* Icon */}
@@ -97,7 +97,7 @@ const NotificationItem = ({
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
           <p
-            className={`font-semibold text-gray-800 truncate ${
+            className={`font-semibold text-gray-800 dark:text-dk-text truncate ${
               compact ? "text-xs" : "text-sm"
             }`}
           >
@@ -108,20 +108,20 @@ const NotificationItem = ({
           )}
         </div>
         <p
-          className={`text-gray-500 mt-0.5 ${
+          className={`text-gray-500 dark:text-dk-text-2 mt-0.5 ${
             compact ? "text-[11px] line-clamp-1" : "text-xs line-clamp-2"
           }`}
         >
           {message}
         </p>
         <div className="flex items-center justify-between mt-1">
-          <span className="text-[11px] text-gray-400">{timeAgo(createdAt)}</span>
+          <span className="text-[11px] text-gray-400 dark:text-dk-text-3">{timeAgo(createdAt)}</span>
           <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             {!isRead && (
               <button
                 onClick={handleMarkRead}
                 title="Mark as read"
-                className="w-5 h-5 flex items-center justify-center rounded-full hover:bg-blue-100 transition-colors"
+                className="w-5 h-5 flex items-center justify-center rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
               >
                 <span className="w-2 h-2 bg-blue-500 rounded-full" />
               </button>
@@ -130,7 +130,7 @@ const NotificationItem = ({
               <button
                 onClick={handleDelete}
                 title="Delete"
-                className="w-5 h-5 flex items-center justify-center rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                className="w-5 h-5 flex items-center justify-center rounded-full text-gray-400 dark:text-dk-text-3 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

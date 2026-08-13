@@ -103,13 +103,13 @@ const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
     <div className="space-y-6">
       {/* ── Header ─────────────────────────────────────── */}
       <div className="space-y-1.5">
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300/80">
+        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-blue-600 dark:text-cyan-300/80">
           Reset access
         </p>
-        <h3 className="font-space-grotesk text-2xl font-bold tracking-tight text-white">
+        <h3 className="font-space-grotesk text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
           Recover your account
         </h3>
-        <p className="text-sm leading-6 text-slate-300">
+        <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">
           We'll send a one-time code to your email so you can set a new password.
         </p>
       </div>
@@ -123,7 +123,7 @@ const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
         />
         <span
           className={`h-1.5 w-8 rounded-full transition-all duration-300 ${
-            resetStep === 'reset' ? 'bg-cyan-400' : 'bg-white/15'
+            resetStep === 'reset' ? 'bg-cyan-400' : 'bg-slate-300 dark:bg-white/15'
           }`}
         />
         <span className="ml-1 text-[11px] text-slate-500">
@@ -173,9 +173,9 @@ const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
             {emailSnapshot ? (
               <div className="flex items-center gap-2.5 rounded-2xl border border-cyan-400/20 bg-cyan-400/5 px-4 py-3 text-sm">
                 <span className="h-2 w-2 shrink-0 rounded-full bg-cyan-400" />
-                <span className="text-slate-300">
+                <span className="text-slate-600 dark:text-slate-300">
                   Code sent to{' '}
-                  <span className="font-semibold text-white">{emailSnapshot}</span>
+                  <span className="font-semibold text-slate-900 dark:text-white">{emailSnapshot}</span>
                 </span>
               </div>
             ) : null}
@@ -220,7 +220,7 @@ const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
           resetPasswordState()
           onBack()
         }}
-        className="flex items-center gap-1.5 text-sm font-semibold text-slate-400 transition hover:text-white"
+        className="flex items-center gap-1.5 text-sm font-semibold text-slate-500 dark:text-slate-400 transition hover:text-slate-900 dark:hover:text-white"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

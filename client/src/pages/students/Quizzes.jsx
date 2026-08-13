@@ -59,9 +59,9 @@ const Quizzes = () => {
             <p className="mt-1 text-sm text-gray-500">Timed assessments, instant scoring, and attempt history from your enrolled courses.</p>
           </div>
           <div className="flex gap-2 text-sm">
-            <span className="rounded-full bg-white px-3 py-1 border">{totals.available} quizzes</span>
-            <span className="rounded-full bg-white px-3 py-1 border">{totals.inProgress} active</span>
-            <span className="rounded-full bg-white px-3 py-1 border">{totals.passed} passed</span>
+            <span className="rounded-full bg-white dark:bg-dk-surface px-3 py-1 border">{totals.available} quizzes</span>
+            <span className="rounded-full bg-white dark:bg-dk-surface px-3 py-1 border">{totals.inProgress} active</span>
+            <span className="rounded-full bg-white dark:bg-dk-surface px-3 py-1 border">{totals.passed} passed</span>
           </div>
         </div>
 
@@ -69,7 +69,7 @@ const Quizzes = () => {
           {quizzes.map((quiz) => {
             const summary = quiz.attemptSummary || {};
             return (
-              <div key={quiz._id} className="rounded-2xl border bg-white p-5 shadow-sm flex flex-col gap-4">
+              <div key={quiz._id} className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-5 shadow-sm flex flex-col gap-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <h2 className="text-lg font-semibold text-gray-900">{quiz.title}</h2>
@@ -97,7 +97,7 @@ const Quizzes = () => {
           })}
 
           {quizzes.length === 0 ? (
-            <div className="col-span-full rounded-2xl border bg-white p-10 text-center text-gray-500 shadow-sm">No quizzes are available yet.</div>
+            <div className="col-span-full rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-10 text-center text-gray-500 shadow-sm">No quizzes are available yet.</div>
           ) : null}
         </div>
       </div>
@@ -107,3 +107,4 @@ const Quizzes = () => {
 };
 
 export default Quizzes;
+

@@ -152,14 +152,14 @@ const Educators = () => {
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm outline-none focus:border-blue-500"
+            className="rounded-md border border-gray-300 bg-white dark:bg-dk-surface px-4 py-2 text-sm outline-none focus:border-blue-500"
             placeholder="Search educators"
             aria-label="Search educators"
           />
           <select
             value={statusFilter}
             onChange={(event) => setStatusFilter(event.target.value)}
-            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm outline-none focus:border-blue-500"
+            className="rounded-md border border-gray-300 bg-white dark:bg-dk-surface px-4 py-2 text-sm outline-none focus:border-blue-500"
             aria-label="Filter educators"
           >
             <option value="all">All statuses</option>
@@ -181,7 +181,7 @@ const Educators = () => {
 
       {editingUser ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4 py-8">
-          <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl">
+          <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white dark:bg-dk-surface p-6 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h3 className="text-lg font-semibold text-gray-800">Edit Educator</h3>
@@ -199,7 +199,7 @@ const Educators = () => {
               </div>
               <div className="rounded-xl bg-gray-50 p-4">
                 <p className="text-xs uppercase tracking-wide text-gray-400">Role</p>
-                <select value={draftRole} onChange={(event) => setDraftRole(event.target.value)} className="mt-2 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500">
+                <select value={draftRole} onChange={(event) => setDraftRole(event.target.value)} className="mt-2 w-full rounded-md border border-gray-300 bg-white dark:bg-dk-surface px-3 py-2 text-sm outline-none focus:border-blue-500">
                   <option value="student">Student</option>
                   <option value="educator">Educator</option>
                   <option value="admin">Admin</option>
@@ -207,7 +207,7 @@ const Educators = () => {
               </div>
               <div className="rounded-xl bg-gray-50 p-4">
                 <p className="text-xs uppercase tracking-wide text-gray-400">Status</p>
-                <select value={draftStatus} onChange={(event) => setDraftStatus(event.target.value)} className="mt-2 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500">
+                <select value={draftStatus} onChange={(event) => setDraftStatus(event.target.value)} className="mt-2 w-full rounded-md border border-gray-300 bg-white dark:bg-dk-surface px-3 py-2 text-sm outline-none focus:border-blue-500">
                   <option value="active">Active</option>
                   <option value="suspended">Suspended</option>
                 </select>
@@ -234,3 +234,4 @@ const Educators = () => {
 }
 
 export default Educators
+

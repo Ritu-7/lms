@@ -18,10 +18,10 @@ const RoleSelector = ({ onSelect }: RoleSelectorProps) => {
     >
       <div className="space-y-3">
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">Get Started</p>
-        <h2 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white font-space-grotesk sm:text-5xl">
+        <h2 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-dk-text font-space-grotesk sm:text-5xl">
           Choose Your Path
         </h2>
-        <p className="max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-400">
+        <p className="max-w-2xl text-base leading-relaxed text-slate-600 dark:text-dk-text-2">
           Select your workspace to get personalized tools, insights, and content tailored to your goals.
         </p>
       </div>

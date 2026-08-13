@@ -80,13 +80,13 @@ const MyCourses = () => {
   if (!courses) return <Loading />;
 
   return (
-    <div className='min-h-screen flex flex-col items-start md:p-8 p-4 pt-8 bg-gray-50/30'>
+    <div className='min-h-screen flex flex-col items-start md:p-8 p-4 pt-8 bg-gray-50/30 dark:bg-dk-base'>
       <div className='w-full'>
-        <h2 className='pb-4 text-lg font-medium'>My Courses</h2>
+        <h2 className='pb-4 text-lg font-medium dark:text-dk-text'>My Courses</h2>
 
-        <div className='max-w-5xl w-full bg-white border rounded-md overflow-hidden shadow-sm'>
+        <div className='max-w-5xl w-full bg-white dark:bg-dk-surface border dark:border-dk-border rounded-md overflow-hidden shadow-sm'>
           <table className='w-full text-sm text-left'>
-            <thead className='border-b bg-gray-50 text-gray-900'>
+            <thead className='border-b dark:border-dk-border bg-gray-50 dark:bg-dk-surface text-gray-900 dark:text-gray-100'>
               <tr>
                 <th className='px-4 py-3 font-semibold'>Course</th>
                 <th className='px-4 py-3 font-semibold'>Earnings</th>
@@ -103,7 +103,7 @@ const MyCourses = () => {
                   const studentCount = course.enrolledStudents?.length || course.studentsEnrolled?.length || 0;
                   
                   return (
-                    <tr key={course._id} className='border-b hover:bg-gray-50 transition-colors'>
+                    <tr key={course._id} className='border-b dark:border-dk-border hover:bg-gray-50 dark:hover:bg-dk-border/50 transition-colors'>
                       <td className='px-4 py-3 flex gap-3 items-center'>
                         <img
                           src={course.courseThumbnail || null}
@@ -111,7 +111,7 @@ const MyCourses = () => {
                           alt='course'
                         />
                         <div className='flex flex-col'>
-                          <span className='font-medium text-gray-800 line-clamp-1'>
+                          <span className='font-medium text-gray-800 dark:text-gray-200 line-clamp-1'>
                             {course.courseTitle}
                           </span>
                           <div className='flex gap-2 mt-1'>
@@ -139,7 +139,7 @@ const MyCourses = () => {
                         )}
                       </td>
 
-                      <td className='px-4 py-3 font-medium text-gray-800'>
+                      <td className='px-4 py-3 font-medium text-gray-800 dark:text-gray-200'>
                         {/* ✅ Displaying the corrected student count */}
                         {studentCount}
                       </td>

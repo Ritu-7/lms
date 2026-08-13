@@ -221,7 +221,7 @@ const SectionBadge = ({ children }) => (
 
 const InputField = ({ label, id, required, children, error }) => (
   <div className="flex flex-col gap-1.5">
-    <label htmlFor={id} className="text-sm font-medium text-slate-700 dark:text-slate-300">
+    <label htmlFor={id} className="text-sm font-medium text-slate-700 dark:text-dk-text-2">
       {label} {required && <span className="text-rose-500">*</span>}
     </label>
     {children}
@@ -238,18 +238,18 @@ const FAQItem = ({ faq, index }) => {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: '-40px' }}
-      className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/60 overflow-hidden"
+      className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface/60 overflow-hidden"
     >
       <button
         onClick={() => setOpen((o) => !o)}
         className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left transition-colors hover:bg-slate-50 dark:hover:bg-white/[0.03]"
         aria-expanded={open}
       >
-        <span className="text-sm font-semibold text-slate-900 dark:text-white leading-snug">{faq.question}</span>
+        <span className="text-sm font-semibold text-slate-900 dark:text-dk-text leading-snug">{faq.question}</span>
         <motion.span
           animate={{ rotate: open ? 180 : 0 }}
           transition={{ duration: 0.25 }}
-          className="shrink-0 text-slate-400 dark:text-slate-500"
+          className="shrink-0 text-slate-400 dark:text-dk-text-3"
         >
           <ChevronDown size={18} />
         </motion.span>
@@ -263,7 +263,7 @@ const FAQItem = ({ faq, index }) => {
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
           >
-            <p className="px-6 pb-5 pt-0 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+            <p className="px-6 pb-5 pt-0 text-sm leading-relaxed text-slate-500 dark:text-dk-text-2">
               {faq.answer}
             </p>
           </motion.div>
@@ -316,14 +316,14 @@ const Contact = () => {
   };
 
   const inputBase =
-    'w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 outline-none transition-all focus:border-indigo-500 dark:focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:bg-white dark:focus:bg-white/[0.07]';
+    'w-full rounded-xl border border-slate-200 dark:border-dk-border bg-slate-50 dark:bg-white/[0.04] px-4 py-3 text-sm text-slate-900 dark:text-dk-text placeholder-slate-400 dark:placeholder-slate-600 outline-none transition-all focus:border-indigo-500 dark:focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:bg-white dark:focus:bg-white/[0.07]';
   const inputError = 'border-rose-400 dark:border-rose-500 focus:border-rose-500 focus:ring-rose-500/20';
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-slate-50 dark:bg-dk-base">
 
       {/* ── Hero ────────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-white/[0.06]">
+      <section className="relative overflow-hidden bg-white dark:bg-dk-surface border-b border-slate-100 dark:border-white/[0.06]">
         {/* Background decorations */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 h-96 w-96 rounded-full bg-gradient-to-br from-indigo-100 to-blue-100 dark:from-indigo-950/40 dark:to-blue-950/40 blur-3xl opacity-60" />
@@ -340,7 +340,7 @@ const Contact = () => {
               custom={0.1}
               initial="hidden"
               animate="visible"
-              className="font-space-grotesk text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-white leading-[1.12]"
+              className="font-space-grotesk text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-dk-text leading-[1.12]"
             >
               We'd Love to{' '}
               <span className="bg-gradient-to-r from-indigo-600 via-blue-600 to-violet-600 dark:from-indigo-400 dark:via-blue-400 dark:to-violet-400 bg-clip-text text-transparent">
@@ -352,7 +352,7 @@ const Contact = () => {
               custom={0.2}
               initial="hidden"
               animate="visible"
-              className="mt-6 text-lg sm:text-xl text-slate-500 dark:text-slate-400 leading-relaxed"
+              className="mt-6 text-lg sm:text-xl text-slate-500 dark:text-dk-text-2 leading-relaxed"
             >
               Whether you have a question, feedback, a partnership proposal, or just want to say hello — our team is here and ready to help.
             </motion.p>
@@ -374,14 +374,14 @@ const Contact = () => {
                   href={channel.href}
                   whileHover={{ y: -4 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                  className={`flex flex-col gap-3 rounded-2xl border ${channel.border} bg-white dark:bg-slate-900/80 p-6 shadow-sm hover:shadow-md transition-shadow group`}
+                  className={`flex flex-col gap-3 rounded-2xl border ${channel.border} bg-white dark:bg-dk-surface/80 p-6 shadow-sm hover:shadow-md transition-shadow group`}
                 >
                   <div className={`inline-flex h-11 w-11 items-center justify-center rounded-xl ${channel.color}`}>
                     <Icon size={20} />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-900 dark:text-white text-sm">{channel.title}</h3>
-                    <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{channel.description}</p>
+                    <h3 className="font-semibold text-slate-900 dark:text-dk-text text-sm">{channel.title}</h3>
+                    <p className="mt-0.5 text-xs text-slate-500 dark:text-dk-text-2">{channel.description}</p>
                   </div>
                   <span className="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 dark:text-indigo-400 group-hover:gap-2 transition-all">
                     {channel.value}
@@ -407,9 +407,9 @@ const Contact = () => {
             viewport={{ once: true, margin: '-60px' }}
             className="lg:col-span-3"
           >
-            <div className="rounded-3xl border border-slate-100 dark:border-white/[0.08] bg-white dark:bg-slate-900/80 p-8 lg:p-10 shadow-sm">
-              <h2 className="mb-1 font-space-grotesk text-2xl font-bold text-slate-900 dark:text-white">Send Us a Message</h2>
-              <p className="mb-8 text-sm text-slate-500 dark:text-slate-400">
+            <div className="rounded-3xl border border-slate-100 dark:border-white/[0.08] bg-white dark:bg-dk-surface/80 p-8 lg:p-10 shadow-sm">
+              <h2 className="mb-1 font-space-grotesk text-2xl font-bold text-slate-900 dark:text-dk-text">Send Us a Message</h2>
+              <p className="mb-8 text-sm text-slate-500 dark:text-dk-text-2">
                 Fill in the form below and we'll get back to you within 24 business hours.
               </p>
 
@@ -427,14 +427,14 @@ const Contact = () => {
                       <CheckCircle2 size={40} className="text-emerald-500" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-slate-900 dark:text-white font-space-grotesk">Message Sent!</h3>
-                      <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                      <h3 className="text-xl font-bold text-slate-900 dark:text-dk-text font-space-grotesk">Message Sent!</h3>
+                      <p className="mt-2 text-sm text-slate-500 dark:text-dk-text-2">
                         Thank you for reaching out. We'll be in touch within 24 business hours.
                       </p>
                     </div>
                     <button
                       onClick={() => setStatus('idle')}
-                      className="mt-4 rounded-xl border border-slate-200 dark:border-white/10 px-6 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/[0.06] transition-colors"
+                      className="mt-4 rounded-xl border border-slate-200 dark:border-dk-border px-6 py-2.5 text-sm font-medium text-slate-700 dark:text-dk-text-2 hover:bg-slate-50 dark:hover:bg-white/[0.06] transition-colors"
                     >
                       Send Another Message
                     </button>
@@ -543,8 +543,8 @@ const Contact = () => {
             className="lg:col-span-2 flex flex-col gap-6"
           >
             {/* Contact Details */}
-            <div className="rounded-3xl border border-slate-100 dark:border-white/[0.08] bg-white dark:bg-slate-900/80 p-8 shadow-sm">
-              <h3 className="mb-6 font-space-grotesk text-lg font-bold text-slate-900 dark:text-white">Contact Details</h3>
+            <div className="rounded-3xl border border-slate-100 dark:border-white/[0.08] bg-white dark:bg-dk-surface/80 p-8 shadow-sm">
+              <h3 className="mb-6 font-space-grotesk text-lg font-bold text-slate-900 dark:text-dk-text">Contact Details</h3>
               <div className="space-y-5">
                 {[
                   { icon: Mail, label: 'General Enquiries', value: 'ritikamarotha9@gmail.com', href: 'mailto:ritikamarotha9@gmail.com' }, // { icon: Mail, label: 'General Enquiries', value: 'nsphereai.com', href: 'mailto:nsphereai.com' },
@@ -559,8 +559,8 @@ const Contact = () => {
                         <Icon size={16} />
                       </div>
                       <div>
-                        <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{item.label}</p>
-                        <p className="mt-0.5 text-sm font-semibold text-slate-900 dark:text-white">{item.value}</p>
+                        <p className="text-xs font-medium text-slate-500 dark:text-dk-text-2">{item.label}</p>
+                        <p className="mt-0.5 text-sm font-semibold text-slate-900 dark:text-dk-text">{item.value}</p>
                       </div>
                     </div>
                   );
@@ -576,8 +576,8 @@ const Contact = () => {
             </div>
 
             {/* Social Links */}
-            <div className="rounded-3xl border border-slate-100 dark:border-white/[0.08] bg-white dark:bg-slate-900/80 p-8 shadow-sm">
-              <h3 className="mb-5 font-space-grotesk text-lg font-bold text-slate-900 dark:text-white">Follow Us</h3>
+            <div className="rounded-3xl border border-slate-100 dark:border-white/[0.08] bg-white dark:bg-dk-surface/80 p-8 shadow-sm">
+              <h3 className="mb-5 font-space-grotesk text-lg font-bold text-slate-900 dark:text-dk-text">Follow Us</h3>
               <div className="space-y-3">
                 {SOCIAL_LINKS.map((social) => {
                   const Icon = social.icon;
@@ -587,12 +587,12 @@ const Contact = () => {
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`flex items-center gap-3 rounded-xl border border-slate-100 dark:border-white/[0.06] p-3 text-slate-500 dark:text-slate-400 ${social.color} transition-colors hover:border-current/20 hover:bg-slate-50 dark:hover:bg-white/[0.04] group`}
+                      className={`flex items-center gap-3 rounded-xl border border-slate-100 dark:border-white/[0.06] p-3 text-slate-500 dark:text-dk-text-2 ${social.color} transition-colors hover:border-current/20 hover:bg-slate-50 dark:hover:bg-white/[0.04] group`}
                     >
                       <Icon size={18} />
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-slate-400 dark:text-slate-500">{social.label}</p>
-                        <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 truncate">{social.handle}</p>
+                        <p className="text-xs font-medium text-slate-400 dark:text-dk-text-3">{social.label}</p>
+                        <p className="text-sm font-semibold text-slate-700 dark:text-dk-text-2 truncate">{social.handle}</p>
                       </div>
                       <ExternalLink size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
                     </a>
@@ -605,7 +605,7 @@ const Contact = () => {
       </section>
 
       {/* ── Office Locations ─────────────────────────────────────────────────── */}
-      <section className="border-y border-slate-100 dark:border-white/[0.06] bg-white dark:bg-slate-900/60 py-24">
+      <section className="border-y border-slate-100 dark:border-white/[0.06] bg-white dark:bg-dk-surface/60 py-24">
         <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
             <motion.div variants={fadeIn} custom={0} initial="hidden" whileInView="visible" viewport={{ once: true }} className="mb-4">
@@ -617,7 +617,7 @@ const Contact = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="font-space-grotesk text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white"
+              className="font-space-grotesk text-3xl sm:text-4xl font-bold text-slate-900 dark:text-dk-text"
             >
               Global Presence, Local Touch
             </motion.h2>
@@ -627,7 +627,7 @@ const Contact = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="mt-4 text-slate-500 dark:text-slate-400 max-w-xl mx-auto"
+              className="mt-4 text-slate-500 dark:text-dk-text-2 max-w-xl mx-auto"
             >
               We operate across three continents to support our learners and educators worldwide.
             </motion.p>
@@ -644,7 +644,7 @@ const Contact = () => {
                 viewport={{ once: true, margin: '-40px' }}
                 whileHover={{ y: -5 }}
                 transition={{ type: 'spring', stiffness: 350, damping: 22 }}
-                className="rounded-2xl border border-slate-100 dark:border-white/[0.08] bg-white dark:bg-slate-900/80 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                className="rounded-2xl border border-slate-100 dark:border-white/[0.08] bg-white dark:bg-dk-surface/80 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
               >
                 {/* Map Placeholder */}
                 <div className={`relative h-44 bg-gradient-to-br ${office.gradient} flex items-center justify-center overflow-hidden`}>
@@ -678,11 +678,11 @@ const Contact = () => {
                 <div className="p-6">
                   <div className="flex items-start gap-2.5 mb-3">
                     <MapPin size={15} className="mt-0.5 shrink-0 text-slate-400" />
-                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{office.address}</p>
+                    <p className="text-sm text-slate-600 dark:text-dk-text-2 leading-relaxed">{office.address}</p>
                   </div>
                   <div className="flex items-center gap-2.5">
                     <Clock size={15} className="shrink-0 text-slate-400" />
-                    <p className="text-sm text-slate-500 dark:text-slate-500">{office.hours}</p>
+                    <p className="text-sm text-slate-500 dark:text-dk-text-3">{office.hours}</p>
                   </div>
                 </div>
               </motion.div>
@@ -729,8 +729,8 @@ const Contact = () => {
                   <MapPin size={28} className="text-white" />
                 </div>
                 <div>
-                  <p className="font-space-grotesk text-lg font-bold text-slate-900 dark:text-white">LearnSphereAI Headquarters</p>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Prestige Tech Park, Bangalore, India</p>
+                  <p className="font-space-grotesk text-lg font-bold text-slate-900 dark:text-dk-text">LearnSphereAI Headquarters</p>
+                  <p className="text-sm text-slate-500 dark:text-dk-text-2">Prestige Tech Park, Bangalore, India</p>
                 </div>
                 <a
                   href="https://maps.google.com/?q=Marathahalli+Bangalore"
@@ -760,7 +760,7 @@ const Contact = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="font-space-grotesk text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white"
+              className="font-space-grotesk text-3xl sm:text-4xl font-bold text-slate-900 dark:text-dk-text"
             >
               Common Support Questions
             </motion.h2>
@@ -770,7 +770,7 @@ const Contact = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="mt-4 text-slate-500 dark:text-slate-400"
+              className="mt-4 text-slate-500 dark:text-dk-text-2"
             >
               Quick answers to the most common questions. Still need help?{' '}
               <a href="mailto:ritikamarotha9@gmail.com" className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">
@@ -820,7 +820,7 @@ const Contact = () => {
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Link
                 to="/course-list"
-                className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-3.5 text-sm font-semibold text-indigo-700 hover:bg-indigo-50 transition-all duration-200 shadow-lg shadow-black/10 active:scale-95"
+                className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-dk-surface px-8 py-3.5 text-sm font-semibold text-indigo-700 hover:bg-indigo-50 transition-all duration-200 shadow-lg shadow-black/10 active:scale-95"
               >
                 Explore Courses
                 <ArrowRight size={16} />

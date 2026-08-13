@@ -125,7 +125,7 @@ const StepCard = ({ step, index }) => {
 
       <div className="flex-1 min-w-0">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+          <p className="text-sm font-semibold text-slate-800 dark:text-dk-text">
             {step.title}
           </p>
           {step.action && (
@@ -140,7 +140,7 @@ const StepCard = ({ step, index }) => {
             </a>
           )}
         </div>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+        <p className="text-xs text-slate-500 dark:text-dk-text-2 mt-1 leading-relaxed">
           {step.desc}
         </p>
       </div>
@@ -161,9 +161,9 @@ const FaqItem = ({ faq, index }) => {
     >
       <button
         onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
+        className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left bg-white dark:bg-dk-surface hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
       >
-        <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+        <span className="text-sm font-semibold text-slate-800 dark:text-dk-text flex items-center gap-2">
           <HelpCircle className="w-4 h-4 text-blue-500 shrink-0" />
           {faq.q}
         </span>
@@ -180,7 +180,7 @@ const FaqItem = ({ faq, index }) => {
             transition={{ duration: 0.22 }}
             className="overflow-hidden"
           >
-            <p className="px-5 py-4 pt-0 text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
+            <p className="px-5 py-4 pt-0 text-sm text-slate-600 dark:text-dk-text-2 leading-relaxed border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-dk-surface">
               {faq.a}
             </p>
           </motion.div>
@@ -281,11 +281,11 @@ const AISettings = () => {
           <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
             <Sparkles className="w-5 h-5 text-white" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold font-space-grotesk text-slate-900 dark:text-white">
+          <h1 className="text-2xl sm:text-3xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">
             AI Settings
           </h1>
         </div>
-        <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed ml-1">
+        <p className="text-slate-500 dark:text-dk-text-2 text-sm leading-relaxed ml-1">
           Manage your personal Gemini API key. Your key is encrypted end-to-end and only used for your own AI requests.
         </p>
       </motion.div>
@@ -295,11 +295,11 @@ const AISettings = () => {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1, duration: 0.4 }}
-        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden"
+        className="bg-white dark:bg-dk-surface border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden"
       >
         {/* Card header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-slate-100 dark:border-slate-800">
-          <h2 className="text-base font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+          <h2 className="text-base font-semibold text-slate-800 dark:text-dk-text flex items-center gap-2">
             <Key className="w-4 h-4 text-slate-400" />
             Gemini API Key
           </h2>
@@ -309,7 +309,7 @@ const AISettings = () => {
               Active
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs font-semibold">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-dk-surface-2 text-slate-500 dark:text-dk-text-2 text-xs font-semibold">
               Not Configured
             </span>
           )}
@@ -318,7 +318,7 @@ const AISettings = () => {
         <div className="p-6 space-y-5">
           <form onSubmit={handleSave} className="space-y-4">
             <div>
-              <label htmlFor="apiKey" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label htmlFor="apiKey" className="block text-sm font-medium text-slate-700 dark:text-dk-text-2 mb-2">
                 {hasKey ? 'Update API Key' : 'Enter your Gemini API Key'}
               </label>
               <div className="relative">
@@ -328,7 +328,7 @@ const AISettings = () => {
                   value={apiKey}
                   onChange={(e) => { setApiKey(e.target.value); setTestSuccess(false); }}
                   placeholder={hasKey ? '••••••••••••••••••••••••' : 'AIzaSy...'}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl pl-4 pr-12 py-3 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                  className="w-full bg-slate-50 dark:bg-dk-base border border-slate-200 dark:border-slate-700 rounded-xl pl-4 pr-12 py-3 text-sm text-slate-900 dark:text-dk-text focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                 />
                 <button type="button" onClick={() => setShowKey(!showKey)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
@@ -365,7 +365,7 @@ const AISettings = () => {
                 {hasKey ? 'Update API Key' : 'Save API Key'}
               </button>
               <button type="button" onClick={handleTest} disabled={isTesting || !apiKey.trim()}
-                className="flex-1 flex items-center justify-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-[0.98] disabled:opacity-50 text-slate-700 dark:text-slate-200 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all">
+                className="flex-1 flex items-center justify-center gap-2 bg-slate-100 dark:bg-dk-surface-2 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-[0.98] disabled:opacity-50 text-slate-700 dark:text-dk-text px-4 py-2.5 rounded-xl text-sm font-semibold transition-all">
                 {isTesting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wifi className="w-4 h-4" />}
                 Test Connection
               </button>
@@ -383,7 +383,7 @@ const AISettings = () => {
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">Danger Zone</p>
+                    <p className="text-sm font-semibold text-slate-700 dark:text-dk-text">Danger Zone</p>
                     <p className="text-xs text-slate-400 mt-0.5">
                       Remove your key permanently. AI features will be disabled.
                     </p>
@@ -411,7 +411,7 @@ const AISettings = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.45 }}
-        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden"
+        className="bg-white dark:bg-dk-surface border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden"
       >
         {/* Guide header with gradient banner */}
         <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 px-6 py-5">
@@ -514,7 +514,7 @@ const AISettings = () => {
       >
         <div className="flex items-center gap-2 mb-4">
           <HelpCircle className="w-4 h-4 text-slate-400" />
-          <h2 className="text-base font-bold text-slate-800 dark:text-white">
+          <h2 className="text-base font-bold text-slate-800 dark:text-dk-text">
             Frequently Asked Questions
           </h2>
         </div>

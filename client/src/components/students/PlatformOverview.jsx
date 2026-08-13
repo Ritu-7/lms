@@ -22,11 +22,11 @@ const PlatformOverview = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className="group relative overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1"
+              className="group relative overflow-hidden rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1"
             >
               <div className={`absolute top-0 right-0 h-24 w-24 -mr-8 -mt-8 rounded-full blur-3xl opacity-20 transition-opacity group-hover:opacity-40 ${stat.bg}`} />
-              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{stat.label}</p>
-              <p className={`mt-2 text-3xl font-bold font-space-grotesk ${stat.color} dark:text-white`}>{stat.value}</p>
+              <p className="text-sm font-medium text-slate-500 dark:text-dk-text-2">{stat.label}</p>
+              <p className={`mt-2 text-3xl font-bold font-space-grotesk ${stat.color} dark:text-dk-text`}>{stat.value}</p>
             </motion.div>
           ))
         ) : null}
@@ -39,10 +39,10 @@ const PlatformOverview = () => {
           initial={{ opacity: 0, x: -20 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
-          className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-8 shadow-sm"
+          className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-8 shadow-sm"
         >
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold font-space-grotesk text-slate-900 dark:text-white">Explore Categories</h2>
+            <h2 className="text-2xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Explore Categories</h2>
             <div className="h-1 w-12 bg-blue-600 rounded-full" />
           </div>
           <div className="flex flex-wrap gap-2">
@@ -50,7 +50,7 @@ const PlatformOverview = () => {
               platformHomeData.categories.map((category) => (
                 <span 
                   key={category.name} 
-                  className="rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 transition-colors hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400"
+                  className="rounded-lg border border-slate-200 dark:border-dk-border bg-slate-50 dark:bg-dk-surface px-4 py-2 text-sm font-medium text-slate-600 dark:text-dk-text-2 transition-colors hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400"
                 >
                   {category.name} <span className="ml-1 opacity-60">({category.count})</span>
                 </span>
@@ -66,10 +66,10 @@ const PlatformOverview = () => {
           initial={{ opacity: 0, x: 20 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
-          className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-8 shadow-sm"
+          className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-8 shadow-sm"
         >
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold font-space-grotesk text-slate-900 dark:text-white">Platform Updates</h2>
+            <h2 className="text-2xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Platform Updates</h2>
             <div className="h-1 w-12 bg-indigo-600 rounded-full" />
           </div>
           <div className="space-y-4">
@@ -77,12 +77,12 @@ const PlatformOverview = () => {
               platformHomeData.announcements.map((announcement) => (
                 <div 
                   key={announcement.id} 
-                  className="group rounded-xl border border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/5 p-4 transition-all hover:bg-white dark:hover:bg-white/10 hover:shadow-sm"
+                  className="group rounded-xl border border-slate-100 dark:border-dk-border bg-slate-50 dark:bg-dk-surface p-4 transition-all hover:bg-white dark:bg-dk-surface dark:hover:bg-dk-surface-2 hover:shadow-sm"
                 >
-                  <p className="font-semibold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  <p className="font-semibold text-slate-800 dark:text-dk-text group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                     {announcement.title}
                   </p>
-                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
+                  <p className="mt-1 text-sm text-slate-600 dark:text-dk-text-2 line-clamp-2">
                     {announcement.message}
                   </p>
                 </div>

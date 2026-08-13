@@ -228,21 +228,21 @@ const Assignments = () => {
   if (loading && !assignments.length) return <Loading />;
 
   return (
-    <div className="min-h-screen bg-gray-50/30 p-4 md:p-8 space-y-8">
+    <div className="min-h-screen bg-gray-50/30 dark:bg-dk-base p-4 md:p-8 space-y-8 dark:text-dk-text">
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-gray-800">Assignments</h1>
           <p className="mt-1 text-sm text-gray-500">Create assignments, attach files, set deadlines, and review submissions in one place.</p>
         </div>
         <div className="flex flex-wrap gap-2 text-sm">
-          <span className="rounded-full bg-white px-3 py-1 border">{assignments.length} assignments</span>
-          <span className="rounded-full bg-white px-3 py-1 border">{submissions.length} submissions</span>
+          <span className="rounded-full bg-white dark:bg-dk-surface px-3 py-1 border">{assignments.length} assignments</span>
+          <span className="rounded-full bg-white dark:bg-dk-surface px-3 py-1 border">{submissions.length} submissions</span>
           <button onClick={resetForm} className="rounded-full bg-blue-600 px-4 py-1.5 text-white font-medium">New Assignment</button>
         </div>
       </div>
 
       <form onSubmit={saveAssignment} className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <div className="rounded-2xl border bg-white p-5 shadow-sm space-y-4">
+        <div className="rounded-2xl border dark:border-dk-border bg-white dark:bg-dk-surface p-5 shadow-sm space-y-4">
           <h2 className="text-lg font-semibold text-gray-900">{editingId ? "Edit assignment" : "Create assignment"}</h2>
           <div className="grid gap-4 md:grid-cols-2">
             <label className="space-y-2 md:col-span-2">
@@ -298,7 +298,7 @@ const Assignments = () => {
             </label>
             <div className="md:col-span-2 space-y-2">
               <span className="text-sm font-medium text-gray-700">Attachments</span>
-              <input id="assignment-files" type="file" multiple className="block w-full rounded-lg border bg-white px-3 py-2 text-sm" />
+              <input id="assignment-files" type="file" multiple className="block w-full rounded-lg border bg-white dark:bg-dk-surface px-3 py-2 text-sm" />
             </div>
           </div>
 
@@ -308,7 +308,7 @@ const Assignments = () => {
               <button type="button" onClick={addRubricItem} className="text-sm font-semibold text-blue-600">Add criterion</button>
             </div>
             {draft.rubric.map((item, index) => (
-              <div key={item.rubricId || index} className="grid gap-3 rounded-lg border bg-white p-3 md:grid-cols-[1fr_1fr_120px_auto]">
+              <div key={item.rubricId || index} className="grid gap-3 rounded-lg border bg-white dark:bg-dk-surface p-3 md:grid-cols-[1fr_1fr_120px_auto]">
                 <input value={item.title} onChange={(e) => handleRubricChange(index, "title", e.target.value)} placeholder="Criterion title" className="rounded-lg border px-3 py-2 outline-none focus:border-blue-500" />
                 <input value={item.description} onChange={(e) => handleRubricChange(index, "description", e.target.value)} placeholder="Description" className="rounded-lg border px-3 py-2 outline-none focus:border-blue-500" />
                 <input type="number" min="0" value={item.maxScore} onChange={(e) => handleRubricChange(index, "maxScore", e.target.value)} placeholder="Max" className="rounded-lg border px-3 py-2 outline-none focus:border-blue-500" />
@@ -324,7 +324,7 @@ const Assignments = () => {
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-2xl border bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border dark:border-dk-border bg-white dark:bg-dk-surface p-5 shadow-sm">
             <h2 className="text-lg font-semibold text-gray-900">Assignment details</h2>
             {selectedAssignment ? (
               <div className="mt-4 space-y-3 text-sm text-gray-600">
@@ -345,7 +345,7 @@ const Assignments = () => {
             )}
           </div>
 
-          <div className="rounded-2xl border bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border dark:border-dk-border bg-white dark:bg-dk-surface p-5 shadow-sm">
             <h2 className="text-lg font-semibold text-gray-900">Submissions</h2>
             <div className="mt-4 space-y-3">
               {submissions.length > 0 ? submissions.map((submission) => (
@@ -370,7 +370,7 @@ const Assignments = () => {
         </div>
       </form>
 
-      <div className="rounded-2xl border bg-white shadow-sm overflow-hidden">
+      <div className="rounded-2xl border dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm overflow-hidden">
         <table className="w-full text-left text-sm">
           <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
             <tr>
@@ -408,3 +408,4 @@ const Assignments = () => {
 };
 
 export default Assignments;
+

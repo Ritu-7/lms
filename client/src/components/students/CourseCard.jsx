@@ -12,7 +12,7 @@ const CourseCard = ({ course }) => {
     <Link
       to={`/course/${course._id}`}
       onClick={() => window.scrollTo(0, 0)}
-      className="group flex flex-col h-full overflow-hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-blue-400 dark:hover:border-blue-500"
+      className="group flex flex-col h-full overflow-hidden bg-white dark:bg-dk-surface border border-slate-200 dark:border-dk-border rounded-2xl shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-blue-400 dark:hover:border-blue-500"
     >
       {/* Thumbnail */}
       <div className="relative overflow-hidden aspect-video">
@@ -26,11 +26,11 @@ const CourseCard = ({ course }) => {
 
       {/* Content */}
       <div className="flex flex-col flex-1 p-5 space-y-3">
-        <h3 className="text-base font-bold font-space-grotesk text-slate-900 dark:text-white line-clamp-2">
+        <h3 className="text-base font-bold font-space-grotesk text-slate-900 dark:text-dk-text line-clamp-2">
           {course.courseTitle}
         </h3>
 
-        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+        <p className="text-xs text-slate-500 dark:text-dk-text-2 font-medium">
           {course.educator?.name || 'Unknown Instructor'}
         </p>
 
@@ -41,7 +41,7 @@ const CourseCard = ({ course }) => {
               <Star key={i} size={14} fill={i < Math.floor(rating) ? "currentColor" : "none"} />
             ))}
           </div>
-          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+          <span className="text-xs font-semibold text-slate-700 dark:text-dk-text-2">
             {rating}
           </span>
           <span className="text-xs text-slate-400">

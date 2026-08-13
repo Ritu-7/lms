@@ -34,12 +34,12 @@ const StudentsEnrolled = () => {
   if (!enrolledStudents) return <Loading />;
 
   return (
-    <div className='min-h-screen flex flex-col items-start md:p-8 p-4 pt-8 bg-gray-50/30'>
+    <div className='min-h-screen flex flex-col items-start md:p-8 p-4 pt-8 bg-gray-50/30 dark:bg-dk-base'>
       <div className='w-full'>
-        <h2 className='pb-4 text-lg font-medium text-gray-800'>Enrolled Students</h2>
-        <div className='max-w-4xl w-full bg-white border border-gray-500/20 rounded-md overflow-hidden shadow-sm'>
+        <h2 className='pb-4 text-lg font-medium text-gray-800 dark:text-dk-text'>Enrolled Students</h2>
+        <div className='max-w-4xl w-full bg-white dark:bg-dk-surface border border-gray-500/20 dark:border-dk-border rounded-md overflow-hidden shadow-sm'>
           <table className='table-auto w-full text-left'>
-            <thead className='text-gray-900 border-b border-gray-500/20 text-sm bg-gray-50'>
+            <thead className='text-gray-900 dark:text-gray-100 border-b border-gray-500/20 dark:border-dk-border text-sm bg-gray-50 dark:bg-dk-surface'>
               <tr>
                 <th className='px-4 py-3 font-semibold hidden sm:table-cell'>#</th>
                 <th className='px-4 py-3 font-semibold'>Student Name</th>
@@ -58,7 +58,7 @@ const StudentsEnrolled = () => {
                                      (studentInfo?.email ? studentInfo.email.split('@')[0] : "Student");
 
                   return (
-                    <tr key={index} className='border-b border-gray-500/20 hover:bg-gray-50 transition-colors'>
+                    <tr key={index} className='border-b border-gray-500/20 dark:border-dk-border hover:bg-gray-50 dark:hover:bg-dk-border/50 transition-colors'>
                       <td className='px-4 py-3 text-center hidden sm:table-cell text-gray-400'>
                         {index + 1}
                       </td>
@@ -70,11 +70,11 @@ const StudentsEnrolled = () => {
                           className='w-9 h-9 rounded-full bg-gray-100 object-cover border border-gray-100 shadow-sm' 
                           onError={(e) => { e.target.src = assets.profile_img }}
                         />
-                        <span className='truncate font-semibold text-gray-800 capitalize'>
+                        <span className='truncate font-semibold text-gray-800 dark:text-gray-200 capitalize'>
                           {displayName}
                         </span>
                       </td>
-                      <td className='px-4 py-3 text-gray-600 font-medium'>
+                      <td className='px-4 py-3 text-gray-600 dark:text-gray-400 font-medium'>
                         {item.courseTitle || "Untitled Course"}
                       </td>
                       <td className='px-4 py-3 hidden md:table-cell text-gray-500'>

@@ -19,10 +19,10 @@ const Logo = ({ className = '', showText = true, light = false }) => {
       </div>
       {showText && (
         <div className="flex flex-col">
-          <span className={`font-space-grotesk text-xl font-bold tracking-tight leading-none ${light ? 'text-white' : 'text-slate-900 dark:text-white'}`}>
+          <span className={`font-space-grotesk text-xl font-bold tracking-tight leading-none ${light ? 'text-white' : 'text-slate-900 dark:text-dk-text'}`}>
             LearnSphere<span className="text-indigo-600 dark:text-indigo-400">AI</span>
           </span>
-          <span className={`text-[10px] font-medium uppercase tracking-[0.15em] opacity-60 ${light ? 'text-white' : 'text-slate-500 dark:text-slate-400'}`}>
+          <span className={`text-[10px] font-medium uppercase tracking-[0.15em] opacity-60 ${light ? 'text-white' : 'text-slate-500 dark:text-dk-text-2'}`}>
             Smarter Learning
           </span>
         </div>

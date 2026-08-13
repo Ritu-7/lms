@@ -185,7 +185,7 @@ const Bookmarks = () => {
   }, [fetchProgress, loading]);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-slate-50 dark:bg-dk-base">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <header className="mb-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div>
@@ -193,8 +193,8 @@ const Bookmarks = () => {
               <Bookmark size={16} />
               Saved learning
             </div>
-            <h1 className="text-3xl font-bold font-space-grotesk text-slate-900 dark:text-white">My Bookmarks</h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-2">Pick up right where you left off with your saved courses and lessons.</p>
+            <h1 className="text-3xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">My Bookmarks</h1>
+            <p className="text-slate-500 dark:text-dk-text-2 mt-2">Pick up right where you left off with your saved courses and lessons.</p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3">
@@ -204,7 +204,7 @@ const Bookmarks = () => {
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Search bookmarks..."
-                className="w-full sm:w-72 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 py-3 pl-11 pr-4 text-sm text-slate-900 dark:text-white outline-none transition-all placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+                className="w-full sm:w-72 rounded-xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface py-3 pl-11 pr-4 text-sm text-slate-900 dark:text-dk-text outline-none transition-all placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
               />
             </div>
             <button
@@ -231,13 +231,13 @@ const Bookmarks = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6 shadow-sm"
+                className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm"
               >
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{stat.label}</p>
+                  <p className="text-sm font-medium text-slate-500 dark:text-dk-text-2">{stat.label}</p>
                   <Icon size={20} className={stat.color} />
                 </div>
-                <p className={`mt-2 text-3xl font-bold font-space-grotesk ${stat.color} dark:text-white`}>{stat.value}</p>
+                <p className={`mt-2 text-3xl font-bold font-space-grotesk ${stat.color} dark:text-dk-text`}>{stat.value}</p>
               </motion.div>
             );
           })}
@@ -246,13 +246,13 @@ const Bookmarks = () => {
         {loading ? (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {[...Array(8)].map((_, index) => (
-              <div key={index} className="overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-sm animate-pulse">
-                <div className="aspect-video bg-slate-200 dark:bg-slate-800" />
+              <div key={index} className="overflow-hidden rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm animate-pulse">
+                <div className="aspect-video bg-slate-200 dark:bg-dk-surface-2" />
                 <div className="p-5 space-y-4">
-                  <div className="h-4 w-3/4 rounded bg-slate-200 dark:bg-slate-800" />
-                  <div className="h-3 w-1/2 rounded bg-slate-200 dark:bg-slate-800" />
-                  <div className="h-2 rounded bg-slate-200 dark:bg-slate-800" />
-                  <div className="h-10 rounded-xl bg-slate-200 dark:bg-slate-800" />
+                  <div className="h-4 w-3/4 rounded bg-slate-200 dark:bg-dk-surface-2" />
+                  <div className="h-3 w-1/2 rounded bg-slate-200 dark:bg-dk-surface-2" />
+                  <div className="h-2 rounded bg-slate-200 dark:bg-dk-surface-2" />
+                  <div className="h-10 rounded-xl bg-slate-200 dark:bg-dk-surface-2" />
                 </div>
               </div>
             ))}
@@ -260,21 +260,21 @@ const Bookmarks = () => {
         ) : error ? (
           <div className="rounded-2xl border border-rose-200 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-950/30 p-8 text-center">
             <BookmarkX className="mx-auto text-rose-500" size={44} />
-            <h2 className="mt-4 text-xl font-bold font-space-grotesk text-slate-900 dark:text-white">Could not load bookmarks</h2>
-            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{error}</p>
+            <h2 className="mt-4 text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Could not load bookmarks</h2>
+            <p className="mt-2 text-sm text-slate-600 dark:text-dk-text-2">{error}</p>
             <button onClick={fetchBookmarks} className="mt-6 rounded-xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white hover:bg-rose-700 transition-all">
               Try Again
             </button>
           </div>
         ) : filteredBookmarks.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-slate-300 dark:border-white/10 bg-white dark:bg-slate-900 p-10 sm:p-16 text-center shadow-sm">
+          <div className="rounded-3xl border border-dashed border-slate-300 dark:border-dk-border bg-white dark:bg-dk-surface p-10 sm:p-16 text-center shadow-sm">
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300">
               <Bookmark size={38} />
             </div>
-            <h2 className="mt-6 text-2xl font-bold font-space-grotesk text-slate-900 dark:text-white">
+            <h2 className="mt-6 text-2xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">
               {query ? 'No matching bookmarks found' : 'Your bookmark shelf is empty'}
             </h2>
-            <p className="mx-auto mt-3 max-w-xl text-slate-500 dark:text-slate-400">
+            <p className="mx-auto mt-3 max-w-xl text-slate-500 dark:text-dk-text-2">
               {query
                 ? 'Try searching by course, instructor, lesson, or category.'
                 : 'Save important courses or lessons while learning, and they will appear here as quick resume cards.'}
@@ -300,7 +300,7 @@ const Bookmarks = () => {
                   initial={{ opacity: 0, y: 18 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-xl"
+                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-xl"
                 >
                   <button
                     onClick={() => bookmark.courseId && navigate(`/course/${bookmark.courseId}`)}
@@ -313,29 +313,29 @@ const Bookmarks = () => {
                         <BookOpen size={44} />
                       </div>
                     )}
-                    <span className="absolute left-4 top-4 rounded-full bg-white/90 dark:bg-slate-950/80 px-3 py-1 text-xs font-semibold text-blue-700 dark:text-blue-300 shadow-sm backdrop-blur">
+                    <span className="absolute left-4 top-4 rounded-full bg-white/90 dark:bg-dk-base/80 px-3 py-1 text-xs font-semibold text-blue-700 dark:text-blue-300 shadow-sm backdrop-blur">
                       {bookmark.category}
                     </span>
                   </button>
 
                   <div className="flex flex-1 flex-col p-5">
-                    <h2 className="line-clamp-2 text-base font-bold font-space-grotesk text-slate-900 dark:text-white">{bookmark.title}</h2>
-                    <div className="mt-3 flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+                    <h2 className="line-clamp-2 text-base font-bold font-space-grotesk text-slate-900 dark:text-dk-text">{bookmark.title}</h2>
+                    <div className="mt-3 flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-dk-text-2">
                       <UserRound size={14} />
                       <span className="truncate">{bookmark.instructor}</span>
                     </div>
 
                     {bookmark.lessonTitle && (
-                      <div className="mt-4 rounded-xl bg-slate-50 dark:bg-white/5 p-3">
+                      <div className="mt-4 rounded-xl bg-slate-50 dark:bg-dk-surface p-3">
                         <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Saved lesson</p>
-                        <p className="mt-1 line-clamp-1 text-sm font-semibold text-slate-700 dark:text-slate-200">{bookmark.lessonTitle}</p>
-                        {bookmark.positionLabel && <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{bookmark.positionLabel}</p>}
+                        <p className="mt-1 line-clamp-1 text-sm font-semibold text-slate-700 dark:text-dk-text">{bookmark.lessonTitle}</p>
+                        {bookmark.positionLabel && <p className="mt-1 text-xs text-slate-500 dark:text-dk-text-2">{bookmark.positionLabel}</p>}
                       </div>
                     )}
 
                     <div className="mt-5">
                       <div className="mb-2 flex items-center justify-between text-xs">
-                        <span className="font-semibold text-slate-700 dark:text-slate-300">Progress</span>
+                        <span className="font-semibold text-slate-700 dark:text-dk-text-2">Progress</span>
                         <span className="font-bold text-blue-600 dark:text-blue-400">{progressLoading ? '...' : `${percentage}%`}</span>
                       </div>
                       <Line strokeWidth={4} percent={percentage} strokeColor={percentage >= 100 ? '#10b981' : '#2563eb'} trailColor="#e2e8f0" strokeLinecap="round" className="h-1.5" />

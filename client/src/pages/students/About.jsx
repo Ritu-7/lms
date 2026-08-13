@@ -164,18 +164,18 @@ const FAQItem = ({ faq, index }) => {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: '-40px' }}
-      className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/60 overflow-hidden"
+      className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface/60 overflow-hidden"
     >
       <button
         onClick={() => setOpen((o) => !o)}
         className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left transition-colors hover:bg-slate-50 dark:hover:bg-white/[0.03]"
         aria-expanded={open}
       >
-        <span className="text-sm font-semibold text-slate-900 dark:text-white leading-snug">{faq.question}</span>
+        <span className="text-sm font-semibold text-slate-900 dark:text-dk-text leading-snug">{faq.question}</span>
         <motion.span
           animate={{ rotate: open ? 180 : 0 }}
           transition={{ duration: 0.25 }}
-          className="shrink-0 text-slate-400 dark:text-slate-500"
+          className="shrink-0 text-slate-400 dark:text-dk-text-3"
         >
           <ChevronDown size={18} />
         </motion.span>
@@ -189,7 +189,7 @@ const FAQItem = ({ faq, index }) => {
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
           >
-            <p className="px-6 pb-5 pt-0 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+            <p className="px-6 pb-5 pt-0 text-sm leading-relaxed text-slate-500 dark:text-dk-text-2">
               {faq.answer}
             </p>
           </motion.div>
@@ -202,10 +202,10 @@ const FAQItem = ({ faq, index }) => {
 // ─── Main Component ───────────────────────────────────────────────────────────
 const About = () => {
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-slate-50 dark:bg-dk-base">
 
       {/* ── Hero ────────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-white/[0.06]">
+      <section className="relative overflow-hidden bg-white dark:bg-dk-surface border-b border-slate-100 dark:border-white/[0.06]">
         {/* Background Decorations */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 h-96 w-96 rounded-full bg-gradient-to-br from-indigo-100 to-blue-100 dark:from-indigo-950/40 dark:to-blue-950/40 blur-3xl opacity-60" />
@@ -230,7 +230,7 @@ const About = () => {
               custom={0.1}
               initial="hidden"
               animate="visible"
-              className="font-space-grotesk text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-white leading-[1.12]"
+              className="font-space-grotesk text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-dk-text leading-[1.12]"
             >
               Redefining Learning with{' '}
               <span className="bg-gradient-to-r from-indigo-600 via-blue-600 to-violet-600 dark:from-indigo-400 dark:via-blue-400 dark:to-violet-400 bg-clip-text text-transparent">
@@ -243,7 +243,7 @@ const About = () => {
               custom={0.2}
               initial="hidden"
               animate="visible"
-              className="mt-6 text-lg sm:text-xl text-slate-500 dark:text-slate-400 leading-relaxed max-w-2xl mx-auto"
+              className="mt-6 text-lg sm:text-xl text-slate-500 dark:text-dk-text-2 leading-relaxed max-w-2xl mx-auto"
             >
               LearnSphereAI was born from a simple conviction — every learner deserves a personalised, intelligent, and engaging education experience, regardless of where they are in the world.
             </motion.p>
@@ -264,7 +264,7 @@ const About = () => {
               </Link>
               <Link
                 to="/contact"
-                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.04] px-7 py-3.5 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/[0.08] transition-all duration-200"
+                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-dk-border bg-white dark:bg-white/[0.04] px-7 py-3.5 text-sm font-semibold text-slate-700 dark:text-dk-text-2 hover:bg-slate-50 dark:hover:bg-white/[0.08] transition-all duration-200"
               >
                 Get in Touch
               </Link>
@@ -286,15 +286,15 @@ const About = () => {
                   key={stat.label}
                   whileHover={{ y: -4 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                  className="flex flex-col items-center gap-2 rounded-2xl border border-slate-100 dark:border-white/[0.07] bg-white dark:bg-slate-900/80 p-6 text-center shadow-sm"
+                  className="flex flex-col items-center gap-2 rounded-2xl border border-slate-100 dark:border-white/[0.07] bg-white dark:bg-dk-surface/80 p-6 text-center shadow-sm"
                 >
                   <div className={`flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br ${stat.color} shadow-lg`}>
                     <Icon size={20} className="text-white" />
                   </div>
-                  <span className="text-2xl font-bold font-space-grotesk text-slate-900 dark:text-white">
+                  <span className="text-2xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">
                     {stat.value}
                   </span>
-                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{stat.label}</span>
+                  <span className="text-xs font-medium text-slate-500 dark:text-dk-text-2">{stat.label}</span>
                 </motion.div>
               );
             })}
@@ -319,13 +319,13 @@ const About = () => {
               <div className="mb-5 flex h-13 w-13 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-600/30">
                 <Target size={24} className="text-white" />
               </div>
-              <h2 className="mb-4 font-space-grotesk text-2xl font-bold text-slate-900 dark:text-white">Our Mission</h2>
-              <p className="leading-relaxed text-slate-600 dark:text-slate-400">
+              <h2 className="mb-4 font-space-grotesk text-2xl font-bold text-slate-900 dark:text-dk-text">Our Mission</h2>
+              <p className="leading-relaxed text-slate-600 dark:text-dk-text-2">
                 To democratise world-class education by combining expert-crafted courses with the transformative power of artificial intelligence — making personalised, high-quality learning accessible to every curious mind on the planet.
               </p>
               <ul className="mt-6 space-y-2.5">
                 {['Remove barriers to quality education', 'Personalise every learning journey', 'Empower educators with AI tools'].map((item) => (
-                  <li key={item} className="flex items-center gap-2.5 text-sm text-slate-700 dark:text-slate-300">
+                  <li key={item} className="flex items-center gap-2.5 text-sm text-slate-700 dark:text-dk-text-2">
                     <CheckCircle2 size={16} className="shrink-0 text-blue-600 dark:text-blue-400" />
                     {item}
                   </li>
@@ -348,13 +348,13 @@ const About = () => {
               <div className="mb-5 flex h-13 w-13 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg shadow-violet-600/30">
                 <Sparkles size={24} className="text-white" />
               </div>
-              <h2 className="mb-4 font-space-grotesk text-2xl font-bold text-slate-900 dark:text-white">Our Vision</h2>
-              <p className="leading-relaxed text-slate-600 dark:text-slate-400">
+              <h2 className="mb-4 font-space-grotesk text-2xl font-bold text-slate-900 dark:text-dk-text">Our Vision</h2>
+              <p className="leading-relaxed text-slate-600 dark:text-dk-text-2">
                 A future where AI acts as every student's personal mentor — adapting in real-time to their strengths, closing their knowledge gaps, and unlocking their full intellectual potential through continuous, joyful learning.
               </p>
               <ul className="mt-6 space-y-2.5">
                 {['AI mentor for every learner', 'Continuous skill development', 'Global learning ecosystem'].map((item) => (
-                  <li key={item} className="flex items-center gap-2.5 text-sm text-slate-700 dark:text-slate-300">
+                  <li key={item} className="flex items-center gap-2.5 text-sm text-slate-700 dark:text-dk-text-2">
                     <CheckCircle2 size={16} className="shrink-0 text-violet-600 dark:text-violet-400" />
                     {item}
                   </li>
@@ -366,7 +366,7 @@ const About = () => {
       </section>
 
       {/* ── Features ────────────────────────────────────────────────────────── */}
-      <section className="border-y border-slate-100 dark:border-white/[0.06] bg-white dark:bg-slate-900/60 py-24">
+      <section className="border-y border-slate-100 dark:border-white/[0.06] bg-white dark:bg-dk-surface/60 py-24">
         <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
           <div className="mb-14 text-center">
             <motion.div variants={fadeIn} custom={0} initial="hidden" whileInView="visible" viewport={{ once: true }} className="mb-4">
@@ -378,7 +378,7 @@ const About = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="font-space-grotesk text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white"
+              className="font-space-grotesk text-3xl sm:text-4xl font-bold text-slate-900 dark:text-dk-text"
             >
               Everything You Need to Excel
             </motion.h2>
@@ -388,7 +388,7 @@ const About = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="mt-4 text-slate-500 dark:text-slate-400 max-w-xl mx-auto"
+              className="mt-4 text-slate-500 dark:text-dk-text-2 max-w-xl mx-auto"
             >
               From intelligent tutoring to verified certifications, our platform is engineered to make every learning session more effective.
             </motion.p>
@@ -407,13 +407,13 @@ const About = () => {
                   viewport={{ once: true, margin: '-40px' }}
                   whileHover={{ y: -5 }}
                   transition={{ type: 'spring', stiffness: 350, damping: 22 }}
-                  className={`rounded-2xl border ${feature.border} bg-white dark:bg-slate-900/80 p-6 shadow-sm hover:shadow-md transition-shadow`}
+                  className={`rounded-2xl border ${feature.border} bg-white dark:bg-dk-surface/80 p-6 shadow-sm hover:shadow-md transition-shadow`}
                 >
                   <div className={`mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl ${feature.color}`}>
                     <Icon size={22} />
                   </div>
-                  <h3 className="mb-2 font-semibold text-slate-900 dark:text-white">{feature.title}</h3>
-                  <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">{feature.description}</p>
+                  <h3 className="mb-2 font-semibold text-slate-900 dark:text-dk-text">{feature.title}</h3>
+                  <p className="text-sm leading-relaxed text-slate-500 dark:text-dk-text-2">{feature.description}</p>
                 </motion.div>
               );
             })}
@@ -474,7 +474,7 @@ const About = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="mb-4 font-space-grotesk text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white"
+              className="mb-4 font-space-grotesk text-3xl sm:text-4xl font-bold text-slate-900 dark:text-dk-text"
             >
               The Smarter Way to Learn
             </motion.h2>
@@ -484,7 +484,7 @@ const About = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="mb-8 text-slate-500 dark:text-slate-400 leading-relaxed"
+              className="mb-8 text-slate-500 dark:text-dk-text-2 leading-relaxed"
             >
               We've built LearnSphereAI from the ground up to be the most intelligent, engaging, and results-driven learning platform available today.
             </motion.p>
@@ -502,7 +502,7 @@ const About = () => {
                   <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-950/50">
                     <CheckCircle2 size={12} className="text-indigo-600 dark:text-indigo-400" />
                   </div>
-                  <span className="text-sm text-slate-700 dark:text-slate-300">{item}</span>
+                  <span className="text-sm text-slate-700 dark:text-dk-text-2">{item}</span>
                 </motion.div>
               ))}
             </div>
@@ -511,7 +511,7 @@ const About = () => {
       </section>
 
       {/* ── Team ────────────────────────────────────────────────────────────── */}
-      <section className="border-y border-slate-100 dark:border-white/[0.06] bg-white dark:bg-slate-900/60 py-24">
+      <section className="border-y border-slate-100 dark:border-white/[0.06] bg-white dark:bg-dk-surface/60 py-24">
         <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
           <div className="mb-14 text-center">
             <motion.div variants={fadeIn} custom={0} initial="hidden" whileInView="visible" viewport={{ once: true }} className="mb-4">
@@ -523,7 +523,7 @@ const About = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="font-space-grotesk text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white"
+              className="font-space-grotesk text-3xl sm:text-4xl font-bold text-slate-900 dark:text-dk-text"
             >
               The Minds Behind LearnSphereAI
             </motion.h2>
@@ -533,7 +533,7 @@ const About = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="mt-4 text-slate-500 dark:text-slate-400 max-w-xl mx-auto"
+              className="mt-4 text-slate-500 dark:text-dk-text-2 max-w-xl mx-auto"
             >
               A passionate team of educators, engineers, and AI researchers united by the goal of making world-class learning accessible to everyone.
             </motion.p>
@@ -550,21 +550,21 @@ const About = () => {
                 viewport={{ once: true, margin: '-40px' }}
                 whileHover={{ y: -5 }}
                 transition={{ type: 'spring', stiffness: 350, damping: 22 }}
-                className="flex flex-col items-center gap-4 rounded-2xl border border-slate-100 dark:border-white/[0.08] bg-white dark:bg-slate-900/80 p-8 text-center shadow-sm hover:shadow-md transition-shadow"
+                className="flex flex-col items-center gap-4 rounded-2xl border border-slate-100 dark:border-white/[0.08] bg-white dark:bg-dk-surface/80 p-8 text-center shadow-sm hover:shadow-md transition-shadow"
               >
                 {/* Avatar */}
                 <div className={`flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br ${member.gradient} shadow-lg`}>
                   <span className="font-space-grotesk text-xl font-bold text-white">{member.initials}</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-900 dark:text-white">{member.name}</h3>
-                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{member.role}</p>
+                  <h3 className="font-semibold text-slate-900 dark:text-dk-text">{member.name}</h3>
+                  <p className="mt-1 text-sm text-slate-500 dark:text-dk-text-2">{member.role}</p>
                 </div>
                 <div className="flex items-center gap-3">
                   {['twitter', 'linkedin'].map((social) => (
                     <button
                       key={social}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/[0.06] transition-colors"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 dark:border-dk-border text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/[0.06] transition-colors"
                       aria-label={`${member.name} ${social}`}
                     >
                       {social === 'twitter' ? (
@@ -594,7 +594,7 @@ const About = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="font-space-grotesk text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white"
+              className="font-space-grotesk text-3xl sm:text-4xl font-bold text-slate-900 dark:text-dk-text"
             >
               Frequently Asked Questions
             </motion.h2>
@@ -604,7 +604,7 @@ const About = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="mt-4 text-slate-500 dark:text-slate-400"
+              className="mt-4 text-slate-500 dark:text-dk-text-2"
             >
               Everything you need to know about LearnSphereAI. Can't find the answer?{' '}
               <Link to="/contact" className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">
@@ -654,7 +654,7 @@ const About = () => {
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Link
                 to="/course-list"
-                className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-3.5 text-sm font-semibold text-indigo-700 hover:bg-indigo-50 transition-all duration-200 shadow-lg shadow-black/10 active:scale-95"
+                className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-dk-surface px-8 py-3.5 text-sm font-semibold text-indigo-700 hover:bg-indigo-50 transition-all duration-200 shadow-lg shadow-black/10 active:scale-95"
               >
                 Browse Courses
                 <ArrowRight size={16} />
@@ -676,3 +676,4 @@ const About = () => {
 };
 
 export default About;
+

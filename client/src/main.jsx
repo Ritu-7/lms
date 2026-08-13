@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import { AppContextProvider } from './context/AppContextProvider'
 import { AuthProvider } from './contexts/AuthContext'
+import { ThemeProvider } from './contexts/ThemeContext'
 
 
 // Import your Publishable Key
@@ -19,11 +20,13 @@ createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl='/'>
-        <AuthProvider>
-          <AppContextProvider>
-            <App />
-          </AppContextProvider>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <AppContextProvider>
+              <App />
+            </AppContextProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </ClerkProvider>
     </BrowserRouter>
   </React.StrictMode>

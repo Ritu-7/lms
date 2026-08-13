@@ -19,7 +19,7 @@ const Sidebar = () => {
 
   // Only render if user is an educator
   return(
-    <div className='md:w-64 w-16 border-r min-h-screen text-base border-gray-200 bg-white py-2 flex flex-col'>
+    <div className='md:w-64 w-16 border-r min-h-screen text-base border-gray-200 dark:border-dk-border bg-white dark:bg-dk-surface py-2 flex flex-col'>
       {menuItems.map((item) => (
         <NavLink
           key={item.name}
@@ -28,8 +28,8 @@ const Sidebar = () => {
           className={({ isActive }) => 
             `flex items-center md:flex-row flex-col md:justify-start justify-center gap-3 py-3.5 md:px-10 border-r-[4px] transition-all duration-200 ${
               isActive 
-                ? 'bg-blue-50 border-blue-600 text-blue-600' 
-                : 'border-transparent text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+                ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-600 text-blue-600 dark:text-blue-400' 
+                : 'border-transparent text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-dk-border hover:text-gray-700 dark:hover:text-gray-200'
             }`
           }
         >

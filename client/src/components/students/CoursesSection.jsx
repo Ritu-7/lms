@@ -15,7 +15,7 @@ const CoursesSection = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-3xl md:text-4xl font-bold font-space-grotesk text-slate-900 dark:text-white"
+          className="text-3xl md:text-4xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text"
         >
           Featured Learning Paths
         </motion.h2>
@@ -24,7 +24,7 @@ const CoursesSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1 }}
-          className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto text-sm md:text-base"
+          className="text-slate-500 dark:text-dk-text-2 max-w-2xl mx-auto text-sm md:text-base"
         >
           Hand-picked courses from our top instructors to help you jumpstart your career in AI, Tech, and Design.
         </motion.p>
@@ -49,7 +49,7 @@ const CoursesSection = () => {
       <div className="text-center">
         <Link
           to="/course-list"
-          className="inline-flex items-center gap-2 px-8 py-3 rounded-xl font-semibold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-white/5 transition-all duration-200 shadow-sm hover:shadow-md group"
+          className="inline-flex items-center gap-2 px-8 py-3 rounded-xl font-semibold text-slate-700 dark:text-dk-text border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface hover:bg-slate-50 dark:hover:bg-dk-surface-2 transition-all duration-200 shadow-sm hover:shadow-md group"
         >
           Browse All Courses
           <svg 
