@@ -16,12 +16,12 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           <label htmlFor={inputId} className="text-sm font-medium text-slate-700 dark:text-slate-200">
             {label}
           </label>
-          {hint ? <span className="text-xs text-slate-500 dark:text-slate-400">{hint}</span> : null}
+          {hint ? <span className="text-xs text-slate-500 dark:text-dk-text-2">{hint}</span> : null}
         </div>
         <input
           ref={ref}
           id={inputId}
-          className={`w-full rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 px-4 py-3 text-sm text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-blue-400 dark:focus:border-cyan-300/60 focus:ring-4 focus:ring-blue-500/10 dark:focus:ring-cyan-300/10 ${className}`}
+          className={`w-full rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-white/5 px-4 py-3 text-sm text-slate-900 dark:text-dk-text outline-none transition placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-blue-400 dark:focus:border-cyan-300/60 focus:ring-4 focus:ring-blue-500/10 dark:focus:ring-cyan-300/10 ${className}`}
           {...props}
         />
         {error ? (

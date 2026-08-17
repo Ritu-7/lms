@@ -86,10 +86,10 @@ const LoginForm = ({ role, onSwitchToSignUp }: LoginFormProps) => {
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-blue-600 dark:text-cyan-300/80">
               Secure sign in
             </p>
-            <h2 className="font-space-grotesk text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+            <h2 className="font-space-grotesk text-3xl font-bold tracking-tight text-slate-900 dark:text-dk-text sm:text-4xl">
               Welcome back
             </h2>
-            <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">
+            <p className="text-sm leading-6 text-slate-600 dark:text-dk-text-2">
               {role === 'student'
                 ? 'Continue your learning journey.'
                 : role === 'instructor'
@@ -99,7 +99,7 @@ const LoginForm = ({ role, onSwitchToSignUp }: LoginFormProps) => {
           </div>
 
           {/* ── Role selector ─────────────────────────── */}
-          <div className="grid grid-cols-2 gap-2 rounded-[22px] border border-slate-200 dark:border-white/10 bg-slate-100/60 dark:bg-white/[0.04] p-1.5 shadow-inner shadow-black/5 dark:shadow-black/20 backdrop-blur-sm">
+          <div className="grid grid-cols-2 gap-2 rounded-[22px] border border-slate-200 dark:border-dk-border bg-slate-100/60 dark:bg-dk-surface-2 p-1.5 shadow-inner shadow-black/5 dark:shadow-black/20 backdrop-blur-sm">
             {PUBLIC_AUTH_ROLES.map((r) => (
               <button
                 key={r.key}
@@ -108,7 +108,7 @@ const LoginForm = ({ role, onSwitchToSignUp }: LoginFormProps) => {
                 className={`flex flex-col items-center justify-center gap-1.5 rounded-[18px] py-3 text-xs font-semibold transition-all duration-200 ${
                   role === r.key
                     ? 'bg-white text-slate-950 shadow-[0_8px_24px_rgba(15,23,42,0.15)]'
-                    : 'text-slate-500 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-white/[0.06] hover:text-slate-900 dark:hover:text-white'
+                    : 'text-slate-500 dark:text-dk-text-2 hover:bg-slate-200/60 dark:hover:bg-white/[0.06] hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 <span className="capitalize">{r.key}</span>
@@ -201,7 +201,7 @@ const LoginForm = ({ role, onSwitchToSignUp }: LoginFormProps) => {
 
           {/* ── Sign up nudge ──────────────────────────── */}
           {onSwitchToSignUp && (
-            <p className="text-center text-sm text-slate-500 dark:text-slate-400">
+            <p className="text-center text-sm text-slate-500 dark:text-dk-text-2">
               Don&apos;t have an account?{' '}
               <button
                 type="button"

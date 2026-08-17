@@ -167,60 +167,86 @@ ${code}
   });
 };
 
-export const runCodeViaPiston = async ({ code, language }) => {
-  const runtimeMap = {
-    javascript: { language: "javascript", version: "18.15.0", ext: "js" },
-    python: { language: "python", version: "3.10.0", ext: "py" },
-    java: { language: "java", version: "15.0.2", ext: "java" },
-    cpp: { language: "c++", version: "10.2.0", ext: "cpp" },
-    typescript: { language: "typescript", version: "5.0.3", ext: "ts" },
-    go: { language: "go", version: "1.16.2", ext: "go" },
-    rust: { language: "rust", version: "1.68.2", ext: "rs" },
-  };
+// Wandbox compiler map — Piston API went whitelist-only on 2026-02-15
+const WANDBOX_COMPILERS = {
+  javascript: "nodejs-20.17.0",
+  python:     "cpython-3.12.7",
+  java:       "openjdk-jdk-22+36",
+  cpp:        "gcc-13.2.0",
+  typescript: "typescript-5.6.2",
+  go:         "go-1.23.2",
+  rust:       "rust-1.82.0",
+};
 
-  const runtime = runtimeMap[language];
-  if (!runtime) {
+export const runCodeViaPiston = async ({ code, language }) => {
+  const compiler = WANDBOX_COMPILERS[language];
+  if (!compiler) {
     const error = new Error(`Running ${language} is not supported yet.`);
     error.statusCode = 400;
     throw error;
   }
 
   if (!String(code || "").trim()) {
-    const error = new Error("NO_CODE");
+    const error = new Error("No code provided.");
     error.statusCode = 400;
     throw error;
   }
 
-  const response = await fetch("https://emkc.org/api/v2/piston/execute", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      language: runtime.language,
-      version: runtime.version,
-      files: [{ name: `main.${runtime.ext}`, content: code }],
-    }),
-  });
-
-  if (!response.ok) {
-    const error = new Error(`Execution service error ${response.status}`);
+  let response;
+  try {
+    response = await fetch("https://wandbox.org/api/compile.json", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        compiler,
+        code,
+        options: "",
+        stdin: "",
+        "compiler-option-raw": "",
+        "runtime-option-raw": "",
+      }),
+      signal: AbortSignal.timeout(25000), // 25 s hard timeout
+    });
+  } catch (fetchErr) {
+    const error = new Error(`Code execution service unreachable: ${fetchErr.message}`);
     error.statusCode = 502;
     throw error;
   }
 
-  const data = await response.json();
-  const stdout = data?.run?.stdout || "";
-  const stderr = data?.run?.stderr || "";
-  const compileErr = data?.compile?.stderr || "";
-  const signal = data?.run?.signal;
+  if (!response.ok) {
+    const text = await response.text().catch(() => "");
+    const error = new Error(`Execution service error ${response.status}${text ? ": " + text.slice(0, 120) : ""}`);
+    error.statusCode = 502;
+    throw error;
+  }
+
+  let data;
+  try {
+    data = await response.json();
+  } catch {
+    const error = new Error("Execution service returned an unreadable response.");
+    error.statusCode = 502;
+    throw error;
+  }
+
+  // Wandbox response fields
+  const exitCode   = data?.status ?? "?";   // "0" = success, non-"0" = error
+  const stdout     = data?.program_output || "";
+  const stderr     = data?.program_error  || "";
+  const compileErr = data?.compiler_error || "";
+  const signal     = data?.signal         || "";
 
   let output = "";
-  if (compileErr) output += `${compileErr}\n`;
-  if (stdout) output += stdout;
-  if (stderr) output += `${output ? "\n" : ""}${stderr}`;
-  if (signal) output += `\n[terminated by signal: ${signal}]`;
+  if (compileErr) output += compileErr.trimEnd() + "\n";
+  if (stdout)     output += stdout;
+  if (stderr)     output += (output ? "\n" : "") + stderr.trimEnd();
+  if (signal)     output += `\n[terminated by signal: ${signal}]`;
+  if (exitCode !== "0" && exitCode !== 0) {
+    output += `\n[exit code ${exitCode}]`;
+  }
   if (!output.trim()) output = "[Program ran with no output]";
 
-  return output;
+  return output.trimEnd();
 };
 
 export const retryWithBackoff = async (fn, retries = 1, delayMs = 350) => {
