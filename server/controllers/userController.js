@@ -39,14 +39,14 @@ export const syncUser = async (req, res) => {
 // --- Get Current User Profile ---
 export const getUserData = async (req, res) => {
   try {
-    const auth = req.auth();
-    if (!auth || !auth.userId) return res.status(401).json({ success: false, message: "Unauthorized" });
+    const authId = req.clerkUserId;
+    if (!authId) return res.status(401).json({ success: false, message: "Unauthorized" });
 
     let user = await User.findOne({ clerkUserId: auth.userId });
     if (!user) {
-      const role = resolveUserRole({ clerkUserId: auth.userId, email: "", existingRole: undefined });
+      const role = resolveUserRole({ clerkUserId: authId, email: "", existingRole: undefined });
       user = await User.create({
-        clerkUserId: auth.userId,
+        clerkUserId: authId,
         name: "User",
         email: "",
         imageUrl: "",
@@ -67,7 +67,7 @@ export const getUserData = async (req, res) => {
 // --- Get Enrolled Courses ---
 export const userEnrolledCourses = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const userId = req.clerkUserId;
     const user = await User.findOne({ clerkUserId: userId }).populate({
       path: "enrolledCourses",
       populate: { path: "modules", populate: { path: "lessons" } },
@@ -86,7 +86,10 @@ export const userEnrolledCourses = async (req, res) => {
 // --- Create Razorpay Order (FIXED) ---
 export const purchaseCourse = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const userId = req.clerkUserId;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
     const { courseId } = req.body;
 
     const user = await User.findOne({ clerkUserId: userId });
@@ -98,8 +101,18 @@ export const purchaseCourse = async (req, res) => {
     if (!course.isPublished) return res.status(409).json({ success: false, message: "Course is not available for purchase" });
     if (user.enrolledCourses.some((id) => id.equals(course._id))) return res.status(409).json({ success: false, message: "You are already enrolled in this course" });
 
+    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+      return res.status(500).json({ success: false, message: "Razorpay credentials not configured" });
+    }
+
     // Amount in paisa
-    const amount = Math.round((course.coursePrice - (course.discount * course.coursePrice) / 100) * 100);
+    const coursePrice = course.coursePrice || 0;
+    const discount = course.discount || 0;
+    const amount = Math.round((coursePrice - (discount * coursePrice) / 100) * 100);
+
+    if (amount <= 0) {
+      return res.status(400).json({ success: false, message: "Invalid course price" });
+    }
 
     // Initializing Razorpay
     const razorpay = new Razorpay({
@@ -122,17 +135,24 @@ export const purchaseCourse = async (req, res) => {
 
     res.json({ success: true, order });
   } catch (error) {
-    // Isse Render logs mein poora stack trace dikhega
     console.error("DETAILED PURCHASE ERROR:", error);
-    res.status(500).json({ success: false, message: error.message });
+    const errorMessage = error.error?.description || error.message || "Payment initiation failed";
+    res.status(500).json({ success: false, message: errorMessage });
   }
 };
 
 // --- Verify Payment & Enroll ---
 export const verifyRazorpayPayment = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const userId = req.clerkUserId;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+      return res.status(500).json({ success: false, message: "Razorpay credentials not configured" });
+    }
 
     const razorpay = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID,
@@ -180,7 +200,7 @@ export const verifyRazorpayPayment = async (req, res) => {
 // --- Progress & Ratings ---
 export const updateUserCourseProgress = async (req, res) => {
   try {
-    const { userId } = typeof req.auth === 'function' ? req.auth() : req.auth;
+    const userId = req.clerkUserId;
     const { courseId, lectureId, lessonId, completionData = {} } = req.body;
     const targetLessonId = lessonId || lectureId;
     const userData = await User.findOne({ clerkUserId: userId });
@@ -242,7 +262,7 @@ export const updateUserCourseProgress = async (req, res) => {
 
 export const getUserCourseProgress = async (req, res) => {
   try {
-    const { userId } = typeof req.auth === 'function' ? req.auth() : req.auth;
+    const userId = req.clerkUserId;
     const { courseId } = req.body;
     const user = await User.findOne({ clerkUserId: userId });
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
@@ -271,7 +291,7 @@ export const getUserCourseProgress = async (req, res) => {
 
 export const addUserRating = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const userId = req.clerkUserId;
     const { courseId, rating } = req.body;
     const course = await Course.findById(courseId);
     const index = course.courseRatings.findIndex((r) => r.userId === userId);
@@ -286,7 +306,7 @@ export const addUserRating = async (req, res) => {
 
 export const updateUserRole = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const userId = req.clerkUserId;
     const { role } = req.body;
     const currentUser = await User.findOne({ clerkUserId: userId });
     const resolvedRole = resolveUserRole({ clerkUserId: userId, email: currentUser?.email, existingRole: role || currentUser?.role });
