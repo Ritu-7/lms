@@ -53,14 +53,14 @@ import NoApiKeyState from '../../components/ai/NoApiKeyState'
 
 const AI_MODELS = [
   {
-    id: 'gemini-2.0-flash',
+    id: 'gemini-3.5-flash',
     name: 'Gemini Flash',
     description: 'Fast & smart',
     icon: Zap,
     iconColor: 'text-amber-500',
   },
   {
-    id: 'gemini-2.0-flash-thinking',
+    id: 'gemini-3.5-flash-thinking',
     name: 'Gemini Thinking',
     description: 'Deep reasoning',
     icon: Brain,
@@ -226,7 +226,7 @@ const MessageContent = ({ text, isStreaming }) => {
           },
           thead({ children }) {
             return (
-              <thead className="bg-slate-50 dark:bg-dk-surface-2/60 text-slate-700 dark:text-dk-text-2 text-xs uppercase tracking-wide">
+              <thead className="bg-slate-50 dark:bg-dk-surface text-slate-700 dark:text-dk-text-2 text-xs uppercase tracking-wide">
                 {children}
               </thead>
             )
@@ -301,7 +301,7 @@ const ChatBubble = ({ msg, onRetry, isLast }) => {
               ? 'bg-blue-600 text-white rounded-tr-sm leading-relaxed'
               : isError
               ? 'bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/50 text-rose-700 dark:text-rose-300 rounded-tl-sm'
-              : 'bg-white dark:bg-dk-surface-2/80 border border-slate-100 dark:border-white/[0.08] text-slate-800 dark:text-dk-text rounded-tl-sm'
+              : 'bg-white dark:bg-dk-surface border border-slate-100 dark:border-white/[0.08] text-slate-800 dark:text-dk-text rounded-tl-sm'
           }`}
         >
           {isUser ? (
@@ -346,7 +346,7 @@ const TypingIndicator = () => (
     <div className="shrink-0 h-8 w-8 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center shadow-sm">
       <Brain size={14} className="text-white" />
     </div>
-    <div className="rounded-2xl rounded-tl-sm bg-white dark:bg-dk-surface-2/80 border border-slate-100 dark:border-white/[0.08] px-4 py-3 shadow-sm">
+    <div className="rounded-2xl rounded-tl-sm bg-white dark:bg-dk-surface border border-slate-100 dark:border-white/[0.08] px-4 py-3 shadow-sm">
       <div className="flex gap-1.5 items-center h-5">
         {[0, 1, 2].map((i) => (
           <motion.div
@@ -824,7 +824,7 @@ const AITutor = () => {
             animate={{ width: 256, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.22, ease: 'easeInOut' }}
-            className="hidden lg:flex shrink-0 flex-col border-r border-slate-200 dark:border-white/[0.07] bg-white dark:bg-dk-surface/80 overflow-hidden"
+            className="hidden lg:flex shrink-0 flex-col border-r border-slate-200 dark:border-white/[0.07] bg-white dark:bg-dk-surface overflow-hidden"
           >
             <SidebarContent />
           </motion.aside>
@@ -874,7 +874,7 @@ const AITutor = () => {
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
 
         {/* ── TOP BAR ── */}
-        <div className="shrink-0 flex items-center gap-2 px-3 sm:px-4 py-2.5 border-b border-slate-200 dark:border-white/[0.07] bg-white/90 dark:bg-dk-surface/80 backdrop-blur-md z-10">
+        <div className="shrink-0 flex items-center gap-2 px-3 sm:px-4 py-2.5 border-b border-slate-200 dark:border-white/[0.07] bg-white/90 dark:bg-dk-surface backdrop-blur-md z-10">
 
           {/* Left: sidebar toggle + mobile history */}
           <div className="flex items-center gap-1">
@@ -1024,7 +1024,7 @@ const AITutor = () => {
         </div>
 
         {/* ── INPUT AREA ── */}
-        <div className="shrink-0 border-t border-slate-200 dark:border-white/[0.07] bg-white/90 dark:bg-dk-surface/80 backdrop-blur-md px-3 sm:px-4 py-3">
+        <div className="shrink-0 border-t border-slate-200 dark:border-white/[0.07] bg-white/90 dark:bg-dk-surface backdrop-blur-md px-3 sm:px-4 py-3">
           <div className="max-w-3xl mx-auto">
 
             {/* Attachment chips */}
@@ -1076,7 +1076,7 @@ const AITutor = () => {
             )}
 
             {/* Main input row */}
-            <div className="flex items-end gap-2 rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface-2/60 shadow-sm focus-within:border-blue-400 dark:focus-within:border-blue-600/60 focus-within:ring-2 focus-within:ring-blue-500/10 dark:focus-within:ring-blue-500/10 transition-all px-3 py-2">
+            <div className="flex items-end gap-2 rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm focus-within:border-blue-400 dark:focus-within:border-blue-600/60 focus-within:ring-2 focus-within:ring-blue-500/10 dark:focus-within:ring-blue-500/10 transition-all px-3 py-2">
 
               {/* Attach buttons */}
               <div className="flex items-center gap-0.5 pb-0.5">
@@ -1159,3 +1159,4 @@ const AITutor = () => {
 }
 
 export default AITutor
+

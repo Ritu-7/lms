@@ -40,9 +40,9 @@ const NotesGenerator = () => {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-64px)] bg-slate-50 font-['Outfit']">
-      <div className="h-16 flex items-center justify-between px-6 bg-white dark:bg-dk-surface border-b border-slate-200 gap-3">
-        <h1 className="text-xl font-bold text-slate-800">Generated Study Notes</h1>
+    <div className="flex flex-col h-[calc(100vh-64px)] bg-slate-50 dark:bg-dk-base font-['Outfit']">
+      <div className="h-16 flex items-center justify-between px-6 bg-white dark:bg-dk-surface border-b border-slate-200 dark:border-dk-border gap-3">
+        <h1 className="text-xl font-bold text-slate-800 dark:text-white">Generated Study Notes</h1>
         <button onClick={handleGenerate} className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 flex items-center gap-2">
           {loading ? <Loader2 className="animate-spin" size={16} /> : null}
           Regenerate
@@ -53,38 +53,38 @@ const NotesGenerator = () => {
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full rounded-xl border border-slate-200 bg-white dark:bg-dk-surface px-4 py-3 text-sm outline-none"
+          className="w-full rounded-xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface px-4 py-3 text-sm outline-none text-slate-800 dark:text-white"
           placeholder="Source title"
         />
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          className="w-full h-40 rounded-3xl border border-slate-200 bg-white dark:bg-dk-surface p-6 outline-none text-slate-800 leading-relaxed"
+          className="w-full h-40 rounded-3xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 outline-none text-slate-800 dark:text-white leading-relaxed"
           placeholder="Paste source notes, lecture text, or transcript here"
         />
       </div>
 
       <div className="flex flex-1 overflow-hidden p-6 gap-6">
-        <div className="flex-1 bg-white dark:bg-dk-surface rounded-3xl shadow-sm border border-slate-100 p-6 overflow-y-auto">
+        <div className="flex-1 bg-white dark:bg-dk-surface rounded-3xl shadow-sm border border-slate-100 dark:border-dk-border p-6 overflow-y-auto">
           {error ? (
             error.isNoKey ? <NoApiKeyState /> :
             <div className="flex items-center gap-3 text-rose-600"><AlertTriangle size={16} />{error.message}</div>
           ) : summary?.summary ? (
-            <textarea value={summary.summary} readOnly className="w-full h-full resize-none outline-none text-slate-800 leading-relaxed" />
+            <textarea value={summary.summary} readOnly className="w-full h-full resize-none outline-none text-slate-800 dark:text-white leading-relaxed bg-transparent" />
           ) : (
             <div className="h-full flex items-center justify-center text-slate-400 text-sm">No generated notes yet. Paste source content and click Regenerate.</div>
           )}
         </div>
 
         <div className="w-[350px] space-y-6 overflow-y-auto">
-          <div className="bg-white dark:bg-dk-surface p-5 rounded-3xl shadow-sm border border-slate-100">
-            <h2 className="font-bold text-slate-800 mb-2">Summary</h2>
-            <p className="text-sm text-slate-600">{summary?.summary || 'No summary available yet.'}</p>
+          <div className="bg-white dark:bg-dk-surface p-5 rounded-3xl shadow-sm border border-slate-100 dark:border-dk-border">
+            <h2 className="font-bold text-slate-800 dark:text-white mb-2">Summary</h2>
+            <p className="text-sm text-slate-600 dark:text-slate-300">{summary?.summary || 'No summary available yet.'}</p>
           </div>
-          <div className="bg-white dark:bg-dk-surface p-5 rounded-3xl shadow-sm border border-slate-100">
-            <h2 className="font-bold text-slate-800 mb-2">Key Points</h2>
+          <div className="bg-white dark:bg-dk-surface p-5 rounded-3xl shadow-sm border border-slate-100 dark:border-dk-border">
+            <h2 className="font-bold text-slate-800 dark:text-white mb-2">Key Points</h2>
             {summary?.keyPoints?.length ? (
-              <ul className="list-disc list-inside text-sm text-slate-600">
+              <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-300">
                 {summary.keyPoints.map((point, index) => <li key={index}>{point}</li>)}
               </ul>
             ) : (

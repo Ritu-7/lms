@@ -230,7 +230,7 @@ const CourseDetail = () => {
                       initial={{ height: 0 }}
                       animate={{ height: 'auto' }}
                       exit={{ height: 0 }}
-                      className="border-t border-slate-200 dark:border-dk-border p-6 space-y-4 bg-slate-50 dark:bg-dk-surface-2/30 text-sm"
+                      className="border-t border-slate-200 dark:border-dk-border p-6 space-y-4 bg-slate-50 dark:bg-dk-surface text-sm"
                     >
                       {chapter.chapterContent?.map((lecture, i) => {
                         const lessonType = getLessonType(lecture);
@@ -311,4 +311,5 @@ const CourseDetail = () => {
 };
 
 export default CourseDetail;
+
 

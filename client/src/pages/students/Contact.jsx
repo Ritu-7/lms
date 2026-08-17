@@ -238,7 +238,7 @@ const FAQItem = ({ faq, index }) => {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: '-40px' }}
-      className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface/60 overflow-hidden"
+      className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface overflow-hidden"
     >
       <button
         onClick={() => setOpen((o) => !o)}
@@ -374,7 +374,7 @@ const Contact = () => {
                   href={channel.href}
                   whileHover={{ y: -4 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                  className={`flex flex-col gap-3 rounded-2xl border ${channel.border} bg-white dark:bg-dk-surface/80 p-6 shadow-sm hover:shadow-md transition-shadow group`}
+                  className={`flex flex-col gap-3 rounded-2xl border ${channel.border} bg-white dark:bg-dk-surface p-6 shadow-sm hover:shadow-md transition-shadow group`}
                 >
                   <div className={`inline-flex h-11 w-11 items-center justify-center rounded-xl ${channel.color}`}>
                     <Icon size={20} />
@@ -407,7 +407,7 @@ const Contact = () => {
             viewport={{ once: true, margin: '-60px' }}
             className="lg:col-span-3"
           >
-            <div className="rounded-3xl border border-slate-100 dark:border-white/[0.08] bg-white dark:bg-dk-surface/80 p-8 lg:p-10 shadow-sm">
+            <div className="rounded-3xl border border-slate-100 dark:border-white/[0.08] bg-white dark:bg-dk-surface p-8 lg:p-10 shadow-sm">
               <h2 className="mb-1 font-space-grotesk text-2xl font-bold text-slate-900 dark:text-dk-text">Send Us a Message</h2>
               <p className="mb-8 text-sm text-slate-500 dark:text-dk-text-2">
                 Fill in the form below and we'll get back to you within 24 business hours.
@@ -543,7 +543,7 @@ const Contact = () => {
             className="lg:col-span-2 flex flex-col gap-6"
           >
             {/* Contact Details */}
-            <div className="rounded-3xl border border-slate-100 dark:border-white/[0.08] bg-white dark:bg-dk-surface/80 p-8 shadow-sm">
+            <div className="rounded-3xl border border-slate-100 dark:border-white/[0.08] bg-white dark:bg-dk-surface p-8 shadow-sm">
               <h3 className="mb-6 font-space-grotesk text-lg font-bold text-slate-900 dark:text-dk-text">Contact Details</h3>
               <div className="space-y-5">
                 {[
@@ -576,7 +576,7 @@ const Contact = () => {
             </div>
 
             {/* Social Links */}
-            <div className="rounded-3xl border border-slate-100 dark:border-white/[0.08] bg-white dark:bg-dk-surface/80 p-8 shadow-sm">
+            <div className="rounded-3xl border border-slate-100 dark:border-white/[0.08] bg-white dark:bg-dk-surface p-8 shadow-sm">
               <h3 className="mb-5 font-space-grotesk text-lg font-bold text-slate-900 dark:text-dk-text">Follow Us</h3>
               <div className="space-y-3">
                 {SOCIAL_LINKS.map((social) => {
@@ -605,7 +605,7 @@ const Contact = () => {
       </section>
 
       {/* ── Office Locations ─────────────────────────────────────────────────── */}
-      <section className="border-y border-slate-100 dark:border-white/[0.06] bg-white dark:bg-dk-surface/60 py-24">
+      <section className="border-y border-slate-100 dark:border-white/[0.06] bg-white dark:bg-dk-surface py-24">
         <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
             <motion.div variants={fadeIn} custom={0} initial="hidden" whileInView="visible" viewport={{ once: true }} className="mb-4">
@@ -644,7 +644,7 @@ const Contact = () => {
                 viewport={{ once: true, margin: '-40px' }}
                 whileHover={{ y: -5 }}
                 transition={{ type: 'spring', stiffness: 350, damping: 22 }}
-                className="rounded-2xl border border-slate-100 dark:border-white/[0.08] bg-white dark:bg-dk-surface/80 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                className="rounded-2xl border border-slate-100 dark:border-white/[0.08] bg-white dark:bg-dk-surface overflow-hidden shadow-sm hover:shadow-md transition-shadow"
               >
                 {/* Map Placeholder */}
                 <div className={`relative h-44 bg-gradient-to-br ${office.gradient} flex items-center justify-center overflow-hidden`}>
@@ -843,3 +843,4 @@ const Contact = () => {
 };
 
 export default Contact;
+

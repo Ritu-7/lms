@@ -164,7 +164,7 @@ const FAQItem = ({ faq, index }) => {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: '-40px' }}
-      className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface/60 overflow-hidden"
+      className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface overflow-hidden"
     >
       <button
         onClick={() => setOpen((o) => !o)}
@@ -286,7 +286,7 @@ const About = () => {
                   key={stat.label}
                   whileHover={{ y: -4 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                  className="flex flex-col items-center gap-2 rounded-2xl border border-slate-100 dark:border-white/[0.07] bg-white dark:bg-dk-surface/80 p-6 text-center shadow-sm"
+                  className="flex flex-col items-center gap-2 rounded-2xl border border-slate-100 dark:border-white/[0.07] bg-white dark:bg-dk-surface p-6 text-center shadow-sm"
                 >
                   <div className={`flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br ${stat.color} shadow-lg`}>
                     <Icon size={20} className="text-white" />
@@ -366,7 +366,7 @@ const About = () => {
       </section>
 
       {/* ── Features ────────────────────────────────────────────────────────── */}
-      <section className="border-y border-slate-100 dark:border-white/[0.06] bg-white dark:bg-dk-surface/60 py-24">
+      <section className="border-y border-slate-100 dark:border-white/[0.06] bg-white dark:bg-dk-surface py-24">
         <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
           <div className="mb-14 text-center">
             <motion.div variants={fadeIn} custom={0} initial="hidden" whileInView="visible" viewport={{ once: true }} className="mb-4">
@@ -407,7 +407,7 @@ const About = () => {
                   viewport={{ once: true, margin: '-40px' }}
                   whileHover={{ y: -5 }}
                   transition={{ type: 'spring', stiffness: 350, damping: 22 }}
-                  className={`rounded-2xl border ${feature.border} bg-white dark:bg-dk-surface/80 p-6 shadow-sm hover:shadow-md transition-shadow`}
+                  className={`rounded-2xl border ${feature.border} bg-white dark:bg-dk-surface p-6 shadow-sm hover:shadow-md transition-shadow`}
                 >
                   <div className={`mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl ${feature.color}`}>
                     <Icon size={22} />
@@ -511,7 +511,7 @@ const About = () => {
       </section>
 
       {/* ── Team ────────────────────────────────────────────────────────────── */}
-      <section className="border-y border-slate-100 dark:border-white/[0.06] bg-white dark:bg-dk-surface/60 py-24">
+      <section className="border-y border-slate-100 dark:border-white/[0.06] bg-white dark:bg-dk-surface py-24">
         <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
           <div className="mb-14 text-center">
             <motion.div variants={fadeIn} custom={0} initial="hidden" whileInView="visible" viewport={{ once: true }} className="mb-4">
@@ -550,7 +550,7 @@ const About = () => {
                 viewport={{ once: true, margin: '-40px' }}
                 whileHover={{ y: -5 }}
                 transition={{ type: 'spring', stiffness: 350, damping: 22 }}
-                className="flex flex-col items-center gap-4 rounded-2xl border border-slate-100 dark:border-white/[0.08] bg-white dark:bg-dk-surface/80 p-8 text-center shadow-sm hover:shadow-md transition-shadow"
+                className="flex flex-col items-center gap-4 rounded-2xl border border-slate-100 dark:border-white/[0.08] bg-white dark:bg-dk-surface p-8 text-center shadow-sm hover:shadow-md transition-shadow"
               >
                 {/* Avatar */}
                 <div className={`flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br ${member.gradient} shadow-lg`}>
@@ -676,4 +676,5 @@ const About = () => {
 };
 
 export default About;
+
 

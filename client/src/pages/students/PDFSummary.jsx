@@ -2,7 +2,8 @@ import React, { useState, useCallback } from 'react'
 import { useAuth } from '@clerk/clerk-react'
 import { useDropzone } from 'react-dropzone'
 import { Document, Page, pdfjs } from 'react-pdf'
-import { FileUp, Sparkles, Download, Copy, BookOpen, Loader2, AlertTriangle } from 'lucide-react'
+import { FileUp, Sparkles, Download, Copy, BookOpen, Loader2, AlertTriangle, Check } from 'lucide-react'
+import { toast } from 'react-toastify'
 import 'react-pdf/dist/Page/AnnotationLayer.css'
 import 'react-pdf/dist/Page/TextLayer.css'
 import { aiRequest } from '../../utils/aiClient'
@@ -16,7 +17,54 @@ const PDFSummary = () => {
   const [processing, setProcessing] = useState(false)
   const [summaryData, setSummaryData] = useState(null)
   const [error, setError] = useState(null)
+  const [copied, setCopied] = useState(false)
   const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
+
+  const formatSummaryText = () => {
+    if (!summaryData) return ''
+    let text = `# AI PDF Summary\n\n`
+    if (summaryData.summary) {
+      text += `## Summary\n${summaryData.summary}\n\n`
+    }
+    if (summaryData.concepts?.length) {
+      text += `## Key Concepts\n`
+      summaryData.concepts.forEach(c => text += `- ${c}\n`)
+      text += `\n`
+    }
+    if (summaryData.formulas?.length) {
+      text += `## Important Formulas\n`
+      summaryData.formulas.forEach(f => text += `- ${f}\n`)
+      text += `\n`
+    }
+    return text.trim()
+  }
+
+  const handleDownload = () => {
+    const text = formatSummaryText()
+    if (!text) return
+    const blob = new Blob([text], { type: 'text/markdown' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${file?.name?.replace('.pdf', '') || 'document'}_summary.md`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
+  const handleCopy = async () => {
+    const text = formatSummaryText()
+    if (!text) return
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(true)
+      toast.success('Summary copied to clipboard')
+      setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+      toast.error('Failed to copy summary')
+    }
+  }
 
   const extractText = async (uploadedFile) => {
     const buffer = await uploadedFile.arrayBuffer()
@@ -100,7 +148,7 @@ const PDFSummary = () => {
               )
             ) : summaryData ? (
               <div className="space-y-6">
-                <div className="p-6 bg-slate-50 dark:bg-dk-surface-2/50 rounded-2xl border border-slate-100 dark:border-slate-700">
+                <div className="p-6 bg-slate-50 dark:bg-dk-surface rounded-2xl border border-slate-100 dark:border-slate-700">
                   <h2 className="font-bold font-space-grotesk text-slate-900 dark:text-dk-text mb-3 flex items-center gap-2"><Sparkles size={18} className="text-blue-600" /> Summary</h2>
                   <p className="text-sm text-slate-600 dark:text-dk-text-2 leading-relaxed">
                     {summaryData.summary || 'No summary was returned.'}
@@ -138,8 +186,11 @@ const PDFSummary = () => {
                 </div>
 
                 <div className="flex gap-3">
-                  <button className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition"><Download size={18} /> Download Notes</button>
-                  <button className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-white dark:bg-dk-surface-2 border border-slate-200 dark:border-dk-border text-slate-700 dark:text-dk-text rounded-xl font-semibold hover:bg-slate-50 transition"><Copy size={18} /> Copy Summary</button>
+                  <button onClick={handleDownload} className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition"><Download size={18} /> Download Notes</button>
+                  <button onClick={handleCopy} className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-white dark:bg-dk-surface-2 border border-slate-200 dark:border-dk-border text-slate-700 dark:text-dk-text rounded-xl font-semibold hover:bg-slate-50 transition dark:hover:bg-dk-surface">
+                    {copied ? <Check size={18} className="text-emerald-500" /> : <Copy size={18} />} 
+                    {copied ? 'Copied!' : 'Copy Summary'}
+                  </button>
                 </div>
               </div>
             ) : (
@@ -165,3 +216,4 @@ const PDFSummary = () => {
 }
 
 export default PDFSummary
+

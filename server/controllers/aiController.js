@@ -51,7 +51,7 @@ const buildSummaryResponse = (data, fallbackTitle = "") => ({
 export const chatTutor = async (req, res, next) => {
   try {
     const user = await resolveCurrentUser(req.clerkUserId);
-    const { messages = [], model = "gemini-2.0-flash", courseTitle = "" } = req.body || {};
+    const { messages = [], model = "gemini-3.5-flash", courseTitle = "" } = req.body || {};
 
     if (!Array.isArray(messages) || messages.length === 0) {
       return res.status(400).json({ success: false, message: "Message history is required" });
@@ -93,7 +93,7 @@ export const chatTutor = async (req, res, next) => {
 export const summarizePdf = async (req, res, next) => {
   try {
     const user = await resolveCurrentUser(req.clerkUserId);
-    const { text = "", fileName = "", model = "gemini-2.0-flash" } = req.body || {};
+    const { text = "", fileName = "", model = "gemini-3.5-flash" } = req.body || {};
 
     if (!String(text || "").trim()) {
       return res.status(400).json({ success: false, message: "PDF text is required" });
@@ -140,7 +140,7 @@ export const summarizePdf = async (req, res, next) => {
 export const summarizeVideo = async (req, res, next) => {
   try {
     const user = await resolveCurrentUser(req.clerkUserId);
-    const { title = "", sourceText = "", videoUrl = "", model = "gemini-2.0-flash" } = req.body || {};
+    const { title = "", sourceText = "", videoUrl = "", model = "gemini-3.5-flash" } = req.body || {};
     const cleanText = String(sourceText || "").trim();
 
     if (!cleanText) {
@@ -189,7 +189,7 @@ export const summarizeVideo = async (req, res, next) => {
 export const generateNotes = async (req, res, next) => {
   try {
     const user = await resolveCurrentUser(req.clerkUserId);
-    const { title = "", sourceText = "", model = "gemini-2.0-flash" } = req.body || {};
+    const { title = "", sourceText = "", model = "gemini-3.5-flash" } = req.body || {};
 
     if (!String(sourceText || "").trim()) {
       return res.status(400).json({ success: false, message: "Source text is required" });
@@ -236,7 +236,7 @@ export const generateNotes = async (req, res, next) => {
 export const analyzeCodingTask = async (req, res, next) => {
   try {
     const user = await resolveCurrentUser(req.clerkUserId);
-    const { code = "", language = "javascript", model = "gemini-2.0-flash", tool = "analyze" } = req.body || {};
+    const { code = "", language = "javascript", model = "gemini-3.5-flash", tool = "analyze" } = req.body || {};
 
     if (!String(code || "").trim()) {
       return res.status(400).json({ success: false, message: "Code is required" });
@@ -444,7 +444,7 @@ export const testKey = async (req, res, next) => {
     }
 
     // Call Gemini with a simple prompt to test the key
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

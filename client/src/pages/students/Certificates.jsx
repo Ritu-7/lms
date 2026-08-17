@@ -329,7 +329,7 @@ const Certificates = () => {
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
-                  <thead className="bg-slate-50 dark:bg-dk-surface-2/50 text-slate-500 uppercase text-xs">
+                  <thead className="bg-slate-50 dark:bg-dk-surface text-slate-500 uppercase text-xs">
                     <tr>
                       <th className="px-6 py-4">Certificate</th>
                       <th className="px-6 py-4">Course</th>

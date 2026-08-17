@@ -70,6 +70,7 @@ import Contact from './pages/students/Contact.jsx'
 // Styles & Toast
 import 'quill/dist/quill.snow.css'
 import { ToastContainer } from 'react-toastify'
+import FloatingAIAssistant from './components/ai/FloatingAIAssistant.jsx'
 
 const App = () => {
   const { user } = useUser();

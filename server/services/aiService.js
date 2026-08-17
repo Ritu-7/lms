@@ -26,7 +26,7 @@ const requestGemini = async ({ model, contents, systemInstruction, generationCon
     throw error;
   }
 
-  const resolvedModel = model || "gemini-2.0-flash";
+  const resolvedModel = model || "gemini-3.5-flash";
   const response = await fetch(`${GEMINI_BASE_URL}/models/${resolvedModel}:generateContent?key=${activeKey}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -159,7 +159,7 @@ ${code}
 \`\`\``;
 
   return callGeminiText({
-    model: model || "gemini-2.0-flash",
+    model: model || "gemini-3.5-flash",
     contents: [{ role: "user", parts: [{ text: prompt }] }],
     systemInstruction: `You analyze ${language} code carefully and explain only what is supported by the input.`,
     generationConfig: { temperature: 0.25, maxOutputTokens: 3072 },

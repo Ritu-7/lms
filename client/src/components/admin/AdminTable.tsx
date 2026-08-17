@@ -48,7 +48,7 @@ const AdminTable = ({ columns, rows, rowActions, emptyMessage = 'No records avai
   return (
     <div className="w-full overflow-hidden">
       <table className="w-full table-auto text-left text-sm">
-        <thead className="bg-slate-50 dark:bg-dk-surface-2/50 text-slate-500 uppercase text-xs">
+        <thead className="bg-slate-50 dark:bg-dk-surface text-slate-500 uppercase text-xs">
           <tr>
             {columns.map((column) => (
               <th key={column} className="px-6 py-4 font-semibold">
@@ -106,3 +106,4 @@ const AdminTable = ({ columns, rows, rowActions, emptyMessage = 'No records avai
 }
 
 export default AdminTable
+
