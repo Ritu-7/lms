@@ -4,7 +4,7 @@ import { findCertificateById, findCertificateByVerificationCode, getCertificateP
 
 export const getMyCertificates = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const userId = req.clerkUserId;
     const user = await User.findOne({ clerkUserId: userId });
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
@@ -41,7 +41,7 @@ export const verifyCertificate = async (req, res) => {
 export const downloadCertificate = async (req, res) => {
   try {
     const { certificateId } = req.params;
-    const { userId } = req.auth();
+    const userId = req.clerkUserId;
     const user = await User.findOne({ clerkUserId: userId });
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
 

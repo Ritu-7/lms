@@ -52,6 +52,7 @@ const ProfileDropdown = ({ user, isEducator, isAdmin, signOut }) => {
     : [
         // Placeholder
         { label: 'Dashboard', icon: '🎓', href: '/my-enrollments' },
+        { label: 'My Assignments', icon: '📝', href: '/assignments' },
         { label: 'Certificates', icon: '📜', href: '/certificates' },
         { label: 'Bookmarks', icon: '🔖', href: '/bookmarks' }, 
         { label: 'AI Tools', icon: '🧠', href: '/ai-tutor' },

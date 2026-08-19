@@ -77,7 +77,7 @@ const assertCourseOwnership = async (educatorId, courseId) => {
 };
 
 const getEducatorContext = async (req) => {
-  const { userId } = req.auth();
+  const userId = req.clerkUserId;
   const educator = await User.findOne({ clerkUserId: userId });
   return { userId, educator };
 };
@@ -220,7 +220,7 @@ export const deleteAssignment = async (req, res) => {
 
 export const getStudentAssignments = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const userId = req.clerkUserId;
     const user = await User.findOne({ clerkUserId: userId });
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
@@ -247,7 +247,7 @@ export const getStudentAssignments = async (req, res) => {
 
 export const getAssignmentDetails = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const userId = req.clerkUserId;
     const user = await User.findOne({ clerkUserId: userId });
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
@@ -272,7 +272,7 @@ export const getAssignmentDetails = async (req, res) => {
 
 export const submitAssignment = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const userId = req.clerkUserId;
     const student = await User.findOne({ clerkUserId: userId });
     if (!student) return res.status(404).json({ success: false, message: "User not found" });
 

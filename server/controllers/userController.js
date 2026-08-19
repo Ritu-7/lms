@@ -42,7 +42,7 @@ export const getUserData = async (req, res) => {
     const authId = req.clerkUserId;
     if (!authId) return res.status(401).json({ success: false, message: "Unauthorized" });
 
-    let user = await User.findOne({ clerkUserId: auth.userId });
+    let user = await User.findOne({ clerkUserId: authId });
     if (!user) {
       const role = resolveUserRole({ clerkUserId: authId, email: "", existingRole: undefined });
       user = await User.create({

@@ -13,6 +13,8 @@ import {
   getResourceBadgeLabel,
   normalizeResourceCollection,
 } from "../../utils/resourceUtils";
+import { ChevronDown, CheckCircle2, PlayCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Player = () => {
   const {
@@ -52,10 +54,10 @@ const Player = () => {
   const hasUserRated = courseData?.courseRatings?.some((r) => r.userId === userData?._id) || false;
 
   const getYouTubeID = (url) => {
-    if (!url) return "";
+    if (!url || typeof url !== "string") return "";
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
-    return match && match[2].length === 11 ? match[2] : url.split("/").pop();
+    return match && match[2].length === 11 ? match[2] : "";
   };
 
   const getLessonResources = (lesson = {}) =>
@@ -540,7 +542,9 @@ const Player = () => {
               {courseChapters.map((chapter, index) => (
                 <div key={index} className="border border-slate-200 dark:border-dk-border rounded-xl overflow-hidden">
                   <button onClick={() => toggleSection(index)} className="flex w-full justify-between items-center p-4 text-left bg-slate-50 dark:bg-dk-surface-2 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                    <p className="font-semibold text-sm text-slate-900 dark:text-dk-text">{chapter.chapterTitle}</p>
+                    <p className="font-semibold text-sm text-slate-900 dark:text-dk-text">
+                      {chapter.chapterTitle || chapter.moduleTitle || `Module ${index + 1}`}
+                    </p>
                     <ChevronDown size={16} className="text-slate-400" />
                   </button>
                   <AnimatePresence>

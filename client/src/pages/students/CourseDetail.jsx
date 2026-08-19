@@ -214,7 +214,7 @@ const CourseDetail = () => {
               <div key={index} className="border border-slate-200 dark:border-dk-border rounded-2xl bg-white dark:bg-dk-surface shadow-sm overflow-hidden">
                 <button onClick={() => toggleSection(index)} className="flex w-full justify-between items-center p-6 text-left hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                   <p className="font-semibold text-slate-900 dark:text-dk-text">
-                    Module {index + 1}: {chapter.chapterTitle}
+                    Module {index + 1}: {chapter.chapterTitle || chapter.moduleTitle || "Untitled"}
                   </p>
                   <div className="flex items-center gap-4 text-sm text-slate-500">
                     <span>{chapter.chapterContent?.length || 0} lessons • {calculateChapterTime(chapter)}</span>

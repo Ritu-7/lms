@@ -91,7 +91,7 @@ const Assignments = () => {
       <div className="mx-auto max-w-7xl px-4 py-10 md:px-8 lg:px-12 space-y-8">
         <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900">Assignments</h1>
+            <h1 className="text-2xl font-semibold text-gray-900">My Assignments</h1>
             <p className="mt-1 text-sm text-gray-500">Track deadlines, submit files, review feedback, and resubmit when requested.</p>
           </div>
           <div className="flex gap-2 text-sm">

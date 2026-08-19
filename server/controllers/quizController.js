@@ -18,7 +18,7 @@ const parsePayload = (value, fallback = {}) => {
 const getId = (value) => value?._id?.toString?.() || value?.toString?.() || "";
 
 const getEducator = async (req) => {
-  const { userId } = req.auth();
+  const userId = req.clerkUserId;
   const educator = await User.findOne({ clerkUserId: userId });
   return { userId, educator };
 };
@@ -164,7 +164,7 @@ export const deleteQuiz = async (req, res) => {
 
 export const getStudentQuizzes = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const userId = req.clerkUserId;
     const user = await User.findOne({ clerkUserId: userId });
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
@@ -198,7 +198,7 @@ export const getStudentQuizzes = async (req, res) => {
 
 export const getQuizDetails = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const userId = req.clerkUserId;
     const user = await User.findOne({ clerkUserId: userId });
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
@@ -227,7 +227,7 @@ export const getQuizDetails = async (req, res) => {
 
 export const startQuizAttempt = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const userId = req.clerkUserId;
     const student = await User.findOne({ clerkUserId: userId });
     if (!student) return res.status(404).json({ success: false, message: "User not found" });
 
@@ -271,7 +271,7 @@ export const startQuizAttempt = async (req, res) => {
 
 export const submitQuizAttempt = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const userId = req.clerkUserId;
     const student = await User.findOne({ clerkUserId: userId });
     if (!student) return res.status(404).json({ success: false, message: "User not found" });
 
@@ -319,7 +319,7 @@ export const submitQuizAttempt = async (req, res) => {
 
 export const getQuizHistory = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const userId = req.clerkUserId;
     const student = await User.findOne({ clerkUserId: userId });
     if (!student) return res.status(404).json({ success: false, message: "User not found" });
 

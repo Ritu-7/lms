@@ -6,7 +6,7 @@ const loadCurrentUser = async (userId) => User.findOne({ clerkUserId: userId });
 
 export const getMyStudyLibrary = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const userId = req.clerkUserId;
     const user = await loadCurrentUser(userId);
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
@@ -32,7 +32,7 @@ export const createOrUpdateBookmark = async (req, res) => {
   try {
     if (!validateLessonPayload(req, res)) return;
 
-    const { userId } = req.auth();
+    const userId = req.clerkUserId;
     const user = await loadCurrentUser(userId);
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
@@ -54,7 +54,7 @@ export const createOrUpdateBookmark = async (req, res) => {
 
 export const removeBookmark = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const userId = req.clerkUserId;
     const user = await loadCurrentUser(userId);
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
@@ -71,7 +71,7 @@ export const createOrUpdateNote = async (req, res) => {
   try {
     if (!validateLessonPayload(req, res)) return;
 
-    const { userId } = req.auth();
+    const userId = req.clerkUserId;
     const user = await loadCurrentUser(userId);
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
@@ -93,7 +93,7 @@ export const createOrUpdateNote = async (req, res) => {
 
 export const removeNote = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const userId = req.clerkUserId;
     const user = await loadCurrentUser(userId);
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
