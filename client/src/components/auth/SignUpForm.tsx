@@ -168,10 +168,11 @@ const VerifyStep = ({ email, code, setCode, onVerify, onBack, isVerifying, error
 
 // ─── Main SignUpForm ─────────────────────────────────────────────────────────
 interface SignUpFormProps {
+  role: string
   onSwitchToLogin: () => void
 }
 
-const SignUpForm = ({ onSwitchToLogin }: SignUpFormProps) => {
+const SignUpForm = ({ role, onSwitchToLogin }: SignUpFormProps) => {
   const {
     completeSignUp,
     verifyEmail,
@@ -195,7 +196,7 @@ const SignUpForm = ({ onSwitchToLogin }: SignUpFormProps) => {
   const email = form.watch('email')
 
   const handleSubmit = form.handleSubmit(async (values) => {
-    await completeSignUp(values)
+    await completeSignUp(values, role)
   })
 
   if (pendingVerification) {

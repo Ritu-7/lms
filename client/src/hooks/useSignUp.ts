@@ -30,7 +30,7 @@ export const useSignUp = () => {
   const [verificationCode, setVerificationCode] = useState('')
   const [isVerifying, setIsVerifying] = useState(false)
 
-  const completeSignUp = async (values: SignUpFormValues) => {
+  const completeSignUp = async (values: SignUpFormValues, role?: string) => {
     if (!isLoaded || !signUp) return
 
     if (values.password !== values.confirmPassword) {
@@ -48,6 +48,7 @@ export const useSignUp = () => {
         lastName: values.lastName.trim(),
         emailAddress: values.email.trim().toLowerCase(),
         password: values.password,
+        unsafeMetadata: { role },
       })
 
       // Send email verification code

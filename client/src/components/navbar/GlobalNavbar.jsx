@@ -18,7 +18,7 @@ import ThemeToggle from '../common/ThemeToggle'
 const NAV_LINKS = [
   { label: 'Home', path: '/' },
   { label: 'Courses', path: '/course-list' },
-  { label: 'My Assignments', path: '/assignments' },
+ 
 ]
 
 const GlobalNavbar = () => {

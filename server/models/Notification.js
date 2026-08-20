@@ -116,8 +116,6 @@ notificationSchema.index({ recipient: 1, isRead: 1, createdAt: -1 });
 // "Get broadcast notifications for my role" — second most common
 notificationSchema.index({ isBroadcast: 1, recipientRole: 1, createdAt: -1 });
 
-// "Has this notification expired?"
-notificationSchema.index({ expiresAt: 1 }, { sparse: true });
 
 // Deduplication helper: type + metadata.refId + recipient within 24h
 notificationSchema.index({ recipient: 1, type: 1, "metadata.refId": 1 });

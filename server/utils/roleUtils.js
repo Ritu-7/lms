@@ -7,7 +7,7 @@ const toNormalizedList = (value) => {
     .filter(Boolean);
 };
 
-export const resolveUserRole = ({ clerkUserId, email, existingRole }) => {
+export const resolveUserRole = ({ clerkUserId, email, existingRole, requestedRole }) => {
   const adminEmails = toNormalizedList(process.env.ADMIN_EMAILS);
   const adminClerkIds = toNormalizedList(process.env.ADMIN_CLERK_IDS);
 
@@ -19,7 +19,7 @@ export const resolveUserRole = ({ clerkUserId, email, existingRole }) => {
     return "admin";
   }
 
-  if (existingRole === "educator") {
+  if (existingRole === "educator" || requestedRole === "educator" || requestedRole === "instructor") {
     return "educator";
   }
 

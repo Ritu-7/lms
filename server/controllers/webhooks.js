@@ -24,7 +24,8 @@ export const clerkWebhook = async (req, res) => {
         existing = await User.findOne({ email });
       }
 
-      const role = resolveUserRole({ clerkUserId: data.id, email, existingRole: existing?.role });
+      const requestedRole = data.unsafe_metadata?.role || data.public_metadata?.role;
+      const role = resolveUserRole({ clerkUserId: data.id, email, existingRole: existing?.role, requestedRole });
 
       if (existing) {
         await User.findByIdAndUpdate(

@@ -7,7 +7,7 @@
 ![Clerk](https://img.shields.io/badge/Clerk-6C47FF?style=for-the-badge&logo=clerk&logoColor=white)
 ![Razorpay](https://img.shields.io/badge/Razorpay-02042B?style=for-the-badge&logo=razorpay&logoColor=3399FF)
 
-Edemy is a high-performance, scalable Learning Management System (LMS) designed to empower educators and provide students with a seamless learning experience. Built with the MERN stack and modern UI components, it bridges the gap between content creation and knowledge consumption with integrated secure payments and real-time progress tracking.
+LearnSphere Ai is a high-performance, scalable Learning Management System (LMS) designed to empower educators and provide students with a seamless learning experience. Built with the MERN stack and modern UI components, it bridges the gap between content creation and knowledge consumption with integrated secure payments and real-time progress tracking.
 
 ## 🚀 Key Features
 

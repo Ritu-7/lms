@@ -60,7 +60,8 @@ export const getUserData = async (req, res) => {
     ]);
     res.json({ success: true, user: { ...user.toObject(), certificates, studyLibrary } });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error("getUserData Error:", error);
+    res.status(500).json({ success: false, message: error.message, stack: error.stack });
   }
 };
 
@@ -292,11 +293,14 @@ export const getUserCourseProgress = async (req, res) => {
 export const addUserRating = async (req, res) => {
   try {
     const userId = req.clerkUserId;
-    const { courseId, rating } = req.body;
+    const { courseId, rating, review } = req.body;
     const course = await Course.findById(courseId);
     const index = course.courseRatings.findIndex((r) => r.userId === userId);
-    if (index > -1) course.courseRatings[index].rating = rating;
-    else course.courseRatings.push({ userId, rating });
+    if (index > -1) {
+      course.courseRatings[index].rating = rating;
+      if (review !== undefined) course.courseRatings[index].review = review;
+    }
+    else course.courseRatings.push({ userId, rating, review });
     await course.save();
     res.json({ success: true });
   } catch (error) {

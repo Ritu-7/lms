@@ -117,7 +117,7 @@ const Login = () => {
                       exit={{ opacity: 0, x: -20 }}
                       transition={{ duration: 0.3, ease: 'easeOut' }}
                     >
-                      <SignUpForm onSwitchToLogin={() => setView('login')} />
+                      <SignUpForm role={selectedRole} onSwitchToLogin={() => setView('login')} />
                     </motion.div>
                   )}
                 </AnimatePresence>
