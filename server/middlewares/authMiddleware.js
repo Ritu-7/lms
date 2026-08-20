@@ -58,6 +58,7 @@ export const protectEducatorRoutes = async (req, res, next) => {
       });
     }
 
+    req.clerkUserId = userId;
     req.user = user; // MongoDB user (educator)
     next();
   } catch (error) {

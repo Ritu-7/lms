@@ -128,7 +128,7 @@ export const educatorDashboardData = async (req, res) => {
 
     const purchases = await Purchase.find({
       course: { $in: courseIds }, 
-      status: { $in: ["completed", "success", "paid"] },
+      status: "completed",
     })
     .populate("user", "name imageUrl email") // Populate Student Info
     .populate("course", "courseTitle")       // ✅ ADD THIS: Populate Course Info
@@ -172,15 +172,17 @@ export const educatorDashboardData = async (req, res) => {
 ================================ */
 export const getEnrolledStudentsData = async (req, res) => {
   try {
-    const userId = req.clerkUserId;
-    const educator = await User.findOne({ clerkUserId: userId });
+    const educator = req.user || (await User.findOne({ clerkUserId: req.clerkUserId }));
+    if (!educator) {
+      return res.status(404).json({ success: false, message: "Educator not found" });
+    }
 
     const courses = await Course.find({ educator: educator._id });
     const courseIds = courses.map((c) => c._id);
 
     const purchases = await Purchase.find({
       course: { $in: courseIds }, // Matches your DB field 'course'
-      status: { $in: ["completed", "success"] },
+      status: "completed",
     })
     .populate("user", "name email imageUrl") // ✅ Matches your DB field 'user'
     .populate("course", "courseTitle");

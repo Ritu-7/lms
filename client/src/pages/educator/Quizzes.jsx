@@ -116,9 +116,13 @@ const Quizzes = () => {
   const [reviewDraft, setReviewDraft] = useState({ totalScore: "", maxScore: "", passed: true, status: "graded" });
 
   const fetchCourses = useCallback(async () => {
-    const token = await getToken();
-    const { data } = await axios.get(`${backendURL}/api/educator/courses`, { headers: { Authorization: `Bearer ${token}` } });
-    if (data.success) setCourses(Array.isArray(data.courses) ? data.courses : []);
+    try {
+      const token = await getToken();
+      const { data } = await axios.get(`${backendURL}/api/educator/courses`, { headers: { Authorization: `Bearer ${token}` } });
+      if (data.success) setCourses(Array.isArray(data.courses) ? data.courses : []);
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
+    }
   }, [backendURL, getToken]);
 
   const fetchQuizzes = useCallback(async () => {
