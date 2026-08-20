@@ -33,6 +33,7 @@ const actionToneClassMap: Record<string, string> = {
   Download: 'text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20',
   Generate: 'text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 dark:text-dk-text-2',
   'View Profile': 'text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20',
+  'Edit Role': 'text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20',
 }
 
 const AdminTable = ({ columns, rows, rowActions, emptyMessage = 'No records available.', onAction }: AdminTableProps) => {

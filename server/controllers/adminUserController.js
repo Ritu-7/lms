@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { clerkClient } from "@clerk/express";
 import Course from "../models/Course.js";
 import User from "../models/User.js";
 
@@ -103,6 +104,17 @@ export const updateUserRole = async (req, res) => {
 
     if (role === "admin" && confirmAdminPromotion !== true) {
       return sendError(res, 400, "Admin promotion requires explicit confirmation");
+    }
+
+    if (targetUser.clerkUserId) {
+      try {
+        await clerkClient.users.updateUserMetadata(targetUser.clerkUserId, {
+          publicMetadata: { role },
+        });
+      } catch (clerkError) {
+        console.error("Failed to sync role to Clerk:", clerkError.message);
+        return sendError(res, 502, "Failed to update role in authentication provider. No changes were saved.");
+      }
     }
 
     targetUser.role = role;

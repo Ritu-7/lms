@@ -1,19 +1,22 @@
 import AdminSection from '../../components/admin/AdminSection'
 import AdminTable from '../../components/admin/AdminTable'
+import EditRoleModal, { type AdminUserRecord } from '../../components/admin/EditRoleModal'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { AppContext } from '../../context/AppContext'
+import { roleLabel } from '../../utils/roleUtils'
 import type { AdminTableRow } from './adminData'
 
 const statusLabel = (status?: string) => (status === 'suspended' ? 'Suspended' : 'Active')
 
 const Students = () => {
   const { fetchAdminUsers, updateAdminUserRole, updateAdminUserStatus, deleteAdminUser } = useContext(AppContext)
-  const [users, setUsers] = useState([])
+  const [users, setUsers] = useState<AdminUserRecord[]>([])
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)
-  const [selectedUser, setSelectedUser] = useState<any>(null)
+  const [selectedUser, setSelectedUser] = useState<AdminUserRecord | null>(null)
+  const [editingUser, setEditingUser] = useState<AdminUserRecord | null>(null)
 
   const loadUsers = useCallback(async () => {
     try {
@@ -33,18 +36,18 @@ const Students = () => {
     const query = search.trim().toLowerCase()
 
     return users
-      .filter((user: any) => statusFilter === 'all' || statusLabel(user.status).toLowerCase() === statusFilter)
-      .filter((user: any) => {
+      .filter((user) => statusFilter === 'all' || statusLabel(user.status).toLowerCase() === statusFilter)
+      .filter((user) => {
         if (!query) return true
         return [user.name, user.email, user.clerkUserId].some((value) => String(value || '').toLowerCase().includes(query))
       })
-      .map((user: any) => ({
+      .map((user) => ({
         id: user._id,
         cells: [
           user.name || 'Unnamed student',
           user.email || 'No email',
-          'Student',
-          `${user.enrolledCourses?.length || 0}`,
+          roleLabel(user.role),
+          `${(user as any).enrolledCourses?.length || 0}`,
           statusLabel(user.status),
         ],
         status: statusLabel(user.status),
@@ -53,11 +56,16 @@ const Students = () => {
   }, [search, statusFilter, users])
 
   const handleAction = async (action: string, row: AdminTableRow) => {
-    const user = row.meta as any
+    const user = row.meta as AdminUserRecord
     if (!user || actionLoading) return
 
     if (action === 'View Profile') {
       setSelectedUser(user)
+      return
+    }
+
+    if (action === 'Edit Role') {
+      setEditingUser(user)
       return
     }
 
@@ -127,11 +135,11 @@ const Students = () => {
         </div>
       </div>
 
-      <AdminSection title="Students" description="View, edit, suspend, and remove student accounts.">
+      <AdminSection title="Students" description="View, edit roles, suspend, and remove student accounts.">
         <AdminTable
-          columns={["Student", "Email", "Role", "Courses", "Status"]}
+          columns={['Student', 'Email', 'Role', 'Courses', 'Status']}
           rows={filteredRows}
-          rowActions={['View Profile', 'Promote to Educator', 'Suspend', 'Delete']}
+          rowActions={['View Profile', 'Edit Role', 'Promote to Educator', 'Suspend', 'Delete']}
           onAction={handleAction}
           emptyMessage={loading ? 'Loading students...' : actionLoading ? 'Updating student...' : 'No student data available.'}
         />
@@ -161,7 +169,7 @@ const Students = () => {
               </div>
               <div className="rounded-xl bg-gray-50 p-4">
                 <p className="text-xs uppercase tracking-wide text-gray-400">Role</p>
-                <p className="mt-1 font-semibold text-gray-800">{selectedUser.role || 'student'}</p>
+                <p className="mt-1 font-semibold text-gray-800">{roleLabel(selectedUser.role)}</p>
               </div>
               <div className="rounded-xl bg-gray-50 p-4">
                 <p className="text-xs uppercase tracking-wide text-gray-400">Status</p>
@@ -169,15 +177,18 @@ const Students = () => {
               </div>
               <div className="rounded-xl bg-gray-50 p-4 sm:col-span-2">
                 <p className="text-xs uppercase tracking-wide text-gray-400">Courses</p>
-                <p className="mt-1 font-semibold text-gray-800">{selectedUser.enrolledCourses?.length || 0}</p>
+                <p className="mt-1 font-semibold text-gray-800">{(selectedUser as any).enrolledCourses?.length || 0}</p>
               </div>
             </div>
           </div>
         </div>
+      ) : null}
+
+      {editingUser ? (
+        <EditRoleModal user={editingUser} onClose={() => setEditingUser(null)} onSaved={loadUsers} includeStatus />
       ) : null}
     </div>
   )
 }
 
 export default Students
-

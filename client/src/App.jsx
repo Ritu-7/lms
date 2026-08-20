@@ -44,6 +44,7 @@ import AccessDenied from './pages/AccessDenied.tsx'
 import AdminLayout from './pages/admin/AdminLayout.tsx'
 import AdminDashboard from './pages/admin/Dashboard.tsx'
 import AdminStudents from './pages/admin/Students.tsx'
+import AdminUsers from './pages/admin/Users.tsx'
 import AdminEducators from './pages/admin/Educators.tsx'
 import AdminCourses from './pages/admin/Courses.tsx'
 import AdminCategories from './pages/admin/Categories.tsx'
@@ -182,6 +183,7 @@ const App = () => {
         {/* --- ADMIN ROUTES --- */}
         <Route path="/admin" element={<RoleRoute roles={['admin']}><AdminLayout /></RoleRoute>}>
           <Route index element={<AdminDashboard />} />
+          <Route path="users" element={<AdminUsers />} />
           <Route path="students" element={<AdminStudents />} />
           <Route path="educators" element={<AdminEducators />} />
           <Route path="courses" element={<AdminCourses />} />
