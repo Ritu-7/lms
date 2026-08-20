@@ -12,10 +12,36 @@ import {
   deleteCourse
 } from "../controllers/educatorController.js";
 import { uploadLessonAsset, uploadLessonResource } from "../controllers/lessonAssetController.js";
+import { getVideoDuration } from "../controllers/videoDurationController.js";
 
 import { protectEducatorRoutes, protectRoute } from "../middlewares/authMiddleware.js";
 
 const educatorRouter = express.Router();
+
+const handleLessonAssetUpload = (req, res, next) => {
+  lessonAssetUpload.single("file")(req, res, (error) => {
+    if (!error) return next();
+
+    if (error.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).json({
+        success: false,
+        message: "File is too large. Maximum upload size is 50 MB.",
+      });
+    }
+
+    if (error.code === "LIMIT_UNEXPECTED_FILE") {
+      return res.status(400).json({
+        success: false,
+        message: "Unsupported file type for lesson uploads.",
+      });
+    }
+
+    return res.status(400).json({
+      success: false,
+      message: error.message || "Upload failed",
+    });
+  });
+};
 
 /* ===============================
    Public Educator Routes
@@ -52,15 +78,21 @@ educatorRouter.post(
 educatorRouter.post(
   "/upload-lesson-asset",
   protectEducatorRoutes,
-  lessonAssetUpload.single("file"),
+  handleLessonAssetUpload,
   uploadLessonAsset
 );
 
 educatorRouter.post(
   "/upload-lesson-resource",
   protectEducatorRoutes,
-  lessonAssetUpload.single("file"),
+  handleLessonAssetUpload,
   uploadLessonResource
+);
+
+educatorRouter.get(
+  "/video-duration",
+  protectEducatorRoutes,
+  getVideoDuration
 );
 
 // Enrolled students

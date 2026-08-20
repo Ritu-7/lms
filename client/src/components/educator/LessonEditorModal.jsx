@@ -12,6 +12,10 @@ import {
   normalizeResourceRecord,
   resourceToLegacyAttachment,
 } from "../../utils/resourceUtils";
+import {
+  fetchVideoDurationMinutes,
+  getDurationFromVideoFile,
+} from "../../utils/videoDurationUtils";
 
 const buildDraft = (lessonInput, fallbackOrder = 1) => {
   const lesson = lessonInput || {};
@@ -49,22 +53,41 @@ const defaultResourceDraft = () => ({
   resourceFile: null,
 });
 
+const LINK_CONTENT_TYPES = new Set(["external_link", "quiz", "assignment"]);
+
 const LessonEditorModal = ({ open, mode = "add", initialLesson, fallbackOrder = 1, onClose, onSave }) => {
   const { backendURL, getToken } = useContext(AppContext);
   const [lessonData, setLessonData] = useState(buildDraft(initialLesson, fallbackOrder));
   const [resourceDraft, setResourceDraft] = useState(defaultResourceDraft());
-  const [uploading, setUploading] = useState("");
+  const [uploading, setUploading] = useState({ video: false, pdf: false, resource: false });
+  const [durationAutoDetected, setDurationAutoDetected] = useState(false);
+  const [durationDetecting, setDurationDetecting] = useState(false);
+  const [durationManuallyEdited, setDurationManuallyEdited] = useState(false);
   const editorRef = useRef(null);
   const quillRef = useRef(null);
+  const videoInputRef = useRef(null);
+  const pdfInputRef = useRef(null);
+  const resourceInputRef = useRef(null);
+  const durationDetectTimerRef = useRef(null);
 
   useEffect(() => {
     if (!open) return;
     setLessonData(buildDraft(initialLesson, fallbackOrder));
     setResourceDraft(defaultResourceDraft());
+    setDurationAutoDetected(false);
+    setDurationDetecting(false);
+    setDurationManuallyEdited(false);
   }, [open, initialLesson, fallbackOrder]);
 
   useEffect(() => {
-    if (!open || quillRef.current || !editorRef.current) return;
+    if (!open) {
+      if (quillRef.current) {
+        quillRef.current = null;
+      }
+      return;
+    }
+
+    if (!editorRef.current || quillRef.current) return;
 
     quillRef.current = new Quill(editorRef.current, {
       theme: "snow",
@@ -79,10 +102,51 @@ const LessonEditorModal = ({ open, mode = "add", initialLesson, fallbackOrder = 
     }
   }, [open, lessonData.lessonRichTextContent]);
 
-  const uploadLessonAsset = async (file) => {
+  useEffect(
+    () => () => {
+      if (durationDetectTimerRef.current) {
+        clearTimeout(durationDetectTimerRef.current);
+      }
+    },
+    []
+  );
+
+  const applyDetectedDuration = (minutes) => {
+    if (!minutes || durationManuallyEdited) return;
+    setLessonData((prev) => ({ ...prev, lessonDuration: minutes }));
+    setDurationAutoDetected(true);
+  };
+
+  const detectDurationFromVideoUrl = async (url) => {
+    if (!url?.trim() || durationManuallyEdited) return;
+
+    setDurationDetecting(true);
+    try {
+      const minutes = await fetchVideoDurationMinutes(url, { backendURL, getToken });
+      if (minutes) {
+        applyDetectedDuration(minutes);
+      }
+    } finally {
+      setDurationDetecting(false);
+    }
+  };
+
+  const scheduleDurationDetection = (url) => {
+    if (durationDetectTimerRef.current) {
+      clearTimeout(durationDetectTimerRef.current);
+    }
+
+    if (!url?.trim() || durationManuallyEdited) return;
+
+    durationDetectTimerRef.current = setTimeout(() => {
+      detectDurationFromVideoUrl(url);
+    }, 700);
+  };
+
+  const uploadLessonAsset = async (file, target) => {
     if (!file) return null;
 
-    setUploading(file.name);
+    setUploading((prev) => ({ ...prev, [target]: true }));
     try {
       const token = await getToken();
       const formData = new FormData();
@@ -100,30 +164,56 @@ const LessonEditorModal = ({ open, mode = "add", initialLesson, fallbackOrder = 
 
       return data.file;
     } finally {
-      setUploading("");
+      setUploading((prev) => ({ ...prev, [target]: false }));
+    }
+  };
+
+  const resetFileInput = (ref) => {
+    if (ref.current) {
+      ref.current.value = "";
     }
   };
 
   const handleAssetUpload = async (file, target) => {
     if (!file) return;
-    try {
-      const fileData = await uploadLessonAsset(file);
-      if (!fileData) return;
 
+    try {
       if (target === "video") {
+        const localDuration = await getDurationFromVideoFile(file);
+        const fileData = await uploadLessonAsset(file, target);
+        if (!fileData) return;
+
+        const cloudinaryDuration = Number(fileData.durationMinutes || 0);
+        const detectedDuration = cloudinaryDuration || localDuration;
+
         setLessonData((prev) => ({
           ...prev,
           lessonVideoUrl: fileData.url,
-          lessonType: "video",
+          lessonType: prev.lessonType === "rich_text" ? prev.lessonType : "video",
+          ...(detectedDuration && !durationManuallyEdited ? { lessonDuration: detectedDuration } : {}),
         }));
+
+        if (detectedDuration && !durationManuallyEdited) {
+          setDurationAutoDetected(true);
+        }
+
+        toast.success("Video uploaded successfully");
+        resetFileInput(videoInputRef);
+        return;
       }
+
+      const fileData = await uploadLessonAsset(file, target);
+      if (!fileData) return;
 
       if (target === "pdf") {
         setLessonData((prev) => ({
           ...prev,
           lessonPdfUrl: fileData.url,
-          lessonType: "pdf",
+          lessonType: prev.lessonType === "rich_text" ? prev.lessonType : "pdf",
         }));
+        toast.success("PDF uploaded successfully");
+        resetFileInput(pdfInputRef);
+        return;
       }
 
       if (target === "resource") {
@@ -143,20 +233,67 @@ const LessonEditorModal = ({ open, mode = "add", initialLesson, fallbackOrder = 
           lessonResources: [...prev.lessonResources, newResource],
         }));
         setResourceDraft(defaultResourceDraft());
+        toast.success("Attachment uploaded successfully");
+        resetFileInput(resourceInputRef);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || error.message || "Asset upload failed");
+      const message =
+        error.response?.data?.message ||
+        (error.code === "ERR_NETWORK" ? "Upload failed — check your connection and try again" : error.message) ||
+        "Asset upload failed";
+      toast.error(message);
     }
+  };
+
+  const validateLesson = () => {
+    if (!lessonData.lessonTitle.trim()) {
+      toast.error("Lesson title is required");
+      return false;
+    }
+
+    const { lessonType } = lessonData;
+
+    if (lessonType === "video" && !lessonData.lessonVideoUrl.trim()) {
+      toast.error("Add a video URL or upload a video file");
+      return false;
+    }
+
+    if (lessonType === "pdf" && !lessonData.lessonPdfUrl.trim()) {
+      toast.error("Add a PDF URL or upload a PDF file");
+      return false;
+    }
+
+    if (LINK_CONTENT_TYPES.has(lessonType) && !lessonData.lessonExternalLink.trim()) {
+      toast.error("External link is required for this content type");
+      return false;
+    }
+
+    if (lessonType === "rich_text") {
+      const richText = quillRef.current ? quillRef.current.root.innerHTML : lessonData.lessonRichTextContent;
+      const plainText = richText.replace(/<[^>]+>/g, "").trim();
+      if (!plainText) {
+        toast.error("Rich text content is required");
+        return false;
+      }
+    }
+
+    return true;
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (!validateLesson()) return;
+
     const richText = quillRef.current ? quillRef.current.root.innerHTML : lessonData.lessonRichTextContent;
     const legacyAttachments = lessonData.lessonResources.map(resourceToLegacyAttachment);
+    const duration = Number(lessonData.lessonDuration || 0);
 
     onSave({
       ...lessonData,
-      lessonDuration: Number(lessonData.lessonDuration || 0),
+      lessonTitle: lessonData.lessonTitle.trim(),
+      lessonDuration: duration,
+      lectureTitle: lessonData.lessonTitle.trim(),
+      lectureDuration: duration,
       lessonRichTextContent: richText,
       richTextContent: richText,
       previewMode: Boolean(lessonData.previewMode),
@@ -165,15 +302,23 @@ const LessonEditorModal = ({ open, mode = "add", initialLesson, fallbackOrder = 
       lectureType: lessonData.lessonType,
       lectureUrl:
         lessonData.lessonType === "pdf"
-          ? lessonData.lessonPdfUrl
-          : lessonData.lessonType === "external_link" || lessonData.lessonType === "quiz" || lessonData.lessonType === "assignment"
-            ? lessonData.lessonExternalLink
-            : lessonData.lessonVideoUrl,
+          ? lessonData.lessonPdfUrl.trim()
+          : LINK_CONTENT_TYPES.has(lessonData.lessonType)
+            ? lessonData.lessonExternalLink.trim()
+            : lessonData.lessonVideoUrl.trim(),
+      lessonVideoUrl: lessonData.lessonVideoUrl.trim(),
+      lessonPdfUrl: lessonData.lessonPdfUrl.trim(),
+      lessonExternalLink: lessonData.lessonExternalLink.trim(),
       resources: lessonData.lessonResources,
       lessonAttachments: legacyAttachments,
       lectureAttachments: legacyAttachments,
     });
   };
+
+  const showVideoFields = lessonData.lessonType === "video";
+  const showPdfFields = lessonData.lessonType === "pdf";
+  const showExternalLinkField = LINK_CONTENT_TYPES.has(lessonData.lessonType);
+  const showRichTextField = lessonData.lessonType === "rich_text" || lessonData.lessonType === "video" || lessonData.lessonType === "pdf";
 
   if (!open) return null;
 
@@ -212,10 +357,21 @@ const LessonEditorModal = ({ open, mode = "add", initialLesson, fallbackOrder = 
                 type="number"
                 min="0"
                 value={lessonData.lessonDuration}
-                onChange={(e) => setLessonData((prev) => ({ ...prev, lessonDuration: e.target.value }))}
+                onChange={(e) => {
+                  setDurationManuallyEdited(true);
+                  setDurationAutoDetected(false);
+                  setLessonData((prev) => ({ ...prev, lessonDuration: e.target.value }));
+                }}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-blue-500"
-                placeholder="0"
+                placeholder="Enter manually or auto-detect from video"
               />
+              <p className="text-xs text-gray-500">
+                {durationDetecting
+                  ? "Detecting duration from video..."
+                  : durationAutoDetected
+                    ? "Duration auto-detected from video. Edit to override."
+                    : "Paste a YouTube URL or upload a video to auto-detect duration."}
+              </p>
             </label>
 
             <label className="space-y-2">
@@ -268,72 +424,134 @@ const LessonEditorModal = ({ open, mode = "add", initialLesson, fallbackOrder = 
             </p>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <label className="space-y-2">
+          {showVideoFields && (
+            <label className="space-y-2 block">
               <span className="text-sm font-medium text-gray-700">Video URL</span>
               <input
-                type="url"
+                type="text"
                 value={lessonData.lessonVideoUrl}
-                onChange={(e) => setLessonData((prev) => ({ ...prev, lessonVideoUrl: e.target.value }))}
+                onChange={(e) => {
+                  const nextUrl = e.target.value;
+                  setLessonData((prev) => ({ ...prev, lessonVideoUrl: nextUrl }));
+                  scheduleDurationDetection(nextUrl);
+                }}
+                onBlur={(e) => detectDurationFromVideoUrl(e.target.value)}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-blue-500"
                 placeholder="YouTube or hosted video URL"
               />
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-gray-300 px-3 py-2 text-sm text-gray-600 hover:border-blue-500 hover:text-blue-600">
                   <img src={assets.file_upload_icon} alt="" className="h-4 w-4" />
-                  {uploading ? "Uploading..." : "Upload video"}
+                  {uploading.video ? "Uploading..." : "Upload video"}
                   <input
+                    ref={videoInputRef}
                     type="file"
                     accept="video/*"
                     hidden
+                    disabled={uploading.video}
                     onChange={(e) => handleAssetUpload(e.target.files?.[0], "video")}
                   />
                 </label>
+                {lessonData.lessonVideoUrl && (
+                  <a
+                    href={lessonData.lessonVideoUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs font-medium text-blue-600 hover:underline"
+                  >
+                    Preview video link
+                  </a>
+                )}
               </div>
             </label>
+          )}
 
-            <label className="space-y-2">
+          {showPdfFields && (
+            <label className="space-y-2 block">
               <span className="text-sm font-medium text-gray-700">PDF URL</span>
               <input
-                type="url"
+                type="text"
                 value={lessonData.lessonPdfUrl}
                 onChange={(e) => setLessonData((prev) => ({ ...prev, lessonPdfUrl: e.target.value }))}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-blue-500"
                 placeholder="PDF file URL"
               />
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-gray-300 px-3 py-2 text-sm text-gray-600 hover:border-blue-500 hover:text-blue-600">
                   <img src={assets.file_upload_icon} alt="" className="h-4 w-4" />
-                  {uploading ? "Uploading..." : "Upload PDF"}
+                  {uploading.pdf ? "Uploading..." : "Upload PDF"}
                   <input
+                    ref={pdfInputRef}
                     type="file"
-                    accept="application/pdf"
+                    accept="application/pdf,.pdf"
                     hidden
+                    disabled={uploading.pdf}
                     onChange={(e) => handleAssetUpload(e.target.files?.[0], "pdf")}
                   />
                 </label>
+                {lessonData.lessonPdfUrl && (
+                  <a
+                    href={lessonData.lessonPdfUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs font-medium text-blue-600 hover:underline"
+                  >
+                    Preview PDF link
+                  </a>
+                )}
               </div>
             </label>
-          </div>
+          )}
 
-          <label className="space-y-2">
-            <span className="text-sm font-medium text-gray-700">External link</span>
-            <input
-              type="url"
-              value={lessonData.lessonExternalLink}
-              onChange={(e) => setLessonData((prev) => ({ ...prev, lessonExternalLink: e.target.value }))}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-blue-500"
-              placeholder="Optional external reference or assignment link"
-            />
-          </label>
+          {showExternalLinkField && (
+            <label className="space-y-2 block">
+              <span className="text-sm font-medium text-gray-700">
+                {lessonData.lessonType === "quiz"
+                  ? "Quiz link"
+                  : lessonData.lessonType === "assignment"
+                    ? "Assignment link"
+                    : "External link"}
+              </span>
+              <input
+                type="url"
+                value={lessonData.lessonExternalLink}
+                onChange={(e) => setLessonData((prev) => ({ ...prev, lessonExternalLink: e.target.value }))}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-blue-500"
+                placeholder={
+                  lessonData.lessonType === "quiz"
+                    ? "https://example.com/quiz/..."
+                    : lessonData.lessonType === "assignment"
+                      ? "https://example.com/assignment/..."
+                      : "Optional external reference or assignment link"
+                }
+                required={showExternalLinkField}
+              />
+              {lessonData.lessonExternalLink && (
+                <a
+                  href={lessonData.lessonExternalLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-block text-xs font-medium text-blue-600 hover:underline"
+                >
+                  Open link in new tab
+                </a>
+              )}
+            </label>
+          )}
 
-          <div className="space-y-2">
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-sm font-medium text-gray-700">Rich text content</span>
-              <span className="text-xs text-gray-500">Use this for notes, instructions, or embedded HTML.</span>
+          {showRichTextField && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm font-medium text-gray-700">Rich text content</span>
+                <span className="text-xs text-gray-500">
+                  {lessonData.lessonType === "rich_text"
+                    ? "Required for rich text lessons."
+                    : "Optional notes or instructions."}
+                </span>
+              </div>
+              <div ref={editorRef} className="min-h-40 rounded-lg border border-gray-300 bg-white dark:bg-dk-surface" />
             </div>
-            <div ref={editorRef} className="min-h-40 rounded-lg border border-gray-300 bg-white dark:bg-dk-surface" />
-          </div>
+          )}
 
           <label className="space-y-2">
             <span className="text-sm font-medium text-gray-700">Transcript placeholder</span>
@@ -366,10 +584,12 @@ const LessonEditorModal = ({ open, mode = "add", initialLesson, fallbackOrder = 
                 placeholder="Attachment label"
               />
               <label className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white">
-                {uploading ? "Uploading..." : "Choose file"}
+                {uploading.resource ? "Uploading..." : "Choose file"}
                 <input
+                  ref={resourceInputRef}
                   type="file"
                   hidden
+                  disabled={uploading.resource}
                   accept=".pdf,.doc,.docx,.ppt,.pptx,.zip,.txt,image/*,video/*"
                   onChange={(e) => handleAssetUpload(e.target.files?.[0], "resource")}
                 />
@@ -386,7 +606,7 @@ const LessonEditorModal = ({ open, mode = "add", initialLesson, fallbackOrder = 
                     <div className="min-w-0">
                       <p className="truncate font-medium text-gray-800">{resource.resourceTitle}</p>
                       <p className="truncate text-xs text-gray-500">
-                        {getResourceBadgeLabel(resource)}
+                        {getResourceBadgeLabel(resource.resourceType)}
                         {resource.resourceSize ? ` · ${formatResourceSize(resource.resourceSize)}` : ""}
                         {resource.resourceUrl ? ` · ${resource.resourceUrl}` : ""}
                       </p>

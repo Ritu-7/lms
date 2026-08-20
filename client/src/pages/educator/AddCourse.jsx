@@ -16,8 +16,8 @@ const AddCourse = () => {
 
   const [courseTitle, setCourseTitle] = useState("");
   const [courseCategory, setCourseCategory] = useState("");
-  const [coursePrice, setCoursePrice] = useState(0);
-  const [courseDiscount, setCourseDiscount] = useState(0);
+  const [coursePrice, setCoursePrice] = useState("");
+  const [courseDiscount, setCourseDiscount] = useState("");
   const [image, setImage] = useState(null);
   const [modules, setModules] = useState([]);
   const [courseFeatures, setCourseFeatures] = useState([]);
@@ -175,8 +175,8 @@ const AddCourse = () => {
         courseTitle,
         category: courseCategory.trim(),
         courseDescription: quillRef.current.root.innerHTML,
-        coursePrice: Number(coursePrice),
-        discount: Number(courseDiscount),
+        coursePrice: Number(coursePrice) || 0,
+        discount: Number(courseDiscount) || 0,
         courseFeatures,
         courseContent: normalizeModuleOrder(modules),
       };
@@ -193,8 +193,8 @@ const AddCourse = () => {
       if (data.success) {
         toast.success(data.message);
         setCourseTitle("");
-        setCoursePrice(0);
-        setCourseDiscount(0);
+        setCoursePrice("");
+        setCourseDiscount("");
         setImage(null);
         setModules([]);
         setCourseFeatures([]);
@@ -246,20 +246,24 @@ const AddCourse = () => {
             <p className="text-gray-600 font-medium">Price</p>
             <input
               type="number"
+              min="0"
+              step="0.01"
               value={coursePrice}
               onChange={(e) => setCoursePrice(e.target.value)}
               className="w-full border border-gray-400 rounded-md p-2"
-              placeholder="0"
+              placeholder="Enter price (e.g. 150)"
             />
           </div>
           <div className="flex-1">
             <p className="text-gray-600 font-medium">Discount (%)</p>
             <input
               type="number"
+              min="0"
+              max="100"
               value={courseDiscount}
               onChange={(e) => setCourseDiscount(e.target.value)}
               className="w-full border border-gray-400 rounded-md p-2"
-              placeholder="0"
+              placeholder="Enter discount % (optional)"
             />
           </div>
         </div>

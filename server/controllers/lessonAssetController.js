@@ -60,7 +60,9 @@ export const uploadLessonResource = async (req, res) => {
         fileName: resource.resourceFileName,
         mimeType: resource.resourceMimeType,
         size: resource.resourceSize,
-        resourceType: resource.resourceStorageType,
+        resourceType: resource.resourceType,
+        durationMinutes:
+          resource.resourceDuration > 0 ? Math.max(1, Math.ceil(resource.resourceDuration / 60)) : 0,
       },
     });
   } catch (error) {
