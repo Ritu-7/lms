@@ -4,6 +4,7 @@ import Course from "../models/Course.js";
 import User from "../models/User.js";
 import { normalizeQuizQuestions, calculateQuizTotalPoints, evaluateQuizAttempt, computeQuizExpiresAt, canAttemptQuiz, summarizeQuizAttempt } from "../services/quizService.js";
 import { notifyQuizAvailable, notifyQuizResult } from "../services/notificationService.js";
+import { clientDataErrorMessage, isClientDataError, parseObjectId, resolveCourseModuleLesson } from "../utils/objectId.js";
 
 const parsePayload = (value, fallback = {}) => {
   if (!value) return fallback;
@@ -24,10 +25,19 @@ const getEducator = async (req) => {
 };
 
 const assertCourseOwnership = async (educatorId, courseId) => {
-  const course = await Course.findById(courseId);
-  if (!course) return { course: null, error: "Course not found" };
-  if (course.educator.toString() !== educatorId.toString()) return { course: null, error: "Not authorized" };
+  const parsed = parseObjectId(courseId, "course");
+  if (parsed.error) return { course: null, error: parsed.error, status: 400 };
+  const course = await Course.findById(parsed.id);
+  if (!course) return { course: null, error: "Course not found", status: 404 };
+  if (course.educator.toString() !== educatorId.toString()) return { course: null, error: "Not authorized", status: 403 };
   return { course, error: null };
+};
+
+const respondClientOrServerError = (res, error) => {
+  if (isClientDataError(error)) {
+    return res.status(400).json({ success: false, message: clientDataErrorMessage(error) });
+  }
+  return res.status(500).json({ success: false, message: error.message });
 };
 
 const canAccessQuiz = (quiz = {}, user = null) => {
@@ -49,8 +59,15 @@ export const createQuiz = async (req, res) => {
     if (!educator) return res.status(404).json({ success: false, message: "Educator not found" });
 
     const quizData = parsePayload(req.body.quizData, req.body);
-    const { course, error } = await assertCourseOwnership(educator._id, quizData.course);
-    if (error) return res.status(403).json({ success: false, message: error });
+    const { course, error, status } = await assertCourseOwnership(educator._id, quizData.course);
+    if (error) return res.status(status || 403).json({ success: false, message: error });
+
+    const scoped = await resolveCourseModuleLesson({
+      courseId: course._id,
+      moduleId: quizData.module,
+      lessonId: quizData.lesson,
+    });
+    if (scoped.error) return res.status(400).json({ success: false, message: scoped.error });
 
     const questions = normalizeQuizQuestions(quizData.questions);
     const quiz = await Quiz.create({
@@ -58,8 +75,8 @@ export const createQuiz = async (req, res) => {
       description: quizData.description || "",
       instructions: quizData.instructions || "",
       course: course._id,
-      module: quizData.module || null,
-      lesson: quizData.lesson || null,
+      module: scoped.moduleId,
+      lesson: scoped.lessonId,
       educator: educator._id,
       status: quizData.status || "draft",
       startAt: quizData.startAt || null,
@@ -84,7 +101,7 @@ export const createQuiz = async (req, res) => {
       notifyQuizAvailable(enrolledIds, course._id, quiz._id, quiz.title);
     }
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return respondClientOrServerError(res, error);
   }
 };
 
@@ -129,10 +146,35 @@ export const updateQuiz = async (req, res) => {
     if (quiz.educator.toString() !== educator._id.toString()) return res.status(403).json({ success: false, message: "Not authorized" });
 
     const quizData = parsePayload(req.body.quizData, req.body);
+    const { course, error, status } = await assertCourseOwnership(educator._id, quizData.course || quiz.course);
+    if (error) return res.status(status || 403).json({ success: false, message: error });
+
+    const scoped = await resolveCourseModuleLesson({
+      courseId: course._id,
+      moduleId: quizData.module,
+      lessonId: quizData.lesson,
+    });
+    if (scoped.error) return res.status(400).json({ success: false, message: scoped.error });
+
     const questions = quizData.questions ? normalizeQuizQuestions(quizData.questions) : quiz.questions;
 
     Object.assign(quiz, {
-      ...quizData,
+      title: quizData.title ?? quiz.title,
+      description: quizData.description ?? quiz.description,
+      instructions: quizData.instructions ?? quiz.instructions,
+      course: course._id,
+      module: scoped.moduleId,
+      lesson: scoped.lessonId,
+      status: quizData.status ?? quiz.status,
+      startAt: quizData.startAt || null,
+      dueAt: quizData.dueAt || null,
+      timeLimitMinutes: Number(quizData.timeLimitMinutes ?? quiz.timeLimitMinutes ?? 0),
+      attemptLimit: Number(quizData.attemptLimit ?? quiz.attemptLimit ?? 1),
+      passingScore: Number(quizData.passingScore ?? quiz.passingScore ?? 70),
+      instantEvaluation: quizData.instantEvaluation ?? quiz.instantEvaluation,
+      reviewMode: quizData.reviewMode ?? quiz.reviewMode,
+      showCorrectAnswersImmediately: quizData.showCorrectAnswersImmediately ?? quiz.showCorrectAnswersImmediately,
+      shuffleQuestions: quizData.shuffleQuestions ?? quiz.shuffleQuestions,
       questions,
       tags: quizData.tags ? (Array.isArray(quizData.tags) ? quizData.tags : String(quizData.tags).split(",").map((tag) => tag.trim()).filter(Boolean)) : quiz.tags,
       totalPoints: calculateQuizTotalPoints(questions),
@@ -141,7 +183,7 @@ export const updateQuiz = async (req, res) => {
     await quiz.save();
     res.json({ success: true, quiz });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return respondClientOrServerError(res, error);
   }
 };
 

@@ -189,6 +189,7 @@ export const modulesToLegacyCourseContent = (modules = []) => {
   return modules.map((module, moduleIndex) => {
     const lessons = Array.isArray(module?.lessons) ? module.lessons : [];
     return {
+      _id: module?._id,
       chapterId: module?.moduleId || module?._id?.toString() || normalizeId(),
       chapterOrder: toPositiveNumber(module?.moduleOrder, moduleIndex + 1),
       chapterTitle: module?.moduleTitle || `Module ${moduleIndex + 1}`,

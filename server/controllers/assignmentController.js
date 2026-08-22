@@ -14,6 +14,7 @@ import {
   normalizeAssignmentRubric,
   summarizeAssignmentSubmission,
 } from "../services/assignmentService.js";
+import { clientDataErrorMessage, isClientDataError, parseObjectId, resolveCourseModuleLesson } from "../utils/objectId.js";
 
 const buildAttachmentMetadata = (file, uploaded) => {
   const resourceType = normalizeResourceType({
@@ -70,10 +71,19 @@ const parsePayload = (value, fallback = {}) => {
 };
 
 const assertCourseOwnership = async (educatorId, courseId) => {
-  const course = await Course.findById(courseId);
-  if (!course) return { course: null, error: "Course not found" };
-  if (course.educator.toString() !== educatorId.toString()) return { course: null, error: "Not authorized" };
+  const parsed = parseObjectId(courseId, "course");
+  if (parsed.error) return { course: null, error: parsed.error, status: 400 };
+  const course = await Course.findById(parsed.id);
+  if (!course) return { course: null, error: "Course not found", status: 404 };
+  if (course.educator.toString() !== educatorId.toString()) return { course: null, error: "Not authorized", status: 403 };
   return { course, error: null };
+};
+
+const respondClientOrServerError = (res, error) => {
+  if (isClientDataError(error)) {
+    return res.status(400).json({ success: false, message: clientDataErrorMessage(error) });
+  }
+  return res.status(500).json({ success: false, message: error.message });
 };
 
 const getEducatorContext = async (req) => {
@@ -98,8 +108,15 @@ export const createAssignment = async (req, res) => {
     if (!educator) return res.status(404).json({ success: false, message: "Educator not found" });
 
     const assignmentData = parsePayload(req.body.assignmentData, req.body);
-    const { course, error } = await assertCourseOwnership(educator._id, assignmentData.course);
-    if (error) return res.status(403).json({ success: false, message: error });
+    const { course, error, status } = await assertCourseOwnership(educator._id, assignmentData.course);
+    if (error) return res.status(status || 403).json({ success: false, message: error });
+
+    const scoped = await resolveCourseModuleLesson({
+      courseId: course._id,
+      moduleId: assignmentData.module,
+      lessonId: assignmentData.lesson,
+    });
+    if (scoped.error) return res.status(400).json({ success: false, message: scoped.error });
 
     const attachments = await uploadFiles(req.files || [], "lms/assignment-assets");
     const assignment = await Assignment.create({
@@ -107,8 +124,8 @@ export const createAssignment = async (req, res) => {
       description: assignmentData.description || "",
       instructions: assignmentData.instructions || "",
       course: course._id,
-      module: assignmentData.module || null,
-      lesson: assignmentData.lesson || null,
+      module: scoped.moduleId,
+      lesson: scoped.lessonId,
       educator: educator._id,
       status: assignmentData.status || "draft",
       dueDate: assignmentData.dueDate,
@@ -129,7 +146,7 @@ export const createAssignment = async (req, res) => {
 
     res.status(201).json({ success: true, assignment });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return respondClientOrServerError(res, error);
   }
 };
 
@@ -179,17 +196,40 @@ export const updateAssignment = async (req, res) => {
     if (assignment.educator.toString() !== educator._id.toString()) return res.status(403).json({ success: false, message: "Not authorized" });
 
     const assignmentData = parsePayload(req.body.assignmentData, req.body);
+    const { course, error, status } = await assertCourseOwnership(educator._id, assignmentData.course || assignment.course);
+    if (error) return res.status(status || 403).json({ success: false, message: error });
+
+    const scoped = await resolveCourseModuleLesson({
+      courseId: course._id,
+      moduleId: assignmentData.module,
+      lessonId: assignmentData.lesson,
+    });
+    if (scoped.error) return res.status(400).json({ success: false, message: scoped.error });
+
     const attachments = req.files?.length ? await uploadFiles(req.files, "lms/assignment-assets") : [];
     const updates = {
-      ...assignmentData,
+      title: assignmentData.title ?? assignment.title,
+      description: assignmentData.description ?? assignment.description,
+      instructions: assignmentData.instructions ?? assignment.instructions,
+      course: course._id,
+      module: scoped.moduleId,
+      lesson: scoped.lessonId,
+      status: assignmentData.status ?? assignment.status,
+      dueDate: assignmentData.dueDate || assignment.dueDate,
+      allowLateSubmissions: assignmentData.allowLateSubmissions ?? assignment.allowLateSubmissions,
+      latePenaltyPercent: Number(assignmentData.latePenaltyPercent ?? assignment.latePenaltyPercent ?? 0),
+      maxAttempts: Number(assignmentData.maxAttempts ?? assignment.maxAttempts ?? 3),
+      totalPoints: Number(assignmentData.totalPoints ?? assignment.totalPoints ?? 100),
       rubric: assignmentData.rubric ? normalizeAssignmentRubric(assignmentData.rubric) : assignment.rubric,
     };
     if (attachments.length) {
       updates.attachments = normalizeAssignmentAttachments([...(assignment.attachments || []), ...attachments]);
     }
 
-    if (updates.tags && !Array.isArray(updates.tags)) {
-      updates.tags = String(updates.tags).split(",").map((tag) => tag.trim()).filter(Boolean);
+    if (assignmentData.tags && !Array.isArray(assignmentData.tags)) {
+      updates.tags = String(assignmentData.tags).split(",").map((tag) => tag.trim()).filter(Boolean);
+    } else if (Array.isArray(assignmentData.tags)) {
+      updates.tags = assignmentData.tags;
     }
 
     Object.assign(assignment, updates);
@@ -197,7 +237,7 @@ export const updateAssignment = async (req, res) => {
 
     res.json({ success: true, assignment });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return respondClientOrServerError(res, error);
   }
 };
 

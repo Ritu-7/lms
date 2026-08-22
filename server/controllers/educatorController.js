@@ -9,7 +9,7 @@ import Quiz from "../models/Quiz.js";
 import QuizAttempt from "../models/QuizAttempt.js";
 import fs from "fs";
 import { resolveUserRole } from "../utils/roleUtils.js";
-import { replaceHierarchyForCourse } from "../services/courseHierarchyService.js";
+import { replaceHierarchyForCourse, serializeCourseHierarchy } from "../services/courseHierarchyService.js";
 import { notifyCoursePublished } from "../services/notificationService.js";
 
 /* ===============================
@@ -247,12 +247,15 @@ export const getEducatorCourses = async (req, res) => {
       return res.status(404).json({ success: false, message: "Educator not found" });
     }
 
-    // ✅ FIX: Ensure we find courses belonging to this educator
-    // If you want to be extra safe, you can .populate('studentsEnrolled') 
-    // but just ensuring the field exists is usually enough.
-    const courses = await Course.find({ educator: educator._id });
-    
-    res.json({ success: true, courses });
+    const courses = await Course.find({ educator: educator._id }).populate({
+      path: "modules",
+      populate: { path: "lessons" },
+    });
+
+    res.json({
+      success: true,
+      courses: courses.map((course) => serializeCourseHierarchy(course)),
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

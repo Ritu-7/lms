@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { AppContext } from "../../context/AppContext";
 import Loading from "../../components/students/Loading";
+import { getCourseModules, getEntityId, validateCourseModuleLesson } from "../../utils/courseStructure";
 
 const questionTypes = [
   { value: "mcq", label: "MCQ" },
@@ -165,6 +166,13 @@ const Quizzes = () => {
   }, [fetchAttempts, selectedQuizId]);
 
   const selectedQuiz = useMemo(() => quizzes.find((quiz) => quiz._id === selectedQuizId) || null, [quizzes, selectedQuizId]);
+  const selectedCourse = useMemo(() => courses.find((course) => course._id === draft.course) || null, [courses, draft.course]);
+  const courseModules = useMemo(() => getCourseModules(selectedCourse), [selectedCourse]);
+  const selectedModule = useMemo(
+    () => courseModules.find((module) => module._id === draft.module) || null,
+    [courseModules, draft.module]
+  );
+  const courseLessons = selectedModule?.lessons || [];
 
   const resetForm = () => {
     setDraft(buildDraft());
@@ -182,9 +190,9 @@ const Quizzes = () => {
       title: quiz.title || "",
       description: quiz.description || "",
       instructions: quiz.instructions || "",
-      course: quiz.course?._id || quiz.course || "",
-      module: quiz.module || "",
-      lesson: quiz.lesson || "",
+      course: getEntityId(quiz.course),
+      module: getEntityId(quiz.module),
+      lesson: getEntityId(quiz.lesson),
       status: quiz.status || "draft",
       startAt: quiz.startAt ? new Date(quiz.startAt).toISOString().slice(0, 16) : "",
       dueAt: quiz.dueAt ? new Date(quiz.dueAt).toISOString().slice(0, 16) : "",
@@ -239,14 +247,21 @@ const Quizzes = () => {
 
   const saveQuiz = async (event) => {
     event.preventDefault();
+    const validationError = validateCourseModuleLesson(draft);
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
     try {
       setSaving(true);
       const token = await getToken();
       const payload = {
         ...draft,
         course: draft.course,
-        startAt: draft.startAt,
-        dueAt: draft.dueAt,
+        module: draft.module,
+        lesson: draft.lesson,
+        startAt: draft.startAt || null,
+        dueAt: draft.dueAt || null,
         timeLimitMinutes: Number(draft.timeLimitMinutes || 0),
         attemptLimit: Number(draft.attemptLimit || 1),
         passingScore: Number(draft.passingScore || 70),
@@ -337,9 +352,23 @@ const Quizzes = () => {
             </label>
             <label className="space-y-2">
               <span className="text-sm font-medium text-gray-700">Course</span>
-              <select required value={draft.course} onChange={(e) => setDraft((prev) => ({ ...prev, course: e.target.value }))} className="w-full rounded-lg border px-3 py-2 outline-none focus:border-blue-500">
+              <select required value={draft.course} onChange={(e) => setDraft((prev) => ({ ...prev, course: e.target.value, module: "", lesson: "" }))} className="w-full rounded-lg border px-3 py-2 outline-none focus:border-blue-500">
                 <option value="">Select course</option>
                 {courses.map((course) => <option key={course._id} value={course._id}>{course.courseTitle}</option>)}
+              </select>
+            </label>
+            <label className="space-y-2">
+              <span className="text-sm font-medium text-gray-700">Module</span>
+              <select required value={draft.module} disabled={!draft.course} onChange={(e) => setDraft((prev) => ({ ...prev, module: e.target.value, lesson: "" }))} className="w-full rounded-lg border px-3 py-2 outline-none focus:border-blue-500 disabled:bg-gray-100">
+                <option value="">Select module</option>
+                {courseModules.map((module) => <option key={module._id} value={module._id}>{module.title}</option>)}
+              </select>
+            </label>
+            <label className="space-y-2">
+              <span className="text-sm font-medium text-gray-700">Lesson</span>
+              <select required value={draft.lesson} disabled={!draft.module} onChange={(e) => setDraft((prev) => ({ ...prev, lesson: e.target.value }))} className="w-full rounded-lg border px-3 py-2 outline-none focus:border-blue-500 disabled:bg-gray-100">
+                <option value="">Select lesson</option>
+                {courseLessons.map((lesson) => <option key={lesson._id} value={lesson._id}>{lesson.title}</option>)}
               </select>
             </label>
             <label className="space-y-2">
