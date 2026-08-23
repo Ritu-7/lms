@@ -114,13 +114,22 @@ const MyEnrollments = () => {
             <h1 className="text-3xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">My Learning</h1>
             <p className="text-slate-500 dark:text-dk-text-2 mt-2">Track your progress, assignments, and earned certificates.</p>
           </div>
-          <button
-            onClick={() => navigate('/assignments')}
-            className="flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-600/25"
-          >
-            <BookOpen size={16} />
-            My Assignments
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={() => navigate('/quizzes')}
+              className="flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-700 transition-all active:scale-95 shadow-lg shadow-indigo-600/25"
+            >
+              <Award size={16} />
+              My Quizzes
+            </button>
+            <button
+              onClick={() => navigate('/assignments')}
+              className="flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-600/25"
+            >
+              <BookOpen size={16} />
+              My Assignments
+            </button>
+          </div>
         </header>
 
         {/* Stats */}
