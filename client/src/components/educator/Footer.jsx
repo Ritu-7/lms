@@ -1,5 +1,6 @@
 import React from 'react'
 import { assets } from '../../assets/assets'
+import Logo from '../common/Logo'
 
 const Footer = () => {
   return (
@@ -8,11 +9,9 @@ const Footer = () => {
         
         {/* Left Side: Logo & Copyright */}
         <div className="flex items-center gap-4">
-          <img
-            className="hidden md:block w-24 object-contain"
-            src={assets.logo_dark}
-            alt="Logo"
-          />
+          <div className="hidden md:block">
+            <Logo />
+          </div>
 
           {/* Vertical Divider (Desktop Only) */}
           <div className="hidden md:block h-6 w-px bg-gray-300"></div>

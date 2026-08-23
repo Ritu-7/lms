@@ -46,6 +46,7 @@ export const getVideoDuration = async (req, res) => {
         "User-Agent":
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         "Accept-Language": "en-US,en;q=0.9",
+        "Cookie": "CONSENT=YES+cb.20210328-17-p0.en+FX+478;"
       },
     });
 
@@ -57,7 +58,14 @@ export const getVideoDuration = async (req, res) => {
     const durationMinutes = parseYouTubeDurationMinutes(html);
 
     if (!durationMinutes) {
-      return res.status(404).json({ success: false, message: "Could not detect video duration" });
+      console.warn(`Could not parse duration for YouTube video ${youtubeId}. HTML length: ${html.length}`);
+      return res.json({
+        success: true,
+        durationMinutes: 0,
+        source: "youtube",
+        videoId: youtubeId,
+        message: "Duration detection failed, using 0",
+      });
     }
 
     return res.json({

@@ -77,8 +77,21 @@ export const addCourse = async (req, res) => {
     const parsedCourseData =
       typeof courseData === "string" ? JSON.parse(courseData) : courseData;
 
-    const imageUpload = await cloudinary.uploader.upload(imageFile.path);
-    fs.unlinkSync(imageFile.path);
+    let imageUpload;
+    try {
+      imageUpload = await cloudinary.uploader.upload(imageFile.path);
+    } catch (uploadError) {
+      console.error("Cloudinary Upload Error:", uploadError);
+      return res.status(500).json({ success: false, message: "Failed to upload course thumbnail. Check Cloudinary settings." });
+    } finally {
+      try {
+        if (imageFile && imageFile.path) {
+          fs.unlinkSync(imageFile.path);
+        }
+      } catch (fsError) {
+        console.error("Failed to delete temp file:", fsError);
+      }
+    }
 
     const course = await Course.create({
       ...parsedCourseData,
@@ -97,7 +110,8 @@ export const addCourse = async (req, res) => {
       course,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Add Course Error:", error);
+    res.status(500).json({ success: false, message: error.message || "Failed to add course" });
   }
 };
 

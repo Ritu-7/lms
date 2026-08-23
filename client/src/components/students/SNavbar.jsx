@@ -4,6 +4,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { UserButton, useUser } from '@clerk/clerk-react'
 import { useAuthModal } from '../../contexts/AuthContext'
 import NotificationBell from '../notifications/NotificationBell'
+import Logo from '../common/Logo'
 
 const SNavbar = () => {
   const location = useLocation()
@@ -16,14 +17,9 @@ const SNavbar = () => {
   return (
     <div className={`flex items-center justify-between px-4 sm:px-10 md:px-14 lg:px-36 border-b border-gray-500 py-4 ${isCourseListPage ? 'bg-white' : 'bg-cyan-100/70'}`}>
       
-      <img 
-  src={assets.logo} 
-  alt="Logo" 
-  width="128"   
-  height="32"   
-  className="w-28 lg:w-32 cursor-pointer" 
-  onClick={() => navigate('/')} 
-/>
+      <div className="cursor-pointer" onClick={() => navigate('/')}>
+        <Logo />
+      </div>
 
       <div className="hidden md:flex items-center gap-5 text-gray-600">
         {user && (
