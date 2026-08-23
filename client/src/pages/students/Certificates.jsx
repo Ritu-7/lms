@@ -13,19 +13,19 @@ import {
   RefreshCw,
   ShieldCheck,
   TriangleAlert,
+  Sparkles,
 } from 'lucide-react';
 import { AppContext } from '../../context/AppContext';
 import Footer from '../../components/students/Footer';
+import CertificateViewer from '../../components/students/CertificateViewer';
 
 const MotionDiv = motion.div;
 const MotionArticle = motion.article;
 
 const formatDate = (date) => {
   if (!date) return 'N/A';
-
   const parsedDate = new Date(date);
   if (Number.isNaN(parsedDate.getTime())) return 'N/A';
-
   return parsedDate.toLocaleDateString(undefined, {
     year: 'numeric',
     month: 'short',
@@ -40,57 +40,44 @@ const getCourseTitle = (certificate) => (
   'Untitled Course'
 );
 
-const getCertificateName = (certificate) => (
-  certificate?.certificateName ||
-  certificate?.title ||
-  `Certificate of Completion`
-);
-
 const getStatusStyles = (status = 'active') => {
-  const normalizedStatus = String(status || 'active').toLowerCase();
-
-  if (['active', 'verified', 'valid', 'issued'].includes(normalizedStatus)) {
+  const s = String(status || 'active').toLowerCase();
+  if (['active', 'verified', 'valid', 'issued'].includes(s))
     return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-300 dark:border-emerald-500/30';
-  }
-
-  if (['revoked', 'expired', 'invalid'].includes(normalizedStatus)) {
+  if (['revoked', 'expired', 'invalid'].includes(s))
     return 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/30 dark:text-rose-300 dark:border-rose-500/30';
-  }
-
   return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-300 dark:border-amber-500/30';
 };
 
 const getDisplayStatus = (status = 'active') => {
-  const normalizedStatus = String(status || 'active');
-  if (normalizedStatus.toLowerCase() === 'active') return 'Verified';
-  return normalizedStatus.charAt(0).toUpperCase() + normalizedStatus.slice(1);
+  const s = String(status || 'active');
+  if (s.toLowerCase() === 'active') return 'Verified';
+  return s.charAt(0).toUpperCase() + s.slice(1);
 };
 
 const Certificates = () => {
   const navigate = useNavigate();
-  const { backendURL, getToken, userData } = useContext(AppContext);
+  const { backendURL, getToken, userData, enrolledCourses } = useContext(AppContext);
 
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [viewingCertificate, setViewingCertificate] = useState(null);
+  const [generating, setGenerating] = useState({});
 
   const fetchCertificates = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
-
       const token = await getToken();
-
       if (!token) {
         setCertificates([]);
         setError('Please sign in to view your earned certificates.');
         return;
       }
-
       const { data } = await axios.get(`${backendURL}/api/certificates/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       if (data.success) {
         setCertificates(Array.isArray(data.certificates) ? data.certificates : []);
       } else {
@@ -109,56 +96,40 @@ const Certificates = () => {
     fetchCertificates();
   }, [fetchCertificates]);
 
-  const stats = useMemo(() => {
-    const verifiedCount = certificates.filter((certificate) => (
-      ['active', 'verified', 'valid', 'issued'].includes(String(certificate.status || 'active').toLowerCase())
-    )).length;
+  // Courses that don't yet have a certificate
+  const coursesWithoutCertificate = useMemo(() => {
+    if (!Array.isArray(enrolledCourses)) return [];
+    const certCourseIds = new Set(
+      certificates.map((c) => String(c.course?._id || c.course || '')).filter(Boolean)
+    );
+    return enrolledCourses.filter((c) => !certCourseIds.has(String(c._id)));
+  }, [enrolledCourses, certificates]);
 
-    return [
-      { label: 'Learner', value: userData?.name || 'Student', color: 'text-slate-900', icon: Award },
-      { label: 'Certificates', value: certificates.length, color: 'text-blue-600', icon: FileCheck2 },
-      { label: 'Verified', value: verifiedCount, color: 'text-emerald-600', icon: ShieldCheck },
-    ];
-  }, [certificates, userData?.name]);
-
-  const handleDownload = async (certificate) => {
-    const certificateId = certificate.certificateId || certificate._id;
-
-    if (!certificateId) {
-      toast.info('Download is not available for this certificate.');
-      return;
-    }
-
+  const handleGenerate = async (courseId, courseTitle) => {
     try {
+      setGenerating((prev) => ({ ...prev, [courseId]: true }));
       const token = await getToken();
-      const downloadUrl = certificate.downloadUrl || `${backendURL}/api/certificates/${certificateId}/download`;
-      const resolvedDownloadUrl = downloadUrl.startsWith('http') ? downloadUrl : `${backendURL}${downloadUrl}`;
-
-      const response = await axios.get(resolvedDownloadUrl, {
-        responseType: 'blob',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-
-      const blobUrl = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.setAttribute('download', `${certificateId}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(blobUrl);
+      const { data } = await axios.post(
+        `${backendURL}/api/certificates/generate`,
+        { courseId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (data.success) {
+        toast.success(`🎉 Certificate issued for "${courseTitle}"!`);
+        fetchCertificates();
+      } else {
+        toast.info(data.message || 'Could not issue certificate yet.');
+      }
     } catch (err) {
-      toast.error(err.response?.data?.message || err.message || 'Failed to download certificate.');
+      toast.info(err.response?.data?.message || 'Could not issue certificate yet. Complete all lessons first.');
+    } finally {
+      setGenerating((prev) => ({ ...prev, [courseId]: false }));
     }
   };
 
-  const handleView = (certificate) => {
-    if (certificate.verificationCode) {
-      navigate(`/certificate/verify/${certificate.verificationCode}`);
-      return;
-    }
-
-    toast.info('Verification code is not available for this certificate.');
+  const handleDownload = async (certificate) => {
+    // Open viewer so user can download from there
+    setViewingCertificate(certificate);
   };
 
   const handleVerify = (certificate) => {
@@ -166,17 +137,30 @@ const Certificates = () => {
       navigate(`/certificate/verify/${certificate.verificationCode}`);
       return;
     }
-
-    if (certificate.verificationUrl) {
-      window.open(certificate.verificationUrl, '_blank', 'noopener,noreferrer');
-      return;
-    }
-
     toast.info('Verification details are not available for this certificate.');
   };
 
+  const stats = useMemo(() => {
+    const verifiedCount = certificates.filter((c) =>
+      ['active', 'verified', 'valid', 'issued'].includes(String(c.status || 'active').toLowerCase())
+    ).length;
+    return [
+      { label: 'Learner', value: userData?.name || 'Student', color: 'text-slate-900 dark:text-dk-text', icon: Award },
+      { label: 'Certificates', value: certificates.length, color: 'text-blue-600', icon: FileCheck2 },
+      { label: 'Verified', value: verifiedCount, color: 'text-emerald-600', icon: ShieldCheck },
+    ];
+  }, [certificates, userData?.name]);
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-dk-base">
+      {/* Certificate Viewer Modal */}
+      {viewingCertificate && (
+        <CertificateViewer
+          certificate={viewingCertificate}
+          onClose={() => setViewingCertificate(null)}
+        />
+      )}
+
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <header className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
@@ -193,10 +177,10 @@ const Certificates = () => {
           </button>
         </header>
 
+        {/* Stats */}
         <div className="grid gap-6 mb-10 md:grid-cols-3">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
-
             return (
               <MotionDiv
                 key={stat.label}
@@ -207,44 +191,55 @@ const Certificates = () => {
               >
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-medium text-slate-500 dark:text-dk-text-2">{stat.label}</p>
-                  <Icon size={20} className={`${stat.color} dark:text-dk-text`} />
+                  <Icon size={20} className={stat.color} />
                 </div>
-                <p className={`mt-2 text-3xl font-bold font-space-grotesk ${stat.color} dark:text-dk-text`}>{stat.value}</p>
+                <p className={`mt-2 text-3xl font-bold font-space-grotesk ${stat.color}`}>{stat.value}</p>
               </MotionDiv>
             );
           })}
         </div>
 
+        {/* Generate Certificate for completed courses without a cert */}
+        {coursesWithoutCertificate.length > 0 && (
+          <div className="mb-8 rounded-2xl border border-blue-200 dark:border-blue-900/50 bg-blue-50 dark:bg-blue-950/20 p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Sparkles size={18} className="text-blue-600" />
+              <h2 className="text-base font-bold text-slate-900 dark:text-dk-text">Claim Your Certificate</h2>
+            </div>
+            <p className="text-sm text-slate-500 dark:text-dk-text-2 mb-4">
+              If you've completed a course, click below to generate your certificate instantly.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              {coursesWithoutCertificate.map((course) => (
+                <button
+                  key={course._id}
+                  onClick={() => handleGenerate(course._id, course.courseTitle)}
+                  disabled={generating[course._id]}
+                  className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60 transition-all active:scale-95"
+                >
+                  <Award size={14} />
+                  {generating[course._id] ? 'Checking…' : `"${course.courseTitle}"`}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {loading ? (
-          <>
-            <div className="grid gap-6 sm:grid-cols-2 xl:hidden">
-              {[...Array(4)].map((_, index) => (
-                <div key={index} className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm animate-pulse">
-                  <div className="h-12 w-12 rounded-2xl bg-slate-200 dark:bg-dk-surface-2" />
-                  <div className="mt-5 h-5 w-3/4 rounded bg-slate-200 dark:bg-dk-surface-2" />
-                  <div className="mt-3 h-4 w-1/2 rounded bg-slate-200 dark:bg-dk-surface-2" />
-                  <div className="mt-6 grid grid-cols-2 gap-3">
-                    <div className="h-10 rounded-xl bg-slate-200 dark:bg-dk-surface-2" />
-                    <div className="h-10 rounded-xl bg-slate-200 dark:bg-dk-surface-2" />
-                  </div>
+          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            {[...Array(3)].map((_, index) => (
+              <div key={index} className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm animate-pulse">
+                <div className="h-12 w-12 rounded-2xl bg-slate-200 dark:bg-dk-surface-2" />
+                <div className="mt-5 h-5 w-3/4 rounded bg-slate-200 dark:bg-dk-surface-2" />
+                <div className="mt-3 h-4 w-1/2 rounded bg-slate-200 dark:bg-dk-surface-2" />
+                <div className="mt-6 grid grid-cols-3 gap-3">
+                  <div className="h-10 rounded-xl bg-slate-200 dark:bg-dk-surface-2" />
+                  <div className="h-10 rounded-xl bg-slate-200 dark:bg-dk-surface-2" />
+                  <div className="h-10 rounded-xl bg-slate-200 dark:bg-dk-surface-2" />
                 </div>
-              ))}
-            </div>
-            <div className="hidden xl:block rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm overflow-hidden animate-pulse">
-              <div className="p-6 border-b border-slate-200 dark:border-dk-border">
-                <div className="h-6 w-48 rounded bg-slate-200 dark:bg-dk-surface-2" />
               </div>
-              {[...Array(5)].map((_, index) => (
-                <div key={index} className="grid grid-cols-6 gap-6 border-b border-slate-100 dark:border-slate-800 px-6 py-5">
-                  <div className="col-span-2 h-5 rounded bg-slate-200 dark:bg-dk-surface-2" />
-                  <div className="h-5 rounded bg-slate-200 dark:bg-dk-surface-2" />
-                  <div className="h-5 rounded bg-slate-200 dark:bg-dk-surface-2" />
-                  <div className="h-5 rounded bg-slate-200 dark:bg-dk-surface-2" />
-                  <div className="h-9 rounded-xl bg-slate-200 dark:bg-dk-surface-2" />
-                </div>
-              ))}
-            </div>
-          </>
+            ))}
+          </div>
         ) : error ? (
           <div className="rounded-2xl border border-rose-200 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-950/30 p-8 text-center">
             <TriangleAlert className="mx-auto text-rose-500" size={44} />
@@ -273,59 +268,75 @@ const Certificates = () => {
           </div>
         ) : (
           <>
-            <div className="grid gap-6 xl:hidden">
+            {/* Card grid */}
+            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
               {certificates.map((certificate, index) => (
                 <MotionArticle
                   key={certificate._id || certificate.certificateId || index}
                   initial={{ opacity: 0, y: 18 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="group rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-xl"
+                  className="group rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-xl overflow-hidden"
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300">
-                      <Award size={24} />
-                    </div>
-                    <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${getStatusStyles(certificate.status)}`}>
-                      {getDisplayStatus(certificate.status || 'active')}
-                    </span>
-                  </div>
+                  {/* Top accent */}
+                  <div className="h-1.5 w-full" style={{ background: "linear-gradient(90deg, #1d4ed8, #3b82f6, #818cf8)" }} />
 
-                  <h2 className="mt-5 text-lg font-bold font-space-grotesk text-slate-900 dark:text-dk-text">{getCertificateName(certificate)}</h2>
-                  <p className="mt-2 text-sm font-medium text-slate-600 dark:text-dk-text-2">{getCourseTitle(certificate)}</p>
-
-                  <div className="mt-5 space-y-3 rounded-xl bg-slate-50 dark:bg-dk-surface p-4">
-                    <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-dk-text-2">
-                      <CalendarDays size={16} className="text-blue-600 dark:text-blue-300" />
-                      <span>Issued {formatDate(certificate.issueDate || certificate.createdAt)}</span>
+                  <div className="p-6">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300">
+                        <Award size={24} />
+                      </div>
+                      <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${getStatusStyles(certificate.status)}`}>
+                        {getDisplayStatus(certificate.status || 'active')}
+                      </span>
                     </div>
-                    <div className="flex items-start gap-3 text-sm text-slate-600 dark:text-dk-text-2">
-                      <BadgeCheck size={16} className="mt-0.5 text-emerald-600 dark:text-emerald-300" />
-                      <span className="break-all">{certificate.verificationCode || certificate.certificateId || 'N/A'}</span>
-                    </div>
-                  </div>
 
-                  <div className="mt-6 grid grid-cols-3 gap-3">
-                    <button onClick={() => handleView(certificate)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-3 py-2.5 text-xs font-semibold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700">
-                      <Eye size={14} />
-                      View
-                    </button>
-                    <button onClick={() => handleDownload(certificate)} className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-dk-border px-3 py-2.5 text-xs font-semibold text-slate-700 dark:text-dk-text transition-all hover:bg-slate-50 dark:hover:bg-dk-surface-2">
-                      <Download size={14} />
-                      PDF
-                    </button>
-                    <button onClick={() => handleVerify(certificate)} className="inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/20 px-3 py-2.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300 transition-all hover:bg-emerald-100 dark:hover:bg-emerald-950/40">
-                      <ShieldCheck size={14} />
-                      Verify
-                    </button>
+                    <h2 className="mt-5 text-base font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Certificate of Completion</h2>
+                    <p className="mt-1 text-sm font-medium text-blue-600 dark:text-blue-400">{getCourseTitle(certificate)}</p>
+
+                    <div className="mt-4 space-y-2 rounded-xl bg-slate-50 dark:bg-dk-surface p-3">
+                      <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-dk-text-2">
+                        <CalendarDays size={13} className="text-blue-500" />
+                        <span>Issued {formatDate(certificate.issueDate || certificate.createdAt)}</span>
+                      </div>
+                      <div className="flex items-start gap-2 text-xs text-slate-600 dark:text-dk-text-2">
+                        <BadgeCheck size={13} className="mt-0.5 text-emerald-500" />
+                        <span className="break-all font-mono">{certificate.verificationCode || certificate.certificateId || 'N/A'}</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-5 grid grid-cols-3 gap-2">
+                      <button
+                        onClick={() => setViewingCertificate(certificate)}
+                        className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-2 py-2.5 text-xs font-semibold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700"
+                      >
+                        <Eye size={13} />
+                        View
+                      </button>
+                      <button
+                        onClick={() => handleDownload(certificate)}
+                        className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 dark:border-dk-border px-2 py-2.5 text-xs font-semibold text-slate-700 dark:text-dk-text transition-all hover:bg-slate-50 dark:hover:bg-dk-surface-2"
+                      >
+                        <Download size={13} />
+                        PDF
+                      </button>
+                      <button
+                        onClick={() => handleVerify(certificate)}
+                        className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/20 px-2 py-2.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300 transition-all hover:bg-emerald-100 dark:hover:bg-emerald-950/40"
+                      >
+                        <ShieldCheck size={13} />
+                        Verify
+                      </button>
+                    </div>
                   </div>
                 </MotionArticle>
               ))}
             </div>
 
-            <div className="hidden xl:block rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm overflow-hidden">
+            {/* Desktop table */}
+            <div className="mt-8 hidden xl:block rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm overflow-hidden">
               <div className="p-6 border-b border-slate-200 dark:border-dk-border">
-                <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Earned Certificates</h2>
+                <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">All Certificates</h2>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
@@ -348,7 +359,7 @@ const Certificates = () => {
                               <Award size={22} />
                             </div>
                             <div>
-                              <h2 className="font-semibold text-slate-900 dark:text-dk-text">{getCertificateName(certificate)}</h2>
+                              <h2 className="font-semibold text-slate-900 dark:text-dk-text">Certificate of Completion</h2>
                               <p className="mt-1 text-xs text-slate-500 dark:text-dk-text-2">ID: {certificate.certificateId || 'N/A'}</p>
                             </div>
                           </div>
@@ -356,8 +367,8 @@ const Certificates = () => {
                         <td className="px-6 py-5 text-slate-600 dark:text-dk-text-2">{getCourseTitle(certificate)}</td>
                         <td className="px-6 py-5 text-slate-600 dark:text-dk-text-2">{formatDate(certificate.issueDate || certificate.createdAt)}</td>
                         <td className="px-6 py-5">
-                          <span className="block max-w-[220px] truncate font-mono text-xs text-slate-600 dark:text-dk-text-2" title={certificate.verificationCode || certificate.certificateId || 'N/A'}>
-                            {certificate.verificationCode || certificate.certificateId || 'N/A'}
+                          <span className="block max-w-[220px] truncate font-mono text-xs text-slate-600 dark:text-dk-text-2" title={certificate.verificationCode}>
+                            {certificate.verificationCode || 'N/A'}
                           </span>
                         </td>
                         <td className="px-6 py-5">
@@ -367,15 +378,9 @@ const Certificates = () => {
                         </td>
                         <td className="px-6 py-5">
                           <div className="flex justify-end gap-2">
-                            <button onClick={() => handleView(certificate)} className="rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700">
-                              View
-                            </button>
-                            <button onClick={() => handleDownload(certificate)} className="rounded-xl border border-slate-200 dark:border-dk-border px-4 py-2 text-xs font-semibold text-slate-700 dark:text-dk-text transition-all hover:bg-slate-50 dark:hover:bg-dk-surface-2">
-                              Download PDF
-                            </button>
-                            <button onClick={() => handleVerify(certificate)} className="rounded-xl border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/20 px-4 py-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300 transition-all hover:bg-emerald-100 dark:hover:bg-emerald-950/40">
-                              Verify
-                            </button>
+                            <button onClick={() => setViewingCertificate(certificate)} className="rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700">View</button>
+                            <button onClick={() => handleDownload(certificate)} className="rounded-xl border border-slate-200 dark:border-dk-border px-4 py-2 text-xs font-semibold text-slate-700 dark:text-dk-text transition-all hover:bg-slate-50 dark:hover:bg-dk-surface-2">Download PDF</button>
+                            <button onClick={() => handleVerify(certificate)} className="rounded-xl border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/20 px-4 py-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300 transition-all hover:bg-emerald-100 dark:hover:bg-emerald-950/40">Verify</button>
                           </div>
                         </td>
                       </tr>
