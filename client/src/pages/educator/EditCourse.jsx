@@ -61,19 +61,16 @@ const EditCourse = () => {
   }, [courseId, backendURL, getToken, getCourseChapters]);
 
   useEffect(() => {
-    if (editorRef.current && !quillRef.current) {
+    if (!loading && editorRef.current && !quillRef.current) {
       quillRef.current = new Quill(editorRef.current, {
         theme: "snow",
         placeholder: "Write course description here...",
       });
+      if (courseData?.courseDescription) {
+        quillRef.current.root.innerHTML = courseData.courseDescription;
+      }
     }
-  }, []);
-
-  useEffect(() => {
-    if (quillRef.current && courseData?.courseDescription) {
-      quillRef.current.root.innerHTML = courseData.courseDescription;
-    }
-  }, [courseData]);
+  }, [loading, courseData]);
 
   const handleFeature = (action, index) => {
     if (action === "add") {
@@ -206,10 +203,11 @@ const EditCourse = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const descriptionContent = quillRef.current ? quillRef.current.root.innerHTML : courseData?.courseDescription || "";
       const updatedCourseData = {
         ...courseData,
         category: courseCategory.trim(),
-        courseDescription: quillRef.current.root.innerHTML,
+        courseDescription: descriptionContent,
         courseContent: normalizeModuleOrder(modules),
         courseFeatures,
       };
@@ -239,7 +237,7 @@ const EditCourse = () => {
   if (loading) return <Loading />;
 
   return (
-    <div className="h-screen overflow-scroll flex flex-col items-start md:p-8 p-4 pt-8 bg-gray-50 dark:bg-dk-base text-gray-900 dark:text-dk-text">
+    <div className="min-h-full flex-1 flex flex-col items-start md:p-8 p-4 pt-8 bg-gray-50 dark:bg-dk-base text-gray-900 dark:text-dk-text">
       <form onSubmit={handleSubmit} className="w-full max-w-4xl space-y-5">
         <div className="flex flex-col gap-1">
           <p className="text-gray-600 font-medium">Course Title</p>

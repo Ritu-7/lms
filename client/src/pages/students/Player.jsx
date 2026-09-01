@@ -425,14 +425,7 @@ const Player = () => {
     fetchStudyLibrary();
   }, [fetchStudyLibrary, playerData?.lectureId]);
 
-  useEffect(() => {
-    if (!playerData) return undefined;
-    const timer = window.setTimeout(() => {
-      saveNote(noteText);
-    }, 800);
 
-    return () => window.clearTimeout(timer);
-  }, [noteText, playerData, saveNote]);
 
   useEffect(() => {
     if (currentLessonNote) {
@@ -702,12 +695,41 @@ const Player = () => {
                     >
                       {bookmarkSaving ? "Saving…" : "Save Bookmark"}
                     </button>
+                    {filteredBookmarks.length > 0 && (
+                      <div className="mt-6 space-y-3">
+                        <h4 className="text-sm font-semibold text-slate-900 dark:text-dk-text">Saved Bookmarks</h4>
+                        {filteredBookmarks.map((bookmark) => (
+                          <div key={bookmark._id} className="p-3 bg-slate-50 dark:bg-dk-surface-2 rounded-xl text-sm border border-slate-100 dark:border-dk-border">
+                            <div className="font-semibold text-blue-600 mb-1">{bookmark.positionLabel || "Bookmark"}</div>
+                            <div className="text-slate-700 dark:text-dk-text-2">{bookmark.note}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ) : (
-                  <textarea rows="8" value={noteText} onChange={e => setNoteText(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 dark:border-dk-border p-3 text-sm bg-slate-50 dark:bg-dk-surface-2 text-slate-900 dark:text-dk-text placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                    placeholder="Type your private note here… (auto-saved)"
-                  />
+                  <div className="space-y-3">
+                    <textarea rows="8" value={noteText} onChange={e => setNoteText(e.target.value)}
+                      className="w-full rounded-xl border border-slate-200 dark:border-dk-border p-3 text-sm bg-slate-50 dark:bg-dk-surface-2 text-slate-900 dark:text-dk-text placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                      placeholder="Type your private note here…"
+                    />
+                    <button onClick={() => saveNote(noteText)} disabled={noteSaving}
+                      className="w-full py-2.5 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 transition-all disabled:opacity-50 shadow-md shadow-blue-600/20"
+                    >
+                      {noteSaving ? "Saving…" : "Save Note"}
+                    </button>
+                    {filteredNotes.length > 0 && (
+                      <div className="mt-6 space-y-3">
+                        <h4 className="text-sm font-semibold text-slate-900 dark:text-dk-text">Saved Notes</h4>
+                        {filteredNotes.map((note) => (
+                          <div key={note._id} className="p-3 bg-slate-50 dark:bg-dk-surface-2 rounded-xl text-sm border border-slate-100 dark:border-dk-border">
+                            <div className="font-semibold text-blue-600 mb-1">{note.lessonTitle || "Note"}</div>
+                            <div className="text-slate-700 dark:text-dk-text-2 whitespace-pre-wrap">{note.noteText}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             )}

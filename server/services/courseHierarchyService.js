@@ -341,7 +341,9 @@ export const replaceHierarchyForCourse = async (course, courseContent = []) => {
 
 export const serializeCourseHierarchy = (courseDoc, { hideRestrictedUrls = false } = {}) => {
   const course = clone(courseDoc) || {};
-  const populatedModules = Array.isArray(course.modules) && course.modules.length ? course.modules : [];
+  const rawModules = Array.isArray(course.modules) ? course.modules : [];
+  // Filter out null entries that can appear when ObjectId refs don't resolve
+  const populatedModules = rawModules.filter((m) => m && typeof m === "object" && m._id);
   const normalizedModules = populatedModules.map((module, index) => {
     const lessons = Array.isArray(module.lessons) ? module.lessons : [];
     return {

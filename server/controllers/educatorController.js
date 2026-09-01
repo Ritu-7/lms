@@ -261,16 +261,31 @@ export const getEducatorCourses = async (req, res) => {
       return res.status(404).json({ success: false, message: "Educator not found" });
     }
 
-    const courses = await Course.find({ educator: educator._id }).populate({
-      path: "modules",
-      populate: { path: "lessons" },
-    });
+    let courses;
+    try {
+      courses = await Course.find({ educator: educator._id }).populate({
+        path: "modules",
+        populate: { path: "lessons" },
+      });
+    } catch {
+      // If populate fails (e.g., missing Module/Lesson refs), fall back to plain query
+      courses = await Course.find({ educator: educator._id });
+    }
 
     res.json({
       success: true,
-      courses: courses.map((course) => serializeCourseHierarchy(course)),
+      courses: courses.map((course) => {
+        try {
+          return serializeCourseHierarchy(course);
+        } catch {
+          // If serialization fails for one course, return a safe minimal version
+          const plain = course.toObject ? course.toObject() : course;
+          return { ...plain, modules: [], courseContent: plain.courseContent || [] };
+        }
+      }),
     });
   } catch (error) {
+    console.error("getEducatorCourses error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -303,14 +318,16 @@ export const editCourse = async (req, res) => {
       ? JSON.parse(req.body.courseData)
       : req.body;
 
-    const hasHierarchyPayload =
-      Object.prototype.hasOwnProperty.call(updates, "courseContent") ||
-      Object.prototype.hasOwnProperty.call(updates, "modules");
+    const { _id, educator: courseEducator, createdAt, updatedAt, __v, ...cleanUpdates } = updates;
 
-    Object.assign(course, updates);
+    const hasHierarchyPayload =
+      Object.prototype.hasOwnProperty.call(cleanUpdates, "courseContent") ||
+      Object.prototype.hasOwnProperty.call(cleanUpdates, "modules");
+
+    Object.assign(course, cleanUpdates);
 
     if (hasHierarchyPayload) {
-      await replaceHierarchyForCourse(course, updates.courseContent || updates.modules || []);
+      await replaceHierarchyForCourse(course, cleanUpdates.courseContent || cleanUpdates.modules || []);
     } else {
       await course.save();
     }

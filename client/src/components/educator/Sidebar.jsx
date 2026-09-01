@@ -2,14 +2,16 @@
 import React from 'react'
 import { AppContext } from '../../context/AppContext'
 import { assets } from '../../assets/assets'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 
 const Sidebar = () => {
   // Pull isEducator from your Context
+  const location = useLocation();
 
   const menuItems = [
     { name: 'Dashboard', path: '/educator', icon: assets.home_icon },
     { name: 'Add Course', path: '/educator/add-course', icon: assets.add_icon },
+    { name: 'AI Course Builder', path: '/educator/ai-course-generator', icon: assets.add_icon, isAI: true },
     { name: 'My Courses', path: '/educator/my-courses', icon: assets.my_course_icon },
     { name: 'Student Enrolled', path: '/educator/student-enrolled', icon: assets.person_tick_icon },
     { name: 'Assignments', path: '/educator/assignments', icon: assets.lesson_icon },
@@ -19,22 +21,27 @@ const Sidebar = () => {
 
   // Only render if user is an educator
   return(
-    <div className='md:w-64 w-16 border-r min-h-screen text-base border-gray-200 dark:border-dk-border bg-white dark:bg-dk-surface py-2 flex flex-col'>
+    <div className='md:w-64 w-16 shrink-0 border-r text-base border-gray-200 dark:border-dk-border bg-white dark:bg-dk-surface py-2 flex flex-col'>
       {menuItems.map((item) => (
         <NavLink
           key={item.name}
           to={item.path}
           end={item.path === '/educator'}
-          className={({ isActive }) => 
-            `flex items-center md:flex-row flex-col md:justify-start justify-center gap-3 py-3.5 md:px-10 border-r-[4px] transition-all duration-200 ${
-              isActive 
+          className={({ isActive }) => {
+            const isEditCourseActive = item.path === '/educator/my-courses' && location.pathname.includes('/educator/edit-course');
+            const active = isActive || isEditCourseActive;
+            return `flex items-center md:flex-row flex-col md:justify-start justify-center gap-3 py-3.5 md:px-10 border-r-[4px] transition-all duration-200 ${
+              active 
                 ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-600 text-blue-600 dark:text-blue-400' 
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-dk-border hover:text-gray-700 dark:hover:text-gray-200'
             }`
-          }
+          }}
         >
           <img src={item.icon} alt={item.name} className="w-6 h-6" />
-          <p className='md:block hidden font-medium'>{item.name}</p>
+          <p className='md:block hidden font-medium'>
+            {item.name}
+            {item.isAI && <span className="ml-1.5 text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded-full">✨ AI</span>}
+          </p>
         </NavLink>
       ))}
     </div>

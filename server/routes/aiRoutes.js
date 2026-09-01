@@ -1,5 +1,5 @@
 import express from "express";
-import { protectRoute } from "../middlewares/authMiddleware.js";
+import { protectRoute, protectEducatorRoutes } from "../middlewares/authMiddleware.js";
 import {
   analyzeCodingTask,
   chatTutor,
@@ -13,6 +13,15 @@ import {
   deleteKey,
   testKey,
 } from "../controllers/aiController.js";
+import {
+  generateCourse,
+  generateCourseFromPdf,
+  generateLesson,
+  generateLessonFromYoutube,
+  generateQuiz,
+  generateAssignment,
+  saveDraftCourse,
+} from "../controllers/courseGenerationController.js";
 
 const aiRouter = express.Router();
 
@@ -31,5 +40,14 @@ aiRouter.get("/key/status", getKeyStatus);
 aiRouter.post("/key", saveKey);
 aiRouter.delete("/key", deleteKey);
 aiRouter.post("/key/test", testKey);
+
+// AI Course Generation (educator-only)
+aiRouter.post("/course/generate", protectEducatorRoutes, generateCourse);
+aiRouter.post("/course/save-draft", protectEducatorRoutes, saveDraftCourse);
+aiRouter.post("/course/from-pdf", protectEducatorRoutes, generateCourseFromPdf);
+aiRouter.post("/lesson/generate", protectEducatorRoutes, generateLesson);
+aiRouter.post("/lesson/from-youtube", protectEducatorRoutes, generateLessonFromYoutube);
+aiRouter.post("/quiz/generate", protectEducatorRoutes, generateQuiz);
+aiRouter.post("/assignment/generate", protectEducatorRoutes, generateAssignment);
 
 export default aiRouter;

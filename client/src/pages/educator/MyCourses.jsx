@@ -80,7 +80,7 @@ const MyCourses = () => {
   if (!courses) return <Loading />;
 
   return (
-    <div className='min-h-screen flex flex-col items-start md:p-8 p-4 pt-8 bg-gray-50/30 dark:bg-dk-base'>
+    <div className='min-h-full flex-1 flex flex-col items-start md:p-8 p-4 pt-8 bg-gray-50/30 dark:bg-dk-base'>
       <div className='w-full'>
         <h2 className='pb-4 text-lg font-medium dark:text-dk-text'>My Courses</h2>
 

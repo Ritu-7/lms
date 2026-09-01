@@ -42,7 +42,7 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className='min-h-screen bg-slate-50 dark:bg-dk-base p-4 md:p-8 space-y-8'>
+    <div className='min-h-full flex-1 bg-slate-50 dark:bg-dk-base p-4 md:p-8 space-y-8'>
       
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6'>
         {stats.map((stat, idx) => (

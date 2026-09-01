@@ -25,7 +25,8 @@ const LEGACY_PROGRESS_FIELDS = ["completedLectures", "completedLessons", "comple
 const flatten = (value) => (Array.isArray(value) ? value.flat(Infinity) : []);
 
 export const normalizeCompletionRules = (lessonType = "video", rules = {}) => ({
-  ...DEFAULT_COMPLETION_RULES[lessonType],
+  allowManualOverride: true,
+  ...(DEFAULT_COMPLETION_RULES[lessonType] || {}),
   ...rules,
 });
 

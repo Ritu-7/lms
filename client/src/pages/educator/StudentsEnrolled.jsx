@@ -34,7 +34,7 @@ const StudentsEnrolled = () => {
   if (!enrolledStudents) return <Loading />;
 
   return (
-    <div className='min-h-screen flex flex-col items-start md:p-8 p-4 pt-8 bg-gray-50/30 dark:bg-dk-base'>
+    <div className='min-h-full flex-1 flex flex-col items-start md:p-8 p-4 pt-8 bg-gray-50/30 dark:bg-dk-base'>
       <div className='w-full'>
         <h2 className='pb-4 text-lg font-medium text-gray-800 dark:text-dk-text'>Enrolled Students</h2>
         <div className='max-w-4xl w-full bg-white dark:bg-dk-surface border border-gray-500/20 dark:border-dk-border rounded-md overflow-hidden shadow-sm'>

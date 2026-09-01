@@ -444,20 +444,19 @@ export const testKey = async (req, res, next) => {
     }
 
     // Call Gemini with a simple prompt to test the key
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ role: "user", parts: [{ text: "Respond with exactly one word: OK" }] }],
-        generationConfig: { maxOutputTokens: 10 },
-      }),
-    });
-
-    if (!response.ok) {
-      const data = await response.json().catch(() => ({}));
-      return res.status(response.status).json({
+    const { GoogleGenAI } = await import('@google/genai');
+    const ai = new GoogleGenAI({ apiKey });
+    
+    try {
+      await ai.models.generateContent({
+        model: 'gemini-3.5-flash',
+        contents: 'Respond with exactly one word: OK',
+        config: { maxOutputTokens: 10 }
+      });
+    } catch (err) {
+      return res.status(err.status || 502).json({
         success: false,
-        message: data.error?.message || "Invalid API key or connection failed",
+        message: err.message || "Invalid API key or connection failed",
       });
     }
 

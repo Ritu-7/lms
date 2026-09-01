@@ -33,6 +33,7 @@ import AISettings from './pages/students/AISettings.jsx'
 import Educator from './pages/educator/Educator.jsx'
 import Dashboard from './pages/educator/Dashboard.jsx'
 import AddCourse from './pages/educator/AddCourse.jsx'
+import AICourseGenerator from './pages/educator/AICourseGenerator.jsx'
 import StudentEnrolled from './pages/educator/StudentsEnrolled.jsx'
 import MyCourses from './pages/educator/MyCourses.jsx'
 import EditCourse from "./pages/educator/EditCourse";
@@ -172,13 +173,14 @@ const App = () => {
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="add-course" element={<AddCourse />} />
+          <Route path="ai-course-generator" element={<AICourseGenerator />} />
           <Route path="my-courses" element={<MyCourses />} />
           <Route path="student-enrolled" element={<StudentEnrolled />} />
           <Route path="assignments" element={<EducatorAssignments />} />
           <Route path="quizzes" element={<EducatorQuizzes />} />
           <Route path="notifications" element={<EducatorNotifications />} />
+          <Route path="edit-course/:courseId" element={<EditCourse />} />
         </Route>
-        <Route path="/educator/edit-course/:courseId" element={<RoleRoute roles={['educator', 'admin']}><EditCourse /></RoleRoute>} />
 
         {/* --- ADMIN ROUTES --- */}
         <Route path="/admin" element={<RoleRoute roles={['admin']}><AdminLayout /></RoleRoute>}>

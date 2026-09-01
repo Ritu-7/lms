@@ -174,7 +174,7 @@ const AddCourse = () => {
       const courseData = {
         courseTitle,
         category: courseCategory.trim(),
-        courseDescription: quillRef.current.root.innerHTML,
+        courseDescription: quillRef.current ? quillRef.current.root.innerHTML : "",
         coursePrice: Number(coursePrice) || 0,
         discount: Number(courseDiscount) || 0,
         courseFeatures,
@@ -211,8 +211,29 @@ const AddCourse = () => {
   };
 
   return (
-    <div className="h-screen overflow-scroll flex flex-col items-start md:p-8 p-4 pt-8 bg-gray-50 dark:bg-dk-base text-gray-900 dark:text-dk-text">
+    <div className="min-h-full flex-1 flex flex-col items-start md:p-8 p-4 pt-8 bg-gray-50 dark:bg-dk-base text-gray-900 dark:text-dk-text">
       <form onSubmit={handleSubmit} className="w-full max-w-4xl space-y-5">
+        
+        {/* AI Course Banner */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/40 border border-blue-200 dark:border-blue-900/50 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4 mb-6 shadow-sm">
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-dk-text">Try the AI Course Builder</h2>
+              <p className="text-sm text-slate-600 dark:text-dk-text-2 mt-0.5">Let AI generate a complete course draft with modules, lessons, quizzes, and assignments in seconds.</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => window.location.href = '/educator/ai-course-generator'}
+            className="shrink-0 flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/25 active:scale-95"
+          >
+            Create with AI &rarr;
+          </button>
+        </div>
+
         <div className="flex flex-col gap-1">
           <p className="text-gray-600 font-medium">Course Title</p>
           <input

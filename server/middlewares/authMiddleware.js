@@ -51,7 +51,7 @@ export const protectEducatorRoutes = async (req, res, next) => {
       });
     }
 
-    if (user.role !== "educator") {
+    if (user.role !== "educator" && user.role !== "admin") {
       return res.status(403).json({
         success: false,
         message: "Access denied. Educator role required.",

@@ -321,7 +321,7 @@ const Quizzes = () => {
   if (loading && !quizzes.length) return <Loading />;
 
   return (
-    <div className="min-h-screen bg-gray-50/30 dark:bg-dk-base p-4 md:p-8 space-y-8 dark:text-dk-text">
+    <div className="min-h-full flex-1 bg-gray-50/30 dark:bg-dk-base p-4 md:p-8 space-y-8 dark:text-dk-text">
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-gray-800">Quizzes</h1>
