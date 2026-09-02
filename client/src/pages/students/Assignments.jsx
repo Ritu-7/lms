@@ -1,17 +1,19 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { motion } from "framer-motion";
+import { AlertCircle, BookOpen, CheckCircle2, FileEdit, FileText, Paperclip, RefreshCw, Send } from "lucide-react";
 import { AppContext } from "../../context/AppContext";
 import Footer from "../../components/students/Footer";
 import Loading from "../../components/students/Loading";
 
 const badgeClasses = {
-  not_submitted: "bg-gray-100 text-gray-700",
-  submitted: "bg-blue-100 text-blue-700",
-  late_submitted: "bg-amber-100 text-amber-700",
-  needs_resubmission: "bg-rose-100 text-rose-700",
-  graded: "bg-emerald-100 text-emerald-700",
-  returned: "bg-orange-100 text-orange-700",
+  not_submitted: "bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800/60 dark:text-slate-300 dark:border-slate-700",
+  submitted: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-500/30",
+  late_submitted: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-500/30",
+  needs_resubmission: "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-500/30",
+  graded: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-500/30",
+  returned: "bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950/40 dark:text-orange-300 dark:border-orange-500/30",
 };
 
 const Assignments = () => {
@@ -50,6 +52,16 @@ const Assignments = () => {
     [assignments, selectedAssignmentId]
   );
 
+  const stats = useMemo(() => {
+    const resubmissionsCount = assignments.filter((a) => a.submission?.status === "needs_resubmission").length;
+    const gradedCount = assignments.filter((a) => a.submission?.status === "graded").length;
+    return [
+      { label: "Total Assignments", value: assignments.length, icon: BookOpen, color: "text-blue-600 dark:text-blue-400" },
+      { label: "Resubmissions Needed", value: resubmissionsCount, icon: AlertCircle, color: "text-amber-600 dark:text-amber-400" },
+      { label: "Graded & Completed", value: gradedCount, icon: CheckCircle2, color: "text-emerald-600 dark:text-emerald-400" },
+    ];
+  }, [assignments]);
+
   const submitAssignment = async (event) => {
     event.preventDefault();
     if (!selectedAssignment) return;
@@ -74,7 +86,7 @@ const Assignments = () => {
       if (data.success) {
         toast.success("Submission saved");
         setResponseText("");
-        fileInput.value = "";
+        if (fileInput) fileInput.value = "";
         await fetchAssignments();
       }
     } catch (error) {
@@ -87,89 +99,174 @@ const Assignments = () => {
   if (loading) return <Loading />;
 
   return (
-    <div className="min-h-screen bg-gray-50/30">
-      <div className="mx-auto max-w-7xl px-4 py-10 md:px-8 lg:px-12 space-y-8">
-        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+    <div className="min-h-screen bg-slate-50 dark:bg-dk-base">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900">My Assignments</h1>
-            <p className="mt-1 text-sm text-gray-500">Track deadlines, submit files, review feedback, and resubmit when requested.</p>
+            <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 dark:border-blue-500/30 bg-blue-50 dark:bg-blue-950/40 px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-300 mb-4">
+              <FileEdit size={16} />
+              Coursework
+            </div>
+            <h1 className="text-3xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">My Assignments</h1>
+            <p className="text-slate-500 dark:text-dk-text-2 mt-2">Track deadlines, submit files, review feedback, and resubmit when requested.</p>
           </div>
-          <div className="flex gap-2 text-sm">
-            <span className="rounded-full bg-white dark:bg-dk-surface px-3 py-1 border">{assignments.length} assignments</span>
-            <span className="rounded-full bg-white dark:bg-dk-surface px-3 py-1 border">{assignments.filter((assignment) => assignment.submission?.status === "needs_resubmission").length} resubmissions</span>
-          </div>
+          <button
+            onClick={fetchAssignments}
+            disabled={loading}
+            className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70 transition-all active:scale-95 shadow-lg shadow-blue-600/25 w-fit"
+          >
+            <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
+            Refresh
+          </button>
+        </header>
+
+        {/* Stats Grid */}
+        <div className="grid gap-6 md:grid-cols-3">
+          {stats.map((stat, index) => {
+            const Icon = stat.icon;
+            return (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm"
+              >
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium text-slate-500 dark:text-dk-text-2">{stat.label}</p>
+                  <Icon size={20} className={stat.color} />
+                </div>
+                <p className={`mt-2 text-3xl font-bold font-space-grotesk ${stat.color}`}>{stat.value}</p>
+              </motion.div>
+            );
+          })}
         </div>
 
-        <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-          <div className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm overflow-hidden">
-            <div className="border-b px-5 py-4">
-              <h2 className="text-lg font-semibold text-gray-900">Your assignments</h2>
+        {/* Assignments Master-Detail Grid */}
+        <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+          {/* Left: Assignment List */}
+          <div className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm overflow-hidden flex flex-col h-fit">
+            <div className="border-b border-slate-100 dark:border-dk-border px-6 py-4 bg-slate-50/50 dark:bg-dk-surface-2/50">
+              <h2 className="text-base font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Your Assignments</h2>
             </div>
-            <div className="divide-y">
+            <div className="divide-y divide-slate-100 dark:divide-dk-border">
               {assignments.map((assignment) => {
                 const submission = assignment.submission || {};
+                const isSelected = selectedAssignmentId === assignment._id;
                 return (
                   <button
                     key={assignment._id}
                     type="button"
                     onClick={() => setSelectedAssignmentId(assignment._id)}
-                    className={`w-full text-left px-5 py-4 transition-colors ${selectedAssignmentId === assignment._id ? "bg-blue-50" : "hover:bg-gray-50"}`}
+                    className={`w-full text-left px-6 py-5 transition-all flex flex-col gap-2 ${
+                      isSelected
+                        ? "bg-blue-50/70 dark:bg-blue-950/30 border-l-4 border-blue-600 dark:border-blue-500"
+                        : "hover:bg-slate-50 dark:hover:bg-dk-surface-2"
+                    }`}
                   >
                     <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="font-semibold text-gray-900">{assignment.title}</p>
-                        <p className="text-xs text-gray-500">{assignment.course?.courseTitle || "Untitled course"} • Due {assignment.dueDate ? new Date(assignment.dueDate).toLocaleDateString() : "N/A"}</p>
+                      <div className="space-y-1">
+                        <p className="font-bold text-sm font-space-grotesk text-slate-900 dark:text-dk-text">{assignment.title}</p>
+                        <p className="text-xs text-slate-500 dark:text-dk-text-2">
+                          {assignment.course?.courseTitle || "Untitled course"} • Due {assignment.dueDate ? new Date(assignment.dueDate).toLocaleDateString() : "N/A"}
+                        </p>
                       </div>
-                      <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${badgeClasses[submission.status] || badgeClasses.not_submitted}`}>{submission.status || "not_submitted"}</span>
+                      <span className={`shrink-0 rounded-full border px-2.5 py-0.5 text-xs font-semibold capitalize ${badgeClasses[submission.status] || badgeClasses.not_submitted}`}>
+                        {submission.status?.replace("_", " ") || "Not submitted"}
+                      </span>
                     </div>
-                    <div className="mt-2 flex flex-wrap gap-2 text-xs text-gray-500">
-                      <span>{submission.attempts || 0} attempts</span>
-                      <span>{submission.isLate ? "Late" : "On time"}</span>
-                      {submission.maxScore ? <span>{submission.totalScore || 0} / {submission.maxScore}</span> : null}
+                    <div className="flex flex-wrap gap-2 text-xs font-medium text-slate-500 dark:text-dk-text-2">
+                      <span className="rounded-md bg-slate-100 dark:bg-dk-surface-2 px-2 py-0.5">{submission.attempts || 0} attempts</span>
+                      <span className="rounded-md bg-slate-100 dark:bg-dk-surface-2 px-2 py-0.5">{submission.isLate ? "Late" : "On time"}</span>
+                      {submission.maxScore ? (
+                        <span className="rounded-md bg-slate-100 dark:bg-dk-surface-2 px-2 py-0.5">
+                          {submission.totalScore || 0} / {submission.maxScore} pts
+                        </span>
+                      ) : null}
                     </div>
                   </button>
                 );
               })}
-              {assignments.length === 0 ? <div className="px-5 py-10 text-center text-sm text-gray-500">No assignments have been assigned yet.</div> : null}
+              {assignments.length === 0 ? (
+                <div className="px-6 py-12 text-center text-sm text-slate-500 dark:text-dk-text-2">
+                  No assignments have been assigned yet.
+                </div>
+              ) : null}
             </div>
           </div>
 
+          {/* Right: Selected Assignment Details & Submission */}
           <div className="space-y-6">
             {selectedAssignment ? (
               <>
-                <div className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-5 shadow-sm">
-                  <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                <motion.div
+                  key={selectedAssignment._id}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm space-y-6"
+                >
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between border-b border-slate-100 dark:border-dk-border pb-5">
                     <div>
-                      <h2 className="text-xl font-semibold text-gray-900">{selectedAssignment.title}</h2>
-                      <p className="mt-1 text-sm text-gray-500">{selectedAssignment.course?.courseTitle || "Untitled course"}</p>
+                      <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">{selectedAssignment.title}</h2>
+                      <p className="mt-1 text-xs font-medium text-slate-500 dark:text-dk-text-2">{selectedAssignment.course?.courseTitle || "Untitled course"}</p>
                     </div>
-                    <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${badgeClasses[selectedAssignment.submission?.status] || badgeClasses.not_submitted}`}>{selectedAssignment.submission?.status || "not_submitted"}</span>
+                    <span className={`shrink-0 rounded-full border px-3 py-1 text-xs font-semibold capitalize ${badgeClasses[selectedAssignment.submission?.status] || badgeClasses.not_submitted}`}>
+                      {selectedAssignment.submission?.status?.replace("_", " ") || "Not submitted"}
+                    </span>
                   </div>
 
-                  <p className="mt-4 text-sm text-gray-600">{selectedAssignment.description}</p>
-                  <div className="mt-4 grid gap-3 text-sm text-gray-600 md:grid-cols-2">
-                    <p><span className="font-semibold text-gray-800">Due date:</span> {selectedAssignment.dueDate ? new Date(selectedAssignment.dueDate).toLocaleString() : "N/A"}</p>
-                    <p><span className="font-semibold text-gray-800">Attempts:</span> {selectedAssignment.submission?.attempts || 0} / {selectedAssignment.maxAttempts || 3}</p>
-                    <p><span className="font-semibold text-gray-800">Total points:</span> {selectedAssignment.totalPoints || 0}</p>
-                    <p><span className="font-semibold text-gray-800">Late policy:</span> {selectedAssignment.allowLateSubmissions ? `${selectedAssignment.latePenaltyPercent || 0}% penalty` : "Closed on deadline"}</p>
+                  {selectedAssignment.description && (
+                    <p className="text-sm text-slate-600 dark:text-dk-text-2 leading-relaxed">{selectedAssignment.description}</p>
+                  )}
+
+                  <div className="grid gap-3 text-sm sm:grid-cols-2">
+                    <div className="rounded-xl border border-slate-100 dark:border-dk-border bg-slate-50 dark:bg-dk-surface-2 p-3">
+                      <span className="block text-xs font-medium text-slate-400 dark:text-dk-text-3">Due date</span>
+                      <p className="font-semibold text-slate-800 dark:text-dk-text mt-0.5">
+                        {selectedAssignment.dueDate ? new Date(selectedAssignment.dueDate).toLocaleString() : "N/A"}
+                      </p>
+                    </div>
+                    <div className="rounded-xl border border-slate-100 dark:border-dk-border bg-slate-50 dark:bg-dk-surface-2 p-3">
+                      <span className="block text-xs font-medium text-slate-400 dark:text-dk-text-3">Attempts</span>
+                      <p className="font-semibold text-slate-800 dark:text-dk-text mt-0.5">
+                        {selectedAssignment.submission?.attempts || 0} / {selectedAssignment.maxAttempts || 3}
+                      </p>
+                    </div>
+                    <div className="rounded-xl border border-slate-100 dark:border-dk-border bg-slate-50 dark:bg-dk-surface-2 p-3">
+                      <span className="block text-xs font-medium text-slate-400 dark:text-dk-text-3">Total points</span>
+                      <p className="font-semibold text-slate-800 dark:text-dk-text mt-0.5">{selectedAssignment.totalPoints || 0}</p>
+                    </div>
+                    <div className="rounded-xl border border-slate-100 dark:border-dk-border bg-slate-50 dark:bg-dk-surface-2 p-3">
+                      <span className="block text-xs font-medium text-slate-400 dark:text-dk-text-3">Late policy</span>
+                      <p className="font-semibold text-slate-800 dark:text-dk-text mt-0.5">
+                        {selectedAssignment.allowLateSubmissions ? `${selectedAssignment.latePenaltyPercent || 0}% penalty` : "Closed on deadline"}
+                      </p>
+                    </div>
                   </div>
 
-                  <div className="mt-4 rounded-xl bg-gray-50 p-4">
-                    <h3 className="font-semibold text-gray-800">Instructions</h3>
-                    <p className="mt-2 text-sm text-gray-600 whitespace-pre-line">{selectedAssignment.instructions || "No instructions provided."}</p>
+                  <div className="rounded-xl border border-slate-100 dark:border-dk-border bg-slate-50 dark:bg-dk-surface-2 p-4">
+                    <h3 className="text-sm font-bold text-slate-800 dark:text-dk-text flex items-center gap-2">
+                      <FileText size={16} className="text-blue-600 dark:text-blue-400" />
+                      Instructions
+                    </h3>
+                    <p className="mt-2 text-sm text-slate-600 dark:text-dk-text-2 whitespace-pre-line leading-relaxed">
+                      {selectedAssignment.instructions || "No instructions provided."}
+                    </p>
                   </div>
 
                   {Array.isArray(selectedAssignment.rubric) && selectedAssignment.rubric.length > 0 ? (
-                    <div className="mt-4 rounded-xl border p-4">
-                      <h3 className="font-semibold text-gray-800">Rubric</h3>
-                      <div className="mt-3 space-y-3 text-sm">
+                    <div className="rounded-xl border border-slate-100 dark:border-dk-border bg-slate-50/50 dark:bg-dk-surface-2/50 p-4 space-y-3">
+                      <h3 className="text-sm font-bold text-slate-800 dark:text-dk-text">Rubric</h3>
+                      <div className="space-y-2.5">
                         {selectedAssignment.rubric.map((item) => (
-                          <div key={item.rubricId} className="flex items-start justify-between gap-3 rounded-lg bg-gray-50 p-3">
+                          <div key={item.rubricId} className="flex items-start justify-between gap-3 rounded-xl border border-slate-100 dark:border-dk-border bg-white dark:bg-dk-surface p-3.5 shadow-sm">
                             <div>
-                              <p className="font-medium text-gray-900">{item.title}</p>
-                              <p className="text-xs text-gray-500">{item.description || "No description"}</p>
+                              <p className="text-sm font-semibold text-slate-900 dark:text-dk-text">{item.title}</p>
+                              <p className="text-xs text-slate-500 dark:text-dk-text-2 mt-0.5">{item.description || "No description"}</p>
                             </div>
-                            <span className="text-xs font-semibold text-gray-500">{item.maxScore} pts</span>
+                            <span className="shrink-0 rounded-md bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 px-2 py-1 text-xs font-bold">
+                              {item.maxScore} pts
+                            </span>
                           </div>
                         ))}
                       </div>
@@ -177,50 +274,106 @@ const Assignments = () => {
                   ) : null}
 
                   {Array.isArray(selectedAssignment.attachments) && selectedAssignment.attachments.length > 0 ? (
-                    <div className="mt-4 rounded-xl border p-4">
-                      <h3 className="font-semibold text-gray-800">Attachments</h3>
-                      <div className="mt-3 space-y-2">
+                    <div className="rounded-xl border border-slate-100 dark:border-dk-border bg-slate-50/50 dark:bg-dk-surface-2/50 p-4 space-y-3">
+                      <h3 className="text-sm font-bold text-slate-800 dark:text-dk-text flex items-center gap-2">
+                        <Paperclip size={15} />
+                        Attachments
+                      </h3>
+                      <div className="space-y-2">
                         {selectedAssignment.attachments.map((attachment) => (
-                          <a key={attachment.resourceId} href={attachment.resourceUrl} target="_blank" rel="noreferrer" className="block rounded-lg border px-3 py-2 text-sm text-blue-600 hover:bg-blue-50">
+                          <a
+                            key={attachment.resourceId}
+                            href={attachment.resourceUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="block rounded-xl border border-blue-200 dark:border-blue-500/30 bg-blue-50/50 dark:bg-blue-950/20 px-4 py-2.5 text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-100/50 dark:hover:bg-blue-950/40 transition-colors"
+                          >
                             {attachment.resourceTitle}
                           </a>
                         ))}
                       </div>
                     </div>
                   ) : null}
-                </div>
+                </motion.div>
 
-                <form onSubmit={submitAssignment} className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-5 shadow-sm space-y-4">
+                {/* Submission Form */}
+                <form onSubmit={submitAssignment} className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm space-y-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Submit work</h3>
-                    <p className="text-sm text-gray-500">Attach files and write a short response. Resubmissions are supported if your instructor requests them.</p>
+                    <h3 className="text-base font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Submit Work</h3>
+                    <p className="text-xs text-slate-500 dark:text-dk-text-2 mt-1">Attach files and write a short response. Resubmissions are supported if requested.</p>
                   </div>
-                  <textarea rows="6" value={responseText} onChange={(e) => setResponseText(e.target.value)} className="w-full rounded-lg border px-3 py-2 outline-none focus:border-blue-500" placeholder="Your response or notes" />
-                  <input id="assignment-upload-files" type="file" multiple className="block w-full rounded-lg border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface px-3 py-2 text-sm" />
-                  <div className="flex flex-wrap gap-3">
-                    <button type="submit" disabled={submitting} className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white disabled:opacity-60">
+                  <textarea
+                    rows={5}
+                    value={responseText}
+                    onChange={(e) => setResponseText(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 dark:border-dk-border bg-slate-50 dark:bg-dk-surface-2 text-slate-900 dark:text-dk-text px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-slate-400 dark:placeholder:text-dk-text-3 resize-none"
+                    placeholder="Write your response, notes, or explanations here..."
+                  />
+                  <div>
+                    <label className="block text-xs font-medium text-slate-500 dark:text-dk-text-2 mb-1.5">Attach Files (optional)</label>
+                    <input
+                      id="assignment-upload-files"
+                      type="file"
+                      multiple
+                      className="block w-full rounded-xl border border-slate-200 dark:border-dk-border bg-slate-50 dark:bg-dk-surface-2 px-3 py-2 text-sm text-slate-600 dark:text-dk-text file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer"
+                    />
+                  </div>
+                  <div className="flex flex-wrap gap-3 pt-2">
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 shadow-md shadow-blue-600/20 disabled:opacity-60 transition-all"
+                    >
+                      <Send size={15} />
                       {submitting ? "Submitting..." : selectedAssignment.submission?.status === "needs_resubmission" ? "Resubmit Assignment" : "Submit Assignment"}
                     </button>
-                    <button type="button" onClick={fetchAssignments} className="rounded-lg border px-4 py-2 text-sm font-medium text-gray-700">Refresh</button>
+                    <button
+                      type="button"
+                      onClick={fetchAssignments}
+                      className="rounded-xl border border-slate-200 dark:border-dk-border px-5 py-2.5 text-sm font-medium text-slate-700 dark:text-dk-text hover:bg-slate-50 dark:hover:bg-dk-surface-2 transition-all"
+                    >
+                      Refresh
+                    </button>
                   </div>
                 </form>
 
-                <div className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-5 shadow-sm">
-                  <h3 className="text-lg font-semibold text-gray-900">Submission status</h3>
-                  <div className="mt-4 grid gap-3 text-sm text-gray-600 md:grid-cols-2">
-                    <p><span className="font-semibold text-gray-800">Score:</span> {selectedAssignment.submission?.totalScore || 0} / {selectedAssignment.submission?.maxScore || selectedAssignment.totalPoints || 0}</p>
-                    <p><span className="font-semibold text-gray-800">Attempts:</span> {selectedAssignment.submission?.attempts || 0}</p>
-                    <p><span className="font-semibold text-gray-800">Late:</span> {selectedAssignment.submission?.isLate ? "Yes" : "No"}</p>
-                    <p><span className="font-semibold text-gray-800">Grade:</span> {selectedAssignment.submission?.gradeLabel || "Not graded"}</p>
+                {/* Submission Status */}
+                <div className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm space-y-4">
+                  <h3 className="text-base font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Submission Status</h3>
+                  <div className="grid gap-3 text-sm sm:grid-cols-2">
+                    <div className="rounded-xl border border-slate-100 dark:border-dk-border bg-slate-50 dark:bg-dk-surface-2 p-3">
+                      <span className="block text-xs font-medium text-slate-400 dark:text-dk-text-3">Score</span>
+                      <p className="font-semibold text-slate-800 dark:text-dk-text mt-0.5">
+                        {selectedAssignment.submission?.totalScore || 0} / {selectedAssignment.submission?.maxScore || selectedAssignment.totalPoints || 0}
+                      </p>
+                    </div>
+                    <div className="rounded-xl border border-slate-100 dark:border-dk-border bg-slate-50 dark:bg-dk-surface-2 p-3">
+                      <span className="block text-xs font-medium text-slate-400 dark:text-dk-text-3">Attempts</span>
+                      <p className="font-semibold text-slate-800 dark:text-dk-text mt-0.5">{selectedAssignment.submission?.attempts || 0}</p>
+                    </div>
+                    <div className="rounded-xl border border-slate-100 dark:border-dk-border bg-slate-50 dark:bg-dk-surface-2 p-3">
+                      <span className="block text-xs font-medium text-slate-400 dark:text-dk-text-3">Late Status</span>
+                      <p className="font-semibold text-slate-800 dark:text-dk-text mt-0.5">{selectedAssignment.submission?.isLate ? "Yes" : "No"}</p>
+                    </div>
+                    <div className="rounded-xl border border-slate-100 dark:border-dk-border bg-slate-50 dark:bg-dk-surface-2 p-3">
+                      <span className="block text-xs font-medium text-slate-400 dark:text-dk-text-3">Grade</span>
+                      <p className="font-semibold text-slate-800 dark:text-dk-text mt-0.5">{selectedAssignment.submission?.gradeLabel || "Not graded"}</p>
+                    </div>
                   </div>
-                  <div className="mt-4 rounded-xl bg-gray-50 p-4 text-sm text-gray-600">
-                    <p className="font-semibold text-gray-800">Instructor feedback</p>
-                    <p className="mt-1 whitespace-pre-line">{selectedAssignment.submission?.feedback || "No feedback yet."}</p>
+                  <div className="rounded-xl border border-slate-100 dark:border-dk-border bg-slate-50 dark:bg-dk-surface-2 p-4 text-sm">
+                    <p className="font-bold text-slate-800 dark:text-dk-text">Instructor Feedback</p>
+                    <p className="mt-1 text-slate-600 dark:text-dk-text-2 whitespace-pre-line leading-relaxed">
+                      {selectedAssignment.submission?.feedback || "No feedback yet."}
+                    </p>
                   </div>
                 </div>
               </>
             ) : (
-              <div className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-10 text-center text-gray-500 shadow-sm">No assignment selected.</div>
+              <div className="rounded-2xl border border-dashed border-slate-300 dark:border-dk-border bg-white dark:bg-dk-surface p-12 text-center shadow-sm">
+                <BookOpen className="mx-auto text-slate-400 dark:text-dk-text-3 mb-3" size={40} />
+                <h3 className="text-lg font-bold font-space-grotesk text-slate-900 dark:text-dk-text">No assignment selected</h3>
+                <p className="text-sm text-slate-500 dark:text-dk-text-2 mt-1">Select an assignment from the list on the left to view details and submit work.</p>
+              </div>
             )}
           </div>
         </div>

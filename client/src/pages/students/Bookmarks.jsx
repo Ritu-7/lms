@@ -4,7 +4,7 @@ import { Line } from 'rc-progress';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
-import { Bookmark, BookmarkX, BookOpen, Layers, RefreshCw, Search, Trash2, UserRound } from 'lucide-react';
+import { Bookmark, BookmarkX, BookOpen, FileText, Layers, RefreshCw, Search, Trash2, UserRound } from 'lucide-react';
 import { AppContext } from '../../context/AppContext';
 import Footer from '../../components/students/Footer';
 
@@ -41,7 +41,9 @@ const Bookmarks = () => {
     userData,
   } = useContext(AppContext);
 
+  const [activeTab, setActiveTab] = useState('bookmarks');
   const [bookmarks, setBookmarks] = useState([]);
+  const [notes, setNotes] = useState([]);
   const [courseProgress, setCourseProgress] = useState({});
   const [loading, setLoading] = useState(true);
   const [progressLoading, setProgressLoading] = useState(false);
@@ -86,6 +88,17 @@ const Bookmarks = () => {
     ].filter(Boolean).join(' ').toLowerCase().includes(searchTerm));
   }, [bookmarkedCourses, query]);
 
+  const filteredNotes = useMemo(() => {
+    const searchTerm = query.trim().toLowerCase();
+    if (!searchTerm) return notes;
+    return notes.filter((note) => [
+      note.noteText,
+      note.lessonTitle,
+      note.courseTitle,
+      note.positionLabel,
+    ].filter(Boolean).join(' ').toLowerCase().includes(searchTerm));
+  }, [notes, query]);
+
   const fetchBookmarks = useCallback(async () => {
     try {
       setLoading(true);
@@ -94,6 +107,7 @@ const Bookmarks = () => {
 
       if (!token) {
         setBookmarks([]);
+        setNotes([]);
         setError('Please sign in to view your bookmarks.');
         return;
       }
@@ -187,14 +201,14 @@ const Bookmarks = () => {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-dk-base">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <header className="mb-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <header className="mb-8 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 dark:border-blue-500/30 bg-blue-50 dark:bg-blue-950/40 px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-300 mb-4">
               <Bookmark size={16} />
               Saved learning
             </div>
-            <h1 className="text-3xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">My Bookmarks</h1>
-            <p className="text-slate-500 dark:text-dk-text-2 mt-2">Pick up right where you left off with your saved courses and lessons.</p>
+            <h1 className="text-3xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">My Library</h1>
+            <p className="text-slate-500 dark:text-dk-text-2 mt-2">Your bookmarks and notes from all courses in one place.</p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3">
@@ -203,7 +217,7 @@ const Bookmarks = () => {
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search bookmarks..."
+                placeholder={activeTab === 'bookmarks' ? 'Search bookmarks...' : 'Search notes...'}
                 className="w-full sm:w-72 rounded-xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface py-3 pl-11 pr-4 text-sm text-slate-900 dark:text-dk-text outline-none transition-all placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
               />
             </div>
@@ -218,12 +232,37 @@ const Bookmarks = () => {
           </div>
         </header>
 
+        {/* Tab Switcher */}
+        <div className="flex gap-2 mb-8 bg-white dark:bg-dk-surface border border-slate-200 dark:border-dk-border rounded-2xl p-1.5 w-fit shadow-sm">
+          <button
+            onClick={() => setActiveTab('bookmarks')}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${activeTab === 'bookmarks' ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'text-slate-500 dark:text-dk-text-2 hover:text-slate-900 dark:hover:text-dk-text'}`}
+          >
+            <Bookmark size={15} />
+            Bookmarks
+            <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${activeTab === 'bookmarks' ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-dk-surface-2 text-slate-600 dark:text-dk-text-2'}`}>{bookmarks.length}</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('notes')}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${activeTab === 'notes' ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'text-slate-500 dark:text-dk-text-2 hover:text-slate-900 dark:hover:text-dk-text'}`}
+          >
+            <FileText size={15} />
+            Notes
+            <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${activeTab === 'notes' ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-dk-surface-2 text-slate-600 dark:text-dk-text-2'}`}>{notes.length}</span>
+          </button>
+        </div>
+
+        {/* Stats */}
         <div className="grid gap-6 mb-10 md:grid-cols-3">
-          {[
+          {(activeTab === 'bookmarks' ? [
             { label: 'Saved Courses', value: bookmarkedCourses.length, icon: Bookmark, color: 'text-blue-600' },
             { label: 'Categories', value: new Set(bookmarkedCourses.map((bookmark) => bookmark.category)).size, icon: Layers, color: 'text-violet-600' },
             { label: 'Ready to Resume', value: bookmarkedCourses.filter((bookmark) => bookmark.courseId).length, icon: BookOpen, color: 'text-emerald-600' },
-          ].map((stat, index) => {
+          ] : [
+            { label: 'Total Notes', value: notes.length, icon: FileText, color: 'text-blue-600' },
+            { label: 'Courses', value: new Set(notes.map((n) => n.courseId).filter(Boolean)).size, icon: BookOpen, color: 'text-violet-600' },
+            { label: 'Lessons Noted', value: new Set(notes.map((n) => n.lessonId).filter(Boolean)).size, icon: Layers, color: 'text-emerald-600' },
+          ]).map((stat, index) => {
             const Icon = stat.icon;
             return (
               <motion.div
@@ -260,109 +299,185 @@ const Bookmarks = () => {
         ) : error ? (
           <div className="rounded-2xl border border-rose-200 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-950/30 p-8 text-center">
             <BookmarkX className="mx-auto text-rose-500" size={44} />
-            <h2 className="mt-4 text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Could not load bookmarks</h2>
+            <h2 className="mt-4 text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Could not load your library</h2>
             <p className="mt-2 text-sm text-slate-600 dark:text-dk-text-2">{error}</p>
             <button onClick={fetchBookmarks} className="mt-6 rounded-xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white hover:bg-rose-700 transition-all">
               Try Again
             </button>
           </div>
-        ) : filteredBookmarks.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-slate-300 dark:border-dk-border bg-white dark:bg-dk-surface p-10 sm:p-16 text-center shadow-sm">
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300">
-              <Bookmark size={38} />
+        ) : activeTab === 'bookmarks' ? (
+          filteredBookmarks.length === 0 ? (
+            <div className="rounded-3xl border border-dashed border-slate-300 dark:border-dk-border bg-white dark:bg-dk-surface p-10 sm:p-16 text-center shadow-sm">
+              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300">
+                <Bookmark size={38} />
+              </div>
+              <h2 className="mt-6 text-2xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">
+                {query ? 'No matching bookmarks found' : 'Your bookmark shelf is empty'}
+              </h2>
+              <p className="mx-auto mt-3 max-w-xl text-slate-500 dark:text-dk-text-2">
+                {query
+                  ? 'Try searching by course, instructor, lesson, or category.'
+                  : 'Save important courses or lessons while learning, and they will appear here as quick resume cards.'}
+              </p>
+              <button
+                onClick={() => navigate('/course-list')}
+                className="mt-8 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-600/25"
+              >
+                <BookOpen size={16} />
+                Explore Courses
+              </button>
             </div>
-            <h2 className="mt-6 text-2xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">
-              {query ? 'No matching bookmarks found' : 'Your bookmark shelf is empty'}
-            </h2>
-            <p className="mx-auto mt-3 max-w-xl text-slate-500 dark:text-dk-text-2">
-              {query
-                ? 'Try searching by course, instructor, lesson, or category.'
-                : 'Save important courses or lessons while learning, and they will appear here as quick resume cards.'}
-            </p>
-            <button
-              onClick={() => navigate('/course-list')}
-              className="mt-8 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-600/25"
-            >
-              <BookOpen size={16} />
-              Explore Courses
-            </button>
-          </div>
-        ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filteredBookmarks.map((bookmark, index) => {
-              const stats = courseProgress[bookmark.courseId] || { lectureCompleted: 0, totalLectures: calculateNoOfLectures(bookmark.course) || 0 };
-              const total = stats.totalLectures || 1;
-              const percentage = Math.min(Math.round((stats.lectureCompleted / total) * 100), 100);
+          ) : (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {filteredBookmarks.map((bookmark, index) => {
+                const stats = courseProgress[bookmark.courseId] || { lectureCompleted: 0, totalLectures: calculateNoOfLectures(bookmark.course) || 0 };
+                const total = stats.totalLectures || 1;
+                const percentage = Math.min(Math.round((stats.lectureCompleted / total) * 100), 100);
 
-              return (
+                return (
+                  <motion.article
+                    key={bookmark._id}
+                    initial={{ opacity: 0, y: 18 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-xl"
+                  >
+                    <button
+                      onClick={() => bookmark.courseId && navigate(`/course/${bookmark.courseId}`)}
+                      className="relative aspect-video overflow-hidden bg-gradient-to-br from-blue-100 via-indigo-100 to-slate-100 dark:from-blue-950 dark:via-indigo-950 dark:to-slate-900 text-left"
+                    >
+                      {bookmark.thumbnail ? (
+                        <img src={bookmark.thumbnail} alt={bookmark.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-blue-500 dark:text-blue-300">
+                          <BookOpen size={44} />
+                        </div>
+                      )}
+                      <span className="absolute left-4 top-4 rounded-full bg-white/90 dark:bg-dk-base/80 px-3 py-1 text-xs font-semibold text-blue-700 dark:text-blue-300 shadow-sm backdrop-blur">
+                        {bookmark.category}
+                      </span>
+                    </button>
+
+                    <div className="flex flex-1 flex-col p-5">
+                      <h2 className="line-clamp-2 text-base font-bold font-space-grotesk text-slate-900 dark:text-dk-text">{bookmark.title}</h2>
+                      <div className="mt-3 flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-dk-text-2">
+                        <UserRound size={14} />
+                        <span className="truncate">{bookmark.instructor}</span>
+                      </div>
+
+                      {bookmark.lessonTitle && (
+                        <div className="mt-4 rounded-xl bg-slate-50 dark:bg-dk-surface-2 p-3">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Saved lesson</p>
+                          <p className="mt-1 line-clamp-1 text-sm font-semibold text-slate-700 dark:text-dk-text">{bookmark.lessonTitle}</p>
+                          {bookmark.positionLabel && <p className="mt-1 text-xs text-slate-500 dark:text-dk-text-2">{bookmark.positionLabel}</p>}
+                        </div>
+                      )}
+
+                      <div className="mt-5">
+                        <div className="mb-2 flex items-center justify-between text-xs">
+                          <span className="font-semibold text-slate-700 dark:text-dk-text-2">Progress</span>
+                          <span className="font-bold text-blue-600 dark:text-blue-400">{progressLoading ? '...' : `${percentage}%`}</span>
+                        </div>
+                        <Line strokeWidth={4} percent={percentage} strokeColor={percentage >= 100 ? '#10b981' : '#2563eb'} trailColor="#e2e8f0" strokeLinecap="round" className="h-1.5" />
+                      </div>
+
+                      <div className="mt-auto grid grid-cols-2 gap-3 pt-5">
+                        <button
+                          onClick={() => bookmark.courseId && navigate(`/player/${bookmark.courseId}`)}
+                          disabled={!bookmark.courseId}
+                          className="rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          Resume
+                        </button>
+                        <button
+                          onClick={() => handleRemoveBookmark(bookmark._id)}
+                          disabled={removingId === bookmark._id}
+                          className="inline-flex items-center justify-center gap-2 rounded-xl border border-rose-200 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-950/20 px-4 py-2.5 text-xs font-semibold text-rose-700 dark:text-rose-300 transition-all hover:bg-rose-100 dark:hover:bg-rose-950/40 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          <Trash2 size={14} />
+                          {removingId === bookmark._id ? 'Removing' : 'Remove'}
+                        </button>
+                      </div>
+                    </div>
+                  </motion.article>
+                );
+              })}
+            </div>
+          )
+        ) : (
+          /* Notes Tab */
+          filteredNotes.length === 0 ? (
+            <div className="rounded-3xl border border-dashed border-slate-300 dark:border-dk-border bg-white dark:bg-dk-surface p-10 sm:p-16 text-center shadow-sm">
+              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300">
+                <FileText size={38} />
+              </div>
+              <h2 className="mt-6 text-2xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">
+                {query ? 'No matching notes found' : 'No notes yet'}
+              </h2>
+              <p className="mx-auto mt-3 max-w-xl text-slate-500 dark:text-dk-text-2">
+                {query
+                  ? 'Try a different search term.'
+                  : 'Write notes while watching lessons. They will appear here for quick review.'}
+              </p>
+              <button
+                onClick={() => navigate('/course-list')}
+                className="mt-8 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-600/25"
+              >
+                <BookOpen size={16} />
+                Explore Courses
+              </button>
+            </div>
+          ) : (
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {filteredNotes.map((note, index) => (
                 <motion.article
-                  key={bookmark._id}
+                  key={note._id}
                   initial={{ opacity: 0, y: 18 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-xl"
+                  className="flex flex-col rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
                 >
-                  <button
-                    onClick={() => bookmark.courseId && navigate(`/course/${bookmark.courseId}`)}
-                    className="relative aspect-video overflow-hidden bg-gradient-to-br from-blue-100 via-indigo-100 to-slate-100 dark:from-blue-950 dark:via-indigo-950 dark:to-slate-900 text-left"
-                  >
-                    {bookmark.thumbnail ? (
-                      <img src={bookmark.thumbnail} alt={bookmark.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center text-blue-500 dark:text-blue-300">
-                        <BookOpen size={44} />
-                      </div>
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-blue-600 dark:text-blue-400 mb-1">
+                        {note.lessonTitle || 'Note'}
+                      </p>
+                      {note.courseTitle && (
+                        <p className="text-xs text-slate-500 dark:text-dk-text-2 truncate">{note.courseTitle}</p>
+                      )}
+                    </div>
+                    {note.positionLabel && (
+                      <span className="shrink-0 rounded-full bg-slate-100 dark:bg-dk-surface-2 px-2.5 py-1 text-xs font-semibold text-slate-600 dark:text-dk-text-2">
+                        {note.positionLabel}
+                      </span>
                     )}
-                    <span className="absolute left-4 top-4 rounded-full bg-white/90 dark:bg-dk-base/80 px-3 py-1 text-xs font-semibold text-blue-700 dark:text-blue-300 shadow-sm backdrop-blur">
-                      {bookmark.category}
-                    </span>
-                  </button>
+                  </div>
 
-                  <div className="flex flex-1 flex-col p-5">
-                    <h2 className="line-clamp-2 text-base font-bold font-space-grotesk text-slate-900 dark:text-dk-text">{bookmark.title}</h2>
-                    <div className="mt-3 flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-dk-text-2">
-                      <UserRound size={14} />
-                      <span className="truncate">{bookmark.instructor}</span>
-                    </div>
+                  <p className="flex-1 text-sm text-slate-700 dark:text-dk-text-2 whitespace-pre-wrap line-clamp-6 leading-relaxed">
+                    {note.noteText || 'No content'}
+                  </p>
 
-                    {bookmark.lessonTitle && (
-                      <div className="mt-4 rounded-xl bg-slate-50 dark:bg-dk-surface p-3">
-                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Saved lesson</p>
-                        <p className="mt-1 line-clamp-1 text-sm font-semibold text-slate-700 dark:text-dk-text">{bookmark.lessonTitle}</p>
-                        {bookmark.positionLabel && <p className="mt-1 text-xs text-slate-500 dark:text-dk-text-2">{bookmark.positionLabel}</p>}
-                      </div>
-                    )}
-
-                    <div className="mt-5">
-                      <div className="mb-2 flex items-center justify-between text-xs">
-                        <span className="font-semibold text-slate-700 dark:text-dk-text-2">Progress</span>
-                        <span className="font-bold text-blue-600 dark:text-blue-400">{progressLoading ? '...' : `${percentage}%`}</span>
-                      </div>
-                      <Line strokeWidth={4} percent={percentage} strokeColor={percentage >= 100 ? '#10b981' : '#2563eb'} trailColor="#e2e8f0" strokeLinecap="round" className="h-1.5" />
-                    </div>
-
-                    <div className="mt-auto grid grid-cols-2 gap-3 pt-5">
-                      <button
-                        onClick={() => bookmark.courseId && navigate(`/player/${bookmark.courseId}`)}
-                        disabled={!bookmark.courseId}
-                        className="rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        Resume
-                      </button>
-                      <button
-                        onClick={() => handleRemoveBookmark(bookmark._id)}
-                        disabled={removingId === bookmark._id}
-                        className="inline-flex items-center justify-center gap-2 rounded-xl border border-rose-200 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-950/20 px-4 py-2.5 text-xs font-semibold text-rose-700 dark:text-rose-300 transition-all hover:bg-rose-100 dark:hover:bg-rose-950/40 disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        <Trash2 size={14} />
-                        {removingId === bookmark._id ? 'Removing' : 'Remove'}
-                      </button>
-                    </div>
+                  <div className="mt-4 flex items-center justify-between gap-3 pt-4 border-t border-slate-100 dark:border-dk-border">
+                    <button
+                      onClick={() => note.courseId && navigate(`/player/${note.courseId}`)}
+                      disabled={!note.courseId}
+                      className="rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      Go to Lesson
+                    </button>
+                    <button
+                      onClick={() => handleRemoveNote(note._id)}
+                      disabled={removingId === note._id}
+                      className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-950/20 px-3 py-2 text-xs font-semibold text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-950/40 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      <Trash2 size={13} />
+                      {removingId === note._id ? 'Removing' : 'Delete'}
+                    </button>
                   </div>
                 </motion.article>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          )
         )}
       </div>
       <Footer />
@@ -370,4 +485,4 @@ const Bookmarks = () => {
   );
 };
 
-export default Bookmarks;
+export default Bookmarks;
