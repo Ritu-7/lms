@@ -7,12 +7,12 @@ interface AdminStatCardProps {
 
 const AdminStatCard = ({ label, value, helper, icon }: AdminStatCardProps) => {
   return (
-    <div className="flex items-center gap-4 rounded-md border border-gray-500/20 bg-white dark:bg-dk-surface p-6 shadow-sm">
+    <div className="flex items-center gap-4 rounded-xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm">
       <img src={icon} alt="" className="w-12 shrink-0" />
       <div>
-        <p className="text-2xl font-bold text-gray-800">{value}</p>
-        <p className="text-sm font-medium text-gray-500">{label}</p>
-        <p className="mt-1 text-xs text-gray-400">{helper}</p>
+        <p className="text-2xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">{value}</p>
+        <p className="text-sm font-medium text-slate-500 dark:text-dk-text-2">{label}</p>
+        <p className="mt-1 text-xs text-slate-400 dark:text-dk-text-3">{helper}</p>
       </div>
     </div>
   )

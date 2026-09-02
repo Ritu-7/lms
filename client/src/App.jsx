@@ -24,6 +24,7 @@ import NotesGenerator from './pages/students/NotesGenerator.jsx'
 import CreditDashboard from './pages/students/CreditDashboard.jsx'
 import AIUsageAnalytics from './pages/students/AIUsageAnalytics.jsx'
 import AICodingAssistant from './pages/students/AICodingAssistant.jsx'
+import Announcements from './pages/students/Announcements.jsx'
 import Bookmarks from './pages/students/Bookmarks.jsx'  
 import Certificates from './pages/students/Certificates.jsx'
 import Settings from './pages/students/Settings.jsx'
@@ -64,8 +65,9 @@ import StudentNotifications from './pages/students/Notifications.jsx'
 import EducatorNotifications from './pages/educator/Notifications.jsx'
 import AdminNotifications from './pages/admin/Notifications.tsx'
 
-// Navbar
+// Navbar & Footer
 import Navbar from './components/navbar/GlobalNavbar.jsx'
+import Footer from './components/students/Footer.jsx'
 import About from './pages/students/About.jsx'
 import Contact from './pages/students/Contact.jsx'
 
@@ -105,7 +107,7 @@ const App = () => {
   }, [user, backendURL, getToken]);
 
   return (
-    <div className="text-default min-h-screen bg-white">
+    <div className="text-default min-h-screen bg-slate-50 dark:bg-dk-base text-slate-900 dark:text-dk-text transition-colors duration-200">
       <ToastContainer position="top-center" />
       
      
@@ -117,56 +119,55 @@ const App = () => {
           element={<AuthenticateWithRedirectCallback />}
         />
         {/* --- Navbar ROUTES --- */}
-       <Route path="/about" element={<><Navbar /><About /></>} />
-<Route path="/contact" element={<><Navbar /><Contact /></>} />
-        <Route
-  path="/sso-callback"
-  element={<AuthenticateWithRedirectCallback />}
-/>
+        <Route path="/about" element={<><Navbar /><About /><Footer /></>} />
+        <Route path="/contact" element={<><Navbar /><Contact /><Footer /></>} />
+        <Route path="/announcements" element={<><Navbar /><Announcements /><Footer /></>} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Login />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/access-denied" element={<AccessDenied />} />
         {/* --- STUDENT ROUTES --- */}
         <Route path="/" element={<><Navbar /><Home /></>} />
-        <Route path="/course-list" element={<><Navbar /><CourseList /></>} />
-        <Route path="/course-list/:input" element={<><Navbar /><CourseList /></>} />
-        <Route path="/course/:id" element={<><Navbar /><CourseDetail /></>} />
-        <Route path="/my-enrollments" element={<><Navbar /><MyEnrollments /></>} />
-        <Route path="/quizzes" element={<><Navbar /><StudentQuizzes /></>} />
-        <Route path="/assignments" element={<><Navbar /><StudentAssignments /></>} />
-        <Route path="/certificate/verify/:verificationCode" element={<><Navbar /><VerifyCertificate /></>} />
+        <Route path="/course-list" element={<><Navbar /><CourseList /><Footer /></>} />
+        <Route path="/course-list/:input" element={<><Navbar /><CourseList /><Footer /></>} />
+        <Route path="/course/:id" element={<><Navbar /><CourseDetail /><Footer /></>} />
+        <Route path="/my-enrollments" element={<><Navbar /><MyEnrollments /><Footer /></>} />
+        <Route path="/quizzes" element={<><Navbar /><StudentQuizzes /><Footer /></>} />
+        <Route path="/assignments" element={<><Navbar /><StudentAssignments /><Footer /></>} />
+        <Route path="/certificate/verify/:verificationCode" element={<><Navbar /><VerifyCertificate /><Footer /></>} />
         <Route path="/player/:courseId" element={<><Navbar /><Player /></>} />
         <Route path="/quiz/:quizId" element={<><Navbar /><QuizPlayer /></>} />
         <Route path="/loading/:path" element={<><Navbar /><Loading /></>} />
-        <Route path="/notifications" element={<><Navbar /><StudentNotifications /></>} />
+        <Route path="/notifications" element={<><Navbar /><StudentNotifications /><Footer /></>} />
         <Route path="/ai-tutor" element={<><Navbar /><AITutor /></>} />
         <Route path="/pdf-summary" element={<><Navbar /><PDFSummary /></>} />
         <Route path="/video-summary" element={<><Navbar /><VideoSummary /></>} />
         <Route path="/notes-generator" element={<><Navbar /><NotesGenerator /></>} />
-        <Route path="/credits" element={<><Navbar /><CreditDashboard /></>} />
-        <Route path="/ai-analytics" element={<><Navbar /><AIUsageAnalytics /></>} />
+        <Route path="/credits" element={<><Navbar /><CreditDashboard /><Footer /></>} />
+        <Route path="/ai-analytics" element={<><Navbar /><AIUsageAnalytics /><Footer /></>} />
         <Route path="/ai-coding-assistant" element={<><Navbar /><AICodingAssistant /></>} />
-        <Route path="/bookmarks" element={<><Navbar /><Bookmarks /></>} />
-        <Route path="/certificates" element={<><Navbar /><Certificates /></>} />
+        <Route path="/bookmarks" element={<><Navbar /><Bookmarks /><Footer /></>} />
+        <Route path="/certificates" element={<><Navbar /><Certificates /><Footer /></>} />
         <Route
-  path="/settings"
-  element={
-    <>
-      <Navbar />
-      <Settings />
-    </>
-  }
-/>
-<Route
-  path="/settings/ai"
-  element={
-    <>
-      <Navbar />
-      <AISettings />
-    </>
-  }
-/>
+          path="/settings"
+          element={
+            <>
+              <Navbar />
+              <Settings />
+              <Footer />
+            </>
+          }
+        />
+        <Route
+          path="/settings/ai"
+          element={
+            <>
+              <Navbar />
+              <AISettings />
+              <Footer />
+            </>
+          }
+        />
 
         {/* --- EDUCATOR ROUTES --- */}
         <Route path="/educator" element={<RoleRoute roles={['educator', 'admin']}><Educator /></RoleRoute>}>

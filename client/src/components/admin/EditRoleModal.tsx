@@ -76,46 +76,46 @@ const EditRoleModal = ({ user, onClose, onSaved, includeStatus = false }: EditRo
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4 py-8">
-      <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white dark:bg-dk-surface p-6 shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm px-4 py-8">
+      <div className="w-full max-w-lg rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-2xl">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h3 className="text-lg font-semibold text-gray-800">Edit Role</h3>
-            <p className="mt-1 text-sm text-gray-500">Change this user&apos;s role{includeStatus ? ' and status' : ''}.</p>
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-dk-text font-space-grotesk">Edit Role</h3>
+            <p className="mt-1 text-sm text-slate-500 dark:text-dk-text-2">Change this user&apos;s role{includeStatus ? ' and status' : ''}.</p>
           </div>
           <button
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="rounded-md border border-gray-300 px-3 py-1 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-60"
+            className="rounded-lg border border-slate-200 dark:border-dk-border px-3 py-1 text-sm text-slate-600 dark:text-dk-text-2 hover:bg-slate-100 dark:hover:bg-dk-surface-2 disabled:opacity-60"
           >
             Close
           </button>
         </div>
 
         {isSelf ? (
-          <p className="mt-4 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          <p className="mt-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 px-4 py-3 text-sm text-amber-800 dark:text-amber-300">
             You cannot modify your own account from this screen.
           </p>
         ) : null}
 
         {error ? (
-          <p className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+          <p className="mt-4 rounded-lg bg-red-50 dark:bg-red-900/20 px-4 py-3 text-sm text-red-700 dark:text-red-300" role="alert">
             {error}
           </p>
         ) : null}
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          <div className="rounded-xl bg-gray-50 p-4 sm:col-span-2">
-            <p className="text-xs uppercase tracking-wide text-gray-400">Name</p>
-            <p className="mt-1 font-semibold text-gray-800">{user.name || 'Unnamed user'}</p>
+          <div className="rounded-xl bg-slate-50 dark:bg-dk-surface-2 p-4 sm:col-span-2">
+            <p className="text-xs uppercase tracking-wide text-slate-400 dark:text-dk-text-3 font-semibold">Name</p>
+            <p className="mt-1 font-semibold text-slate-800 dark:text-dk-text">{user.name || 'Unnamed user'}</p>
           </div>
-          <div className="rounded-xl bg-gray-50 p-4 sm:col-span-2">
-            <p className="text-xs uppercase tracking-wide text-gray-400">Email</p>
-            <p className="mt-1 font-semibold text-gray-800">{user.email || 'No email'}</p>
+          <div className="rounded-xl bg-slate-50 dark:bg-dk-surface-2 p-4 sm:col-span-2">
+            <p className="text-xs uppercase tracking-wide text-slate-400 dark:text-dk-text-3 font-semibold">Email</p>
+            <p className="mt-1 font-semibold text-slate-800 dark:text-dk-text">{user.email || 'No email'}</p>
           </div>
-          <div className="rounded-xl bg-gray-50 p-4">
-            <label htmlFor="edit-role-select" className="text-xs uppercase tracking-wide text-gray-400">
+          <div className="rounded-xl bg-slate-50 dark:bg-dk-surface-2 p-4">
+            <label htmlFor="edit-role-select" className="text-xs uppercase tracking-wide text-slate-400 dark:text-dk-text-3 font-semibold">
               Role
             </label>
             <select
@@ -123,17 +123,17 @@ const EditRoleModal = ({ user, onClose, onSaved, includeStatus = false }: EditRo
               value={draftRole}
               onChange={(event) => setDraftRole(event.target.value as UserRole)}
               disabled={loading || isSelf}
-              className="mt-2 w-full rounded-md border border-gray-300 bg-white dark:bg-dk-surface px-3 py-2 text-sm outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-2 w-full rounded-md border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface px-3 py-2 text-sm text-slate-900 dark:text-dk-text outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <option value="student">Student</option>
               <option value="educator">Educator</option>
               <option value="admin">Admin</option>
             </select>
-            <p className="mt-2 text-xs text-gray-500">Current: {roleLabel(currentRole)}</p>
+            <p className="mt-2 text-xs text-slate-500 dark:text-dk-text-3">Current: {roleLabel(currentRole)}</p>
           </div>
           {includeStatus ? (
-            <div className="rounded-xl bg-gray-50 p-4">
-              <label htmlFor="edit-status-select" className="text-xs uppercase tracking-wide text-gray-400">
+            <div className="rounded-xl bg-slate-50 dark:bg-dk-surface-2 p-4">
+              <label htmlFor="edit-status-select" className="text-xs uppercase tracking-wide text-slate-400 dark:text-dk-text-3 font-semibold">
                 Status
               </label>
               <select
@@ -141,7 +141,7 @@ const EditRoleModal = ({ user, onClose, onSaved, includeStatus = false }: EditRo
                 value={draftStatus}
                 onChange={(event) => setDraftStatus(event.target.value)}
                 disabled={loading || isSelf}
-                className="mt-2 w-full rounded-md border border-gray-300 bg-white dark:bg-dk-surface px-3 py-2 text-sm outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-2 w-full rounded-md border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface px-3 py-2 text-sm text-slate-900 dark:text-dk-text outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <option value="active">Active</option>
                 <option value="suspended">Suspended</option>
@@ -155,7 +155,7 @@ const EditRoleModal = ({ user, onClose, onSaved, includeStatus = false }: EditRo
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50 disabled:opacity-60"
+            className="rounded-lg border border-slate-200 dark:border-dk-border px-4 py-2 text-sm font-semibold text-slate-600 dark:text-dk-text-2 hover:bg-slate-100 dark:hover:bg-dk-surface-2 disabled:opacity-60"
           >
             Cancel
           </button>
@@ -163,7 +163,7 @@ const EditRoleModal = ({ user, onClose, onSaved, includeStatus = false }: EditRo
             type="button"
             onClick={handleSave}
             disabled={loading || isSelf || !hasChanges}
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? 'Saving...' : 'Save Changes'}
           </button>

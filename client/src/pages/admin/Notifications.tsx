@@ -117,39 +117,39 @@ const AdminNotifications = () => {
   }))
 
   return (
-    <div className="min-h-screen flex flex-col gap-8 md:p-8 p-4 pt-8 bg-gray-50/30 font-sans">
+    <div className="min-h-screen flex flex-col gap-8 md:p-8 p-4 pt-8 bg-slate-50 dark:bg-[#0D0D10] text-slate-900 dark:text-dk-text transition-colors duration-200">
       <div>
-        <h1 className="text-2xl font-semibold text-gray-800">Notification Center</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-3xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Notification Center</h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-dk-text-2">
           Create broadcasts, review analytical trends, and view recent system alerts.
         </p>
       </div>
 
       {/* Analytics widgets */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-dk-surface p-5 rounded-lg border border-gray-200 shadow-sm flex flex-col">
-          <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Sent</span>
-          <span className="text-2xl font-bold text-gray-800 mt-2">
+        <div className="bg-white dark:bg-dk-surface p-5 rounded-xl border border-slate-200 dark:border-dk-border shadow-sm flex flex-col">
+          <span className="text-xs font-semibold text-slate-400 dark:text-dk-text-3 uppercase tracking-wider">Total Sent</span>
+          <span className="text-2xl font-bold text-slate-900 dark:text-dk-text mt-2 font-space-grotesk">
             {loadingAnalytics ? '...' : analytics?.totalCount || 0}
           </span>
         </div>
-        <div className="bg-white dark:bg-dk-surface p-5 rounded-lg border border-gray-200 shadow-sm flex flex-col">
-          <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Unread Alerts</span>
-          <span className="text-2xl font-bold text-blue-600 mt-2">
+        <div className="bg-white dark:bg-dk-surface p-5 rounded-xl border border-slate-200 dark:border-dk-border shadow-sm flex flex-col">
+          <span className="text-xs font-semibold text-slate-400 dark:text-dk-text-3 uppercase tracking-wider">Unread Alerts</span>
+          <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-2 font-space-grotesk">
             {loadingAnalytics ? '...' : analytics?.unreadCount || 0}
           </span>
         </div>
-        <div className="bg-white dark:bg-dk-surface p-5 rounded-lg border border-gray-200 shadow-sm flex flex-col">
-          <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">High Priority</span>
-          <span className="text-2xl font-bold text-red-500 mt-2">
+        <div className="bg-white dark:bg-dk-surface p-5 rounded-xl border border-slate-200 dark:border-dk-border shadow-sm flex flex-col">
+          <span className="text-xs font-semibold text-slate-400 dark:text-dk-text-3 uppercase tracking-wider">High Priority</span>
+          <span className="text-2xl font-bold text-red-500 dark:text-red-400 mt-2 font-space-grotesk">
             {loadingAnalytics
               ? '...'
               : analytics?.byPriority?.find((p) => p._id === 'high')?.count || 0}
           </span>
         </div>
-        <div className="bg-white dark:bg-dk-surface p-5 rounded-lg border border-gray-200 shadow-sm flex flex-col">
-          <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Broadcast Target</span>
-          <span className="text-2xl font-bold text-green-600 mt-2">
+        <div className="bg-white dark:bg-dk-surface p-5 rounded-xl border border-slate-200 dark:border-dk-border shadow-sm flex flex-col">
+          <span className="text-xs font-semibold text-slate-400 dark:text-dk-text-3 uppercase tracking-wider">Broadcast Target</span>
+          <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2 font-space-grotesk">
             {loadingAnalytics
               ? '...'
               : analytics?.byType?.find((t) => t._id === 'announcement')?.total || 0}
@@ -163,36 +163,36 @@ const AdminNotifications = () => {
           <AdminSection title="Composer" description="Send alert to all or specific roles.">
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">Title</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-dk-text mb-1">Title</label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Notification Heading"
-                  className="w-full text-sm border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-xl text-sm border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface px-4 py-2.5 text-slate-900 dark:text-dk-text outline-none focus:border-blue-500 placeholder-slate-400 dark:placeholder-dk-text-3"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">Message</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-dk-text mb-1">Message</label>
                 <textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Detail message describing the alert event..."
                   rows={4}
-                  className="w-full text-sm border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-xl text-sm border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface px-4 py-2.5 text-slate-900 dark:text-dk-text outline-none focus:border-blue-500 placeholder-slate-400 dark:placeholder-dk-text-3"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1">Target Role</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-dk-text mb-1">Target Role</label>
                   <select
                     value={recipientRole}
                     onChange={(e) => setRecipientRole(e.target.value)}
-                    className="w-full text-sm border border-gray-300 rounded px-3 py-2 bg-white dark:bg-dk-surface"
+                    className="w-full text-sm rounded-xl border border-slate-200 dark:border-dk-border px-3 py-2 bg-white dark:bg-dk-surface text-slate-900 dark:text-dk-text outline-none focus:border-blue-500"
                   >
                     <option value="all">All Users</option>
                     <option value="student">Students</option>
@@ -202,11 +202,11 @@ const AdminNotifications = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1">Alert Category</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-dk-text mb-1">Alert Category</label>
                   <select
                     value={type}
                     onChange={(e) => setType(e.target.value)}
-                    className="w-full text-sm border border-gray-300 rounded px-3 py-2 bg-white dark:bg-dk-surface"
+                    className="w-full text-sm rounded-xl border border-slate-200 dark:border-dk-border px-3 py-2 bg-white dark:bg-dk-surface text-slate-900 dark:text-dk-text outline-none focus:border-blue-500"
                   >
                     <option value="announcement">Announcement</option>
                     <option value="course">Course</option>
@@ -220,11 +220,11 @@ const AdminNotifications = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1">Priority</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-dk-text mb-1">Priority</label>
                   <select
                     value={priority}
                     onChange={(e) => setPriority(e.target.value)}
-                    className="w-full text-sm border border-gray-300 rounded px-3 py-2 bg-white dark:bg-dk-surface"
+                    className="w-full text-sm rounded-xl border border-slate-200 dark:border-dk-border px-3 py-2 bg-white dark:bg-dk-surface text-slate-900 dark:text-dk-text outline-none focus:border-blue-500"
                   >
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
@@ -233,13 +233,13 @@ const AdminNotifications = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1">Action URL (optional)</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-dk-text mb-1">Action URL (optional)</label>
                   <input
                     type="text"
                     value={actionUrl}
                     onChange={(e) => setActionUrl(e.target.value)}
                     placeholder="/my-enrollments"
-                    className="w-full text-sm border border-gray-300 rounded px-3 py-2 focus:outline-none"
+                    className="w-full text-sm rounded-xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface px-3 py-2 text-slate-900 dark:text-dk-text outline-none focus:border-blue-500 placeholder-slate-400 dark:placeholder-dk-text-3"
                   />
                 </div>
               </div>
@@ -247,7 +247,7 @@ const AdminNotifications = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="mt-2 w-full py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded transition-all duration-200"
+                className="mt-2 w-full py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-all duration-200 shadow-sm shadow-blue-600/20"
               >
                 {isSubmitting ? 'Sending...' : 'Broadcast Alert'}
               </button>

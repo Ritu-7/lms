@@ -49,26 +49,26 @@ const StudentNotifications = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-dk-base py-8 px-4 sm:px-6 lg:px-8 text-slate-900 dark:text-dk-text transition-colors duration-200">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 font-sans">Notifications</h1>
-            <p className="text-sm text-gray-500 mt-1">
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-dk-text font-space-grotesk">Notifications</h1>
+            <p className="text-sm text-slate-500 dark:text-dk-text-2 mt-1">
               Stay updated on course progress, assignments, quizzes, announcements, and more.
             </p>
           </div>
           <div className="flex items-center gap-3">
             {unreadCount > 0 && (
-              <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full">
+              <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-xs font-semibold px-3 py-1 rounded-full">
                 {unreadCount} unread
               </span>
             )}
             <button
               onClick={markAllRead}
               disabled={unreadCount === 0 || isLoading}
-              className="text-sm font-semibold text-blue-600 hover:text-blue-700 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
+              className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 disabled:text-slate-400 dark:disabled:text-dk-text-3 disabled:cursor-not-allowed transition-colors"
             >
               Mark all as read
             </button>
@@ -76,7 +76,7 @@ const StudentNotifications = () => {
         </div>
 
         {/* Filters */}
-        <div className="border-b border-gray-200 mb-6 overflow-x-auto">
+        <div className="border-b border-slate-200 dark:border-dk-border mb-6 overflow-x-auto">
           <nav className="-mb-px flex space-x-6 min-w-max" aria-label="Tabs">
             {FILTER_TABS.map((tab) => (
               <button
@@ -85,8 +85,8 @@ const StudentNotifications = () => {
                 className={`
                   border-b-2 py-4 px-1 text-sm font-medium transition-all duration-200
                   ${activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}
+                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-slate-500 dark:text-dk-text-2 hover:border-slate-300 dark:hover:border-dk-border-2 hover:text-slate-700 dark:hover:text-white'}
                 `}
               >
                 {tab.label}
@@ -96,7 +96,7 @@ const StudentNotifications = () => {
         </div>
 
         {/* Notifications List */}
-        <div className="bg-white dark:bg-dk-surface rounded-xl shadow-custom-card border border-gray-100 divide-y divide-gray-100 overflow-hidden">
+        <div className="bg-white dark:bg-dk-surface rounded-xl shadow-custom-card border border-slate-200 dark:border-dk-border divide-y divide-slate-100 dark:divide-dk-border overflow-hidden">
           {error && (
             <div className="p-6 text-center text-red-500">
               <p className="font-semibold">Error loading notifications</p>
@@ -112,14 +112,14 @@ const StudentNotifications = () => {
 
           {!error && notifications.length === 0 && !isLoading && (
             <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <div className="w-16 h-16 bg-slate-100 dark:bg-dk-surface-2 rounded-full flex items-center justify-center mb-4">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
                   stroke="currentColor"
-                  className="w-8 h-8 text-gray-400"
+                  className="w-8 h-8 text-slate-400 dark:text-dk-text-3"
                 >
                   <path
                     strokeLinecap="round"
@@ -128,8 +128,8 @@ const StudentNotifications = () => {
                   />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900">No notifications found</h3>
-              <p className="text-sm text-gray-500 mt-1 max-w-xs">
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-dk-text">No notifications found</h3>
+              <p className="text-sm text-slate-500 dark:text-dk-text-2 mt-1 max-w-xs">
                 You're all caught up! When there are updates, they will appear here.
               </p>
             </div>
@@ -147,14 +147,14 @@ const StudentNotifications = () => {
 
           {/* Loading state skeleton */}
           {isLoading && (
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-slate-100 dark:divide-dk-border">
               {[1, 2, 3].map((n) => (
                 <div key={n} className="flex items-start gap-4 p-4 animate-pulse">
-                  <div className="w-10 h-10 bg-gray-200 rounded-full flex-shrink-0" />
+                  <div className="w-10 h-10 bg-slate-200 dark:bg-dk-surface-2 rounded-full flex-shrink-0" />
                   <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-gray-200 rounded w-1/3" />
-                    <div className="h-3 bg-gray-200 rounded w-2/3" />
-                    <div className="h-2 bg-gray-200 rounded w-20" />
+                    <div className="h-4 bg-slate-200 dark:bg-dk-surface-2 rounded w-1/3" />
+                    <div className="h-3 bg-slate-200 dark:bg-dk-surface-2 rounded w-2/3" />
+                    <div className="h-2 bg-slate-200 dark:bg-dk-surface-2 rounded w-20" />
                   </div>
                 </div>
               ))}
@@ -167,7 +167,7 @@ const StudentNotifications = () => {
           <div className="flex justify-center mt-6">
             <button
               onClick={loadMore}
-              className="px-6 py-2.5 border border-gray-200 rounded-full bg-white dark:bg-dk-surface text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
+              className="px-6 py-2.5 border border-slate-200 dark:border-dk-border rounded-full bg-white dark:bg-dk-surface text-sm font-semibold text-slate-700 dark:text-dk-text hover:bg-slate-50 dark:hover:bg-dk-surface-2 transition-colors shadow-sm"
             >
               Load More
             </button>

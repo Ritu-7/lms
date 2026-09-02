@@ -170,7 +170,7 @@ const GlobalNavbar = () => {
               </AnimatePresence>
             </div>
 
-            {[{ label: 'About', path: '/about' }, { label: 'Contact', path: '/contact' }].map((link) => {
+            {[{ label: 'Announcements', path: '/announcements' }, { label: 'About', path: '/about' }, { label: 'Contact', path: '/contact' }].map((link) => {
               const active = isActive(link.path)
               return (
                 <Link

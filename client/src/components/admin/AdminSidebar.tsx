@@ -8,8 +8,8 @@ const AdminSidebar = () => {
   const iconForLogout = assets.cross_icon
 
   return (
-    <aside className="md:w-64 w-20 border-r border-slate-200 dark:border-dk-border bg-white dark:bg-dk-base min-h-screen py-8 flex flex-col">
-      <div className="px-6 mb-10">
+    <aside className="md:w-64 w-20 border-r border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface min-h-[calc(100vh-65px)] py-6 flex flex-col">
+      <div className="px-6 mb-6">
         <Logo showText={false} />
       </div>
 

@@ -7,13 +7,13 @@ const Categories = () => {
   const { adminOverview } = useContext(AppContext)
 
   return (
-    <div className="min-h-screen flex flex-col gap-8 md:p-8 p-4 pt-8 bg-gray-50/30">
+    <div className="min-h-screen flex flex-col gap-8 md:p-8 p-4 pt-8 bg-slate-50 dark:bg-[#0D0D10] text-slate-900 dark:text-dk-text transition-colors duration-200">
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-800">Category Management</h1>
-          <p className="mt-1 text-sm text-gray-500">Create and maintain course categories across the LMS.</p>
+          <h1 className="text-3xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Category Management</h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-dk-text-2">Create and maintain course categories across the LMS.</p>
         </div>
-        <button className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700">
+        <button className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-600/20 hover:bg-blue-700 transition-all duration-200">
           Create Category
         </button>
       </div>

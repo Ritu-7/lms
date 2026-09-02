@@ -9,15 +9,15 @@ interface AdminSectionProps {
 
 const AdminSection = ({ title, description, actions, children }: AdminSectionProps) => {
   return (
-    <section className="rounded-md border border-gray-500/20 bg-white dark:bg-dk-surface shadow-sm">
-      <div className="flex flex-col gap-4 border-b border-gray-500/20 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+    <section className="rounded-xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm overflow-hidden">
+      <div className="flex flex-col gap-4 border-b border-slate-200 dark:border-dk-border px-6 py-4 sm:flex-row sm:items-center sm:justify-between bg-slate-50/50 dark:bg-dk-surface-2/30">
         <div>
-          <h2 className="text-lg font-medium text-gray-800">{title}</h2>
-          {description ? <p className="mt-1 text-sm text-gray-500">{description}</p> : null}
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-dk-text font-space-grotesk">{title}</h2>
+          {description ? <p className="mt-1 text-sm text-slate-500 dark:text-dk-text-2">{description}</p> : null}
         </div>
         {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
       </div>
-      <div className="p-4">{children}</div>
+      <div className="p-6">{children}</div>
     </section>
   )
 }

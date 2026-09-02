@@ -16,6 +16,7 @@ const Sidebar = () => {
     { name: 'Student Enrolled', path: '/educator/student-enrolled', icon: assets.person_tick_icon },
     { name: 'Assignments', path: '/educator/assignments', icon: assets.lesson_icon },
     { name: 'Quizzes', path: '/educator/quizzes', icon: assets.lesson_icon },
+    { name: 'Announcements', path: '/announcements', icon: assets.appointments_icon },
     { name: 'Notifications', path: '/educator/notifications', icon: assets.time_left_clock_icon },
   ]
 

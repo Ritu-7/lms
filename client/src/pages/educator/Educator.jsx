@@ -6,17 +6,14 @@ import Footer from '../../components/educator/Footer'
 
 const Educator = () => {
   return (
-    <div className='text-default min-h-screen bg-white flex flex-col'>
+    <div className='text-default min-h-screen bg-slate-50 dark:bg-dk-base text-slate-900 dark:text-dk-text flex flex-col transition-colors duration-200'>
       <Navbar />
       
       {/* The flex-1 here ensures this middle section expands to push the footer down */}
       <div className='flex flex-1'>
         <Sidebar />
         
-        <main className='flex-1 overflow-y-auto'>
-          {/* Removed the extra curly braces around <Outlet/>. 
-            Added a <main> tag for better SEO and accessibility.
-          */}
+        <main className='flex-1 overflow-y-auto bg-slate-50 dark:bg-[#0D0D10]'>
           <Outlet />
         </main>
       </div>

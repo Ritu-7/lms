@@ -135,6 +135,7 @@ const MobileDrawer = ({ onClose, user, isEducator, isAdmin, openAuth, signOut })
             {[
               { label: 'Home', href: '/' },
               { label: 'Courses', href: '/course-list' },
+              { label: 'Announcements', href: '/announcements' },
               { label: 'About', href: '/about' },
               { label: 'Contact', href: '/contact' },
             ].map(({ label, href }) => (

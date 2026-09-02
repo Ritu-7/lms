@@ -47,9 +47,9 @@ const AdminTable = ({ columns, rows, rowActions, emptyMessage = 'No records avai
   }
 
   return (
-    <div className="w-full overflow-hidden">
+    <div className="w-full overflow-x-auto">
       <table className="w-full table-auto text-left text-sm">
-        <thead className="bg-slate-50 dark:bg-dk-surface text-slate-500 uppercase text-xs">
+        <thead className="bg-slate-50 dark:bg-dk-surface-2 text-slate-600 dark:text-dk-text-2 uppercase text-xs tracking-wider border-b border-slate-200 dark:border-dk-border">
           <tr>
             {columns.map((column) => (
               <th key={column} className="px-6 py-4 font-semibold">
@@ -59,10 +59,10 @@ const AdminTable = ({ columns, rows, rowActions, emptyMessage = 'No records avai
             {rowActions && rowActions.length > 0 ? <th className="px-6 py-4 text-center font-semibold">Actions</th> : null}
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-dk-text-2">
+        <tbody className="divide-y divide-slate-100 dark:divide-dk-border text-slate-700 dark:text-dk-text">
           {rows.length > 0 ? (
             rows.map((row) => (
-              <tr key={row.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+              <tr key={row.id} className="hover:bg-slate-50 dark:hover:bg-dk-surface-2/60 transition-colors">
                 {row.cells.map((cell, index) => {
                   const status = index === row.cells.length - 1 ? row.status : undefined
                   return (
@@ -70,7 +70,7 @@ const AdminTable = ({ columns, rows, rowActions, emptyMessage = 'No records avai
                       {status ? (
                         <span className={`inline-flex rounded-lg px-3 py-1 text-xs font-semibold ${toneClassMap[status]}`}>{cell}</span>
                       ) : (
-                        <span className="font-medium">{cell}</span>
+                        <span className="font-medium text-slate-800 dark:text-dk-text">{cell}</span>
                       )}
                     </td>
                   )
@@ -83,7 +83,7 @@ const AdminTable = ({ columns, rows, rowActions, emptyMessage = 'No records avai
                           key={`${row.id}-${action}`}
                           type="button"
                           onClick={() => handleAction(action, row)}
-                          className={`rounded-lg px-3 py-1 text-xs font-semibold transition ${actionToneClassMap[action] || 'text-slate-600 hover:bg-slate-50'}`}
+                          className={`rounded-lg px-3 py-1 text-xs font-semibold transition ${actionToneClassMap[action] || 'text-slate-600 dark:text-dk-text-2 hover:bg-slate-100 dark:hover:bg-dk-surface-2'}`}
                         >
                           {action}
                         </button>
@@ -95,7 +95,7 @@ const AdminTable = ({ columns, rows, rowActions, emptyMessage = 'No records avai
             ))
           ) : (
             <tr>
-              <td colSpan={columns.length + (rowActions && rowActions.length > 0 ? 1 : 0)} className="px-6 py-12 text-center text-slate-400 italic">
+              <td colSpan={columns.length + (rowActions && rowActions.length > 0 ? 1 : 0)} className="px-6 py-12 text-center text-slate-400 dark:text-dk-text-3 italic">
                 {emptyMessage}
               </td>
             </tr>

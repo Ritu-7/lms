@@ -108,24 +108,24 @@ const Students = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col gap-8 md:p-8 p-4 pt-8 bg-gray-50/30">
+    <div className="min-h-screen flex flex-col gap-8 md:p-8 p-4 pt-8 bg-slate-50 dark:bg-[#0D0D10] text-slate-900 dark:text-dk-text transition-colors duration-200">
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-800">Student Management</h1>
-          <p className="mt-1 text-sm text-gray-500">Search, filter, and manage learner accounts.</p>
+          <h1 className="text-3xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Student Management</h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-dk-text-2">Search, filter, and manage learner accounts.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            className="rounded-md border border-gray-300 bg-white dark:bg-dk-surface px-4 py-2 text-sm outline-none focus:border-blue-500"
+            className="rounded-xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface px-4 py-2 text-sm text-slate-900 dark:text-dk-text outline-none focus:border-blue-500 placeholder-slate-400 dark:placeholder-dk-text-3"
             placeholder="Search students"
             aria-label="Search students"
           />
           <select
             value={statusFilter}
             onChange={(event) => setStatusFilter(event.target.value)}
-            className="rounded-md border border-gray-300 bg-white dark:bg-dk-surface px-4 py-2 text-sm outline-none focus:border-blue-500"
+            className="rounded-xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface px-4 py-2 text-sm text-slate-900 dark:text-dk-text outline-none focus:border-blue-500"
             aria-label="Filter students"
           >
             <option value="all">All statuses</option>
@@ -146,38 +146,38 @@ const Students = () => {
       </AdminSection>
 
       {selectedUser ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4 py-8">
-          <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white dark:bg-dk-surface p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm px-4 py-8">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h3 className="text-lg font-semibold text-gray-800">Student Profile</h3>
-                <p className="mt-1 text-sm text-gray-500">Read-only profile snapshot for quick review.</p>
+                <h3 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Student Profile</h3>
+                <p className="mt-1 text-sm text-slate-500 dark:text-dk-text-2">Read-only profile snapshot for quick review.</p>
               </div>
-              <button type="button" onClick={() => setSelectedUser(null)} className="rounded-md border border-gray-300 px-3 py-1 text-sm text-gray-600 hover:bg-gray-50">
+              <button type="button" onClick={() => setSelectedUser(null)} className="rounded-lg border border-slate-200 dark:border-dk-border px-3 py-1 text-sm text-slate-600 dark:text-dk-text-2 hover:bg-slate-100 dark:hover:bg-dk-surface-2 transition-colors">
                 Close
               </button>
             </div>
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-xl bg-gray-50 p-4">
-                <p className="text-xs uppercase tracking-wide text-gray-400">Name</p>
-                <p className="mt-1 font-semibold text-gray-800">{selectedUser.name || 'Unnamed student'}</p>
+              <div className="rounded-xl bg-slate-50 dark:bg-dk-surface-2 p-4">
+                <p className="text-xs uppercase tracking-wide text-slate-400 dark:text-dk-text-3 font-semibold">Name</p>
+                <p className="mt-1 font-semibold text-slate-800 dark:text-dk-text">{selectedUser.name || 'Unnamed student'}</p>
               </div>
-              <div className="rounded-xl bg-gray-50 p-4">
-                <p className="text-xs uppercase tracking-wide text-gray-400">Email</p>
-                <p className="mt-1 font-semibold text-gray-800">{selectedUser.email || 'No email'}</p>
+              <div className="rounded-xl bg-slate-50 dark:bg-dk-surface-2 p-4">
+                <p className="text-xs uppercase tracking-wide text-slate-400 dark:text-dk-text-3 font-semibold">Email</p>
+                <p className="mt-1 font-semibold text-slate-800 dark:text-dk-text">{selectedUser.email || 'No email'}</p>
               </div>
-              <div className="rounded-xl bg-gray-50 p-4">
-                <p className="text-xs uppercase tracking-wide text-gray-400">Role</p>
-                <p className="mt-1 font-semibold text-gray-800">{roleLabel(selectedUser.role)}</p>
+              <div className="rounded-xl bg-slate-50 dark:bg-dk-surface-2 p-4">
+                <p className="text-xs uppercase tracking-wide text-slate-400 dark:text-dk-text-3 font-semibold">Role</p>
+                <p className="mt-1 font-semibold text-slate-800 dark:text-dk-text">{roleLabel(selectedUser.role)}</p>
               </div>
-              <div className="rounded-xl bg-gray-50 p-4">
-                <p className="text-xs uppercase tracking-wide text-gray-400">Status</p>
-                <p className="mt-1 font-semibold text-gray-800">{statusLabel(selectedUser.status)}</p>
+              <div className="rounded-xl bg-slate-50 dark:bg-dk-surface-2 p-4">
+                <p className="text-xs uppercase tracking-wide text-slate-400 dark:text-dk-text-3 font-semibold">Status</p>
+                <p className="mt-1 font-semibold text-slate-800 dark:text-dk-text">{statusLabel(selectedUser.status)}</p>
               </div>
-              <div className="rounded-xl bg-gray-50 p-4 sm:col-span-2">
-                <p className="text-xs uppercase tracking-wide text-gray-400">Courses</p>
-                <p className="mt-1 font-semibold text-gray-800">{(selectedUser as any).enrolledCourses?.length || 0}</p>
+              <div className="rounded-xl bg-slate-50 dark:bg-dk-surface-2 p-4 sm:col-span-2">
+                <p className="text-xs uppercase tracking-wide text-slate-400 dark:text-dk-text-3 font-semibold">Courses</p>
+                <p className="mt-1 font-semibold text-slate-800 dark:text-dk-text">{(selectedUser as any).enrolledCourses?.length || 0}</p>
               </div>
             </div>
           </div>

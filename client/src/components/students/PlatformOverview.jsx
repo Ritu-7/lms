@@ -66,30 +66,40 @@ const PlatformOverview = () => {
           initial={{ opacity: 0, x: 20 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
-          className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-8 shadow-sm"
+          className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-8 shadow-sm flex flex-col justify-between"
         >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Platform Updates</h2>
-            <div className="h-1 w-12 bg-indigo-600 rounded-full" />
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Platform Updates</h2>
+              <Link to="/announcements" className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
+                View all →
+              </Link>
+            </div>
+            <div className="space-y-4">
+              {platformHomeData.announcements.length > 0 ? (
+                platformHomeData.announcements.slice(0, 3).map((announcement) => (
+                  <Link 
+                    key={announcement.id || announcement._id} 
+                    to="/announcements"
+                    className="block group rounded-xl border border-slate-100 dark:border-dk-border bg-slate-50 dark:bg-dk-surface p-4 transition-all hover:bg-white dark:bg-dk-surface dark:hover:bg-dk-surface-2 hover:shadow-sm"
+                  >
+                    <p className="font-semibold text-slate-800 dark:text-dk-text group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      {announcement.title}
+                    </p>
+                    <p className="mt-1 text-sm text-slate-600 dark:text-dk-text-2 line-clamp-2">
+                      {announcement.message}
+                    </p>
+                  </Link>
+                ))
+              ) : (
+                <p className="text-sm text-slate-500">No announcements published yet.</p>
+              )}
+            </div>
           </div>
-          <div className="space-y-4">
-            {platformHomeData.announcements.length > 0 ? (
-              platformHomeData.announcements.map((announcement) => (
-                <div 
-                  key={announcement.id} 
-                  className="group rounded-xl border border-slate-100 dark:border-dk-border bg-slate-50 dark:bg-dk-surface p-4 transition-all hover:bg-white dark:bg-dk-surface dark:hover:bg-dk-surface-2 hover:shadow-sm"
-                >
-                  <p className="font-semibold text-slate-800 dark:text-dk-text group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    {announcement.title}
-                  </p>
-                  <p className="mt-1 text-sm text-slate-600 dark:text-dk-text-2 line-clamp-2">
-                    {announcement.message}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <p className="text-sm text-slate-500">No announcements published yet.</p>
-            )}
+          <div className="mt-6 pt-4 border-t border-slate-100 dark:border-dk-border">
+            <Link to="/announcements" className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700">
+              Browse all announcements & releases →
+            </Link>
           </div>
         </motion.div>
       </div>
