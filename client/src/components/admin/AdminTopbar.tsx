@@ -11,7 +11,7 @@ const AdminTopbar = () => {
 
   return (
     <header className="flex items-center justify-between border-b border-slate-200 dark:border-dk-border px-4 py-3 md:px-8 bg-white dark:bg-dk-surface sticky top-0 z-40">
-      <Link to="/admin" className="flex items-center gap-3">
+      <Link to="/" className="flex items-center gap-3">
         <Logo />
         <span className="hidden rounded-full border border-slate-200 dark:border-dk-border bg-slate-50 dark:bg-dk-surface-2 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-slate-600 dark:text-dk-text-2 md:inline-flex">
           Admin Portal

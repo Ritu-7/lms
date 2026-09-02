@@ -9,10 +9,6 @@ const AdminSidebar = () => {
 
   return (
     <aside className="md:w-64 w-20 border-r border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface min-h-[calc(100vh-65px)] py-6 flex flex-col">
-      <div className="px-6 mb-6">
-        <Logo showText={false} />
-      </div>
-
       <nav className="flex-1 flex flex-col gap-1 px-3">
         {adminNavItems.map((item) => (
           <NavLink
