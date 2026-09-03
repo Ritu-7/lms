@@ -157,16 +157,7 @@ const PlatformOverview = () => {
           </motion.div>
         </div>
 
-        {/* AI Banner */}
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-12 rounded-2xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-5 text-left">
-          <div className="flex items-center gap-4">
-            <Sparkles className="w-7 h-7 text-blue-600 dark:text-blue-400 shrink-0" />
-            <p className="text-slate-800 dark:text-dk-text text-sm sm:text-base font-medium">AI is with you at every step – from learning to achieving your goals.</p>
-          </div>
-          <Link to="/course-list" className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-all shadow-sm hover:shadow shrink-0 w-full sm:w-auto">
-            Explore Courses <ArrowRight className="w-4 h-4" />
-          </Link>
-        </motion.div>
+
       </div>
 
       {/* Platform Updates Section */}
