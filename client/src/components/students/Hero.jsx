@@ -1,81 +1,322 @@
-import React from 'react'
-import { motion } from 'framer-motion'
-import SearchBar from './SearchBar'
+import React, { useEffect, useState, useContext } from 'react'
+import { motion, useMotionValue, useTransform, animate } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
+import { ArrowRight, Sparkles, BarChart3, Bot, BookOpen, TrendingUp } from 'lucide-react'
+import { AppContext } from '../../context/AppContext'
 
-const Hero = () => {
+/* ───────────── tiny animated counter ───────────── */
+const AnimatedCounter = ({ target, suffix = '', duration = 2 }) => {
+  const count = useMotionValue(0)
+  const rounded = useTransform(count, (v) => Math.round(v * 10) / 10)
+  const [display, setDisplay] = useState('0')
+
+  useEffect(() => {
+    const controls = animate(count, target, { duration, ease: 'easeOut' })
+    const unsub = rounded.on('change', (v) => setDisplay(v.toString()))
+    return () => { controls.stop(); unsub() }
+  }, [target])
+
+  return <span>{display}{suffix}</span>
+}
+
+/* ───────────── starfield particles ───────────── */
+const Particles = () => {
+  const stars = Array.from({ length: 50 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: Math.random() * 2 + 1,
+    delay: Math.random() * 4,
+    duration: Math.random() * 3 + 2,
+  }))
+
   return (
-    <div className="relative w-full overflow-hidden bg-white dark:bg-dk-base pt-20 pb-16 md:pt-32 md:pb-24">
-      {/* Background decorative elements */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-400/10 blur-[120px] dark:bg-blue-500/20" />
-        <div className="absolute bottom-[10%] right-[-10%] w-[35%] h-[35%] rounded-full bg-indigo-400/10 blur-[100px] dark:bg-indigo-500/20" />
-      </div>
-
-      {/* Decorative Background Heading */}
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden -z-10 select-none">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {stars.map((s) => (
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.5, ease: "easeOut" }}
-          className="relative text-[15vw] leading-none font-black font-space-grotesk tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-[#60A5FA] to-[#2563EB] opacity-[0.05] dark:opacity-10 sm:text-[18vw]"
-        >
-          LEARN
-          <span className="absolute inset-0 bg-gradient-to-b from-[#60A5FA] to-[#2563EB] blur-2xl opacity-20 dark:opacity-30 mix-blend-screen -z-10"></span>
-        </motion.div>
+          key={s.id}
+          className="absolute rounded-full bg-white/30 dark:bg-white/40"
+          style={{ left: `${s.x}%`, top: `${s.y}%`, width: s.size, height: s.size }}
+          animate={{ opacity: [0, 1, 0] }}
+          transition={{ repeat: Infinity, duration: s.duration, delay: s.delay, ease: 'easeInOut' }}
+        />
+      ))}
+    </div>
+  )
+}
+
+/* ───────────── floating card wrapper ───────────── */
+const FloatingCard = ({ children, className = '', delay = 0, y = 0, rotate = 0 }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 60, scale: 0.9 }}
+    animate={{ opacity: 1, y: 0, scale: 1 }}
+    transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
+    className={className}
+  >
+    <motion.div
+      animate={{ y: [0, y, 0] }}
+      transition={{ repeat: Infinity, duration: 5 + delay, ease: 'easeInOut' }}
+      style={{ rotate }}
+    >
+      {children}
+    </motion.div>
+  </motion.div>
+)
+
+/* ───────────── mini bar chart ───────────── */
+const MiniBarChart = () => {
+  const bars = [40, 65, 50, 80, 60, 90, 75]
+  return (
+    <div className="flex items-end gap-1.5 h-16">
+      {bars.map((h, i) => (
+        <motion.div
+          key={i}
+          className="w-4 rounded-t-sm bg-gradient-to-t from-emerald-500 to-emerald-400"
+          initial={{ height: 0 }}
+          animate={{ height: `${h}%` }}
+          transition={{ duration: 0.6, delay: 1.2 + i * 0.08, ease: 'easeOut' }}
+        />
+      ))}
+    </div>
+  )
+}
+
+/* ───────────── typing dots ───────────── */
+const TypingDots = () => (
+  <span className="inline-flex gap-1 ml-1">
+    {[0, 1, 2].map((i) => (
+      <motion.span
+        key={i}
+        className="w-1.5 h-1.5 rounded-full bg-emerald-400"
+        animate={{ opacity: [0.3, 1, 0.3] }}
+        transition={{ repeat: Infinity, duration: 1, delay: i * 0.2 }}
+      />
+    ))}
+  </span>
+)
+
+/* ───────────── progress ring ───────────── */
+const ProgressRing = ({ progress = 84, size = 32, stroke = 3 }) => {
+  const r = (size - stroke) / 2
+  const circ = 2 * Math.PI * r
+  return (
+    <svg width={size} height={size} className="rotate-[-90deg]">
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="currentColor" strokeWidth={stroke} className="text-white/10" />
+      <motion.circle
+        cx={size / 2} cy={size / 2} r={r} fill="none" stroke="url(#grad)" strokeWidth={stroke} strokeLinecap="round"
+        initial={{ strokeDasharray: circ, strokeDashoffset: circ }}
+        animate={{ strokeDashoffset: circ * (1 - progress / 100) }}
+        transition={{ duration: 1.5, delay: 1, ease: 'easeOut' }}
+      />
+      <defs>
+        <linearGradient id="grad"><stop stopColor="#3B82F6" /><stop offset="1" stopColor="#8B5CF6" /></linearGradient>
+      </defs>
+    </svg>
+  )
+}
+
+/* ══════════════════════════════════════════════════
+   HERO
+   ══════════════════════════════════════════════════ */
+const Hero = () => {
+  const navigate = useNavigate()
+  const { allCourses, calculateRating, enrolledCourses } = useContext(AppContext)
+
+  // Real data for Trending Course (Card 1)
+  const trendingCourse = allCourses && allCourses.length > 0 ? allCourses[0] : null;
+  const trendingTitle = trendingCourse ? trendingCourse.courseTitle : "AI & Machine Learning";
+  const trendingSubtitle = trendingCourse ? (trendingCourse.educator?.name || "Deep Learning Fundamentals") : "Deep Learning Fundamentals";
+  const trendingEnrolled = trendingCourse ? (trendingCourse.enrolledStudents?.length || 0) : 2400;
+  const trendingRating = trendingCourse ? Number(calculateRating(trendingCourse)) : 4.9;
+
+  // Real data for Analytics (Card 2) - using average course progress or total enrolled
+  const totalEnrolled = enrolledCourses?.length || 0;
+  const analyticsValue = totalEnrolled > 0 ? (enrolledCourses.reduce((acc, curr) => acc + (curr.progress || 0), 0) / totalEnrolled) : 98.4;
+  const analyticsLabel = totalEnrolled > 0 ? "Average Progress" : "Skill Mastery";
+
+  /* stagger variants */
+  const container = { hidden: {}, show: { transition: { staggerChildren: 0.12 } } }
+  const item = { hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } } }
+
+  return (
+    <section className="relative w-full overflow-hidden bg-gradient-to-br from-white via-slate-50 to-blue-50/30 dark:from-[#07070A] dark:via-[#0A0E1A] dark:to-[#07070A]">
+      {/* ── ambient blobs ── */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-[-20%] left-[10%] w-[500px] h-[500px] rounded-full bg-blue-400/[0.07] dark:bg-blue-600/[0.08] blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[5%] w-[400px] h-[400px] rounded-full bg-indigo-400/[0.07] dark:bg-purple-600/[0.06] blur-[100px]" />
+        <div className="absolute top-[30%] right-[30%] w-[300px] h-[300px] rounded-full bg-violet-400/[0.05] dark:bg-violet-500/[0.04] blur-[100px]" />
       </div>
 
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-center text-center space-y-8">
+      {/* ── particles (dark mode only) ── */}
+      <div className="hidden dark:block">
+        <Particles />
+      </div>
+
+      {/* ── grid lines (subtle) ── */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.04]"
+        style={{ backgroundImage: 'linear-gradient(rgba(148,163,184,.5) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,.5) 1px, transparent 1px)', backgroundSize: '60px 60px' }}
+      />
+
+      {/* ── main content ── */}
+      <div className="relative mx-auto max-w-[1360px] px-5 sm:px-8 lg:px-10 pt-8 pb-20 md:pt-12 md:pb-28 lg:pt-16 lg:pb-32">
+        <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-12">
+
+          {/* ───── LEFT: copy ───── */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50/50 px-4 py-1.5 text-sm font-semibold text-blue-600 dark:border-blue-900/30 dark:bg-blue-900/20 dark:text-blue-400"
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="flex-1 flex flex-col items-start text-left max-w-xl lg:max-w-[560px]"
           >
-            <span className="flex h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
-            Learn Smarter with AI
+            {/* badge */}
+            <motion.div variants={item}
+              className="inline-flex items-center gap-2 rounded-full border border-blue-200/60 bg-blue-50/60 backdrop-blur px-4 py-1.5 text-sm font-semibold text-blue-600 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-400 mb-7"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              Learn Smarter with AI
+            </motion.div>
+
+            {/* heading */}
+            <motion.h1 variants={item}
+              className="font-space-grotesk text-[2.6rem] leading-[1.12] sm:text-5xl md:text-[3.4rem] lg:text-[3.6rem] font-bold tracking-tight text-slate-900 dark:text-white"
+            >
+              Empower Your Future{' '}
+              <br className="hidden sm:block" />
+              with{' '}
+              <span className="bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-500 bg-clip-text text-transparent">
+                Learning
+              </span>
+            </motion.h1>
+
+            {/* description */}
+            <motion.p variants={item}
+              className="mt-6 text-base sm:text-lg leading-relaxed text-slate-600 dark:text-slate-400 max-w-md"
+            >
+              Join world-class instructors and a global community to master the skills of tomorrow. LearnSphere AI bridges the gap between knowledge and lifetime achievement.
+            </motion.p>
+
+            {/* CTA buttons */}
+            <motion.div variants={item} className="flex flex-wrap items-center gap-4 mt-9">
+              <motion.button
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => navigate('/course-list')}
+                className="group relative inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition-shadow hover:shadow-xl hover:shadow-blue-600/30"
+              >
+                Get Started Free
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                {/* glow */}
+                <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 opacity-0 blur-xl transition-opacity group-hover:opacity-40" />
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => navigate('/course-list')}
+                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-7 py-3.5 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10 dark:hover:border-white/20"
+              >
+                Explore Courses
+              </motion.button>
+            </motion.div>
+
           </motion.div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="max-w-4xl font-space-grotesk text-4xl font-bold tracking-tight text-slate-900 dark:text-dk-text sm:text-6xl lg:text-7xl"
-          >
-            Empower Your Future with <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">AI-Powered</span> Learning
-          </motion.h1>
+          {/* ───── RIGHT: floating cards ───── */}
+          <div className="flex-1 relative w-full max-w-[600px] min-h-[420px] md:min-h-[480px] lg:min-h-[520px]">
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="max-w-2xl text-lg text-slate-600 dark:text-dk-text-2 sm:text-xl"
-          >
-            Join world-class instructors and a global community to master the skills of tomorrow.
-            Learn Sphere AI bridges the gap between knowledge and achievement.
-          </motion.p>
+            {/* ── Card 1 – Course Card (top-left) ── */}
+            <FloatingCard delay={0.5} y={-10} rotate={-2}
+              className="absolute top-0 left-0 sm:left-4 z-20 w-[260px] sm:w-[280px]"
+            >
+              <div className="rounded-2xl border border-slate-200/40 bg-white/70 backdrop-blur-xl shadow-2xl shadow-slate-900/[0.08] p-5 dark:border-white/[0.08] dark:bg-white/[0.06] dark:shadow-black/40">
+                {/* tag */}
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-amber-500 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 rounded-full px-2.5 py-1 mb-3">
+                  <TrendingUp className="w-3 h-3" /> Currently Trending
+                </span>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="w-full max-w-2xl"
-          >
-            <SearchBar />
-          </motion.div>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white leading-snug line-clamp-1">{trendingTitle}</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-1">{trendingSubtitle}</p>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.5 }}
-            className="flex flex-wrap items-center justify-center gap-8 pt-8 opacity-50 grayscale transition-all hover:grayscale-0 dark:invert dark:opacity-30"
-          >
-            {/* Trusted by companies section - simplified for now */}
-            <span className="text-sm font-semibold uppercase tracking-widest text-slate-500 dark:text-dk-text-2">Trusted by 500+ Companies</span>
-          </motion.div>
+                {/* stats row */}
+                <div className="flex items-center gap-4 mt-4">
+                  <div className="flex items-center gap-1.5">
+                    <BookOpen className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400" />
+                    <span className="text-xs text-slate-600 dark:text-slate-300 font-medium"><AnimatedCounter target={trendingEnrolled} suffix="" /> enrolled</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    {[1,2,3,4,5].map(i => (
+                      <motion.svg key={i} className={`w-3 h-3 ${i <= Math.round(trendingRating) ? 'text-amber-400' : 'text-slate-300 dark:text-slate-600'}`} fill="currentColor" viewBox="0 0 20 20"
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 1 + i * 0.1 }}
+                      >
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </motion.svg>
+                    ))}
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 ml-0.5">{trendingRating.toFixed(1)}</span>
+                  </div>
+                </div>
+              </div>
+            </FloatingCard>
+
+            {/* ── Card 2 – Analytics (top-right) ── */}
+            <FloatingCard delay={0.75} y={8} rotate={3}
+              className="absolute top-4 right-0 sm:right-0 z-10 w-[220px] sm:w-[240px]"
+            >
+              <div className="rounded-2xl border border-slate-200/40 bg-white/70 backdrop-blur-xl shadow-2xl shadow-slate-900/[0.08] p-5 dark:border-white/[0.08] dark:bg-white/[0.06] dark:shadow-black/40">
+                <span className="inline-block text-[10px] font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 rounded-full px-2.5 py-1 mb-3">
+                  Live Analytics
+                </span>
+
+                <div className="flex items-baseline gap-1.5">
+                  <p className="text-2xl font-bold text-slate-900 dark:text-white font-space-grotesk">
+                    <AnimatedCounter target={analyticsValue} suffix={totalEnrolled > 0 ? "%" : ""} duration={2.5} />
+                  </p>
+                  <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{analyticsLabel}</p>
+
+                <div className="mt-3">
+                  <MiniBarChart />
+                </div>
+              </div>
+            </FloatingCard>
+
+            {/* ── Card 3 – AI Assistant (bottom-center) ── */}
+            <FloatingCard delay={1} y={-12} rotate={-1}
+              className="absolute bottom-0 left-1/2 -translate-x-1/2 sm:left-[12%] sm:translate-x-0 z-30 w-[280px] sm:w-[310px]"
+            >
+              <div className="rounded-2xl border border-slate-200/40 bg-white/70 backdrop-blur-xl shadow-2xl shadow-slate-900/[0.08] p-5 dark:border-white/[0.08] dark:bg-white/[0.06] dark:shadow-black/40">
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-500/10 rounded-full px-2.5 py-1 mb-3">
+                  <Bot className="w-3 h-3" /> Active AI Agent
+                </span>
+
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">AI Spark Assistant</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center">
+                  Explaining Quantum Entanglement
+                  <TypingDots />
+                </p>
+
+                <div className="flex items-center gap-2 mt-4 rounded-lg bg-slate-100/70 dark:bg-white/[0.04] px-3 py-2.5">
+                  <BookOpen className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                  <p className="text-xs text-slate-600 dark:text-slate-300 truncate">Generating tailored lesson plan…</p>
+                </div>
+              </div>
+            </FloatingCard>
+
+            {/* decorative orbit ring */}
+            <motion.div
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] h-[380px] rounded-full border border-dashed border-slate-200/30 dark:border-white/[0.04] pointer-events-none"
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 60, ease: 'linear' }}
+            />
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* ── bottom gradient fade ── */}
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-slate-50 via-slate-50/80 to-transparent dark:from-[#07070A] dark:via-[#07070A]/80 dark:to-transparent pointer-events-none" />
+    </section>
   )
 }
 
