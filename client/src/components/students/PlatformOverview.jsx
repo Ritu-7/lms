@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { AppContext } from '../../context/AppContext'
 import { motion } from 'framer-motion'
-import { Search, BookOpen, TrendingUp, Sparkles, ArrowRight, Check } from 'lucide-react'
+import { Search, BookOpen, TrendingUp, Sparkles, ArrowRight, Check, Users, GraduationCap, Library, Award } from 'lucide-react'
 
 const PlatformOverview = () => {
   const { platformHomeData } = useContext(AppContext)
@@ -13,10 +13,10 @@ const PlatformOverview = () => {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {platformHomeData.stats ? (
           [
-            { label: 'Active Students', value: platformHomeData.stats.totalStudents, color: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-900/20' },
-            { label: 'Expert Educators', value: platformHomeData.stats.totalEducators, color: 'text-indigo-600', bg: 'bg-indigo-50 dark:bg-indigo-900/20' },
-            { label: 'Curated Courses', value: platformHomeData.stats.totalCourses, color: 'text-cyan-600', bg: 'bg-cyan-50 dark:bg-cyan-900/20' },
-            { label: 'Total Enrollments', value: platformHomeData.stats.totalEnrollments, color: 'text-violet-600', bg: 'bg-violet-50 dark:bg-violet-900/20' },
+            { label: 'Active Students', value: platformHomeData.stats.totalStudents, color: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-900/20', glow: 'shadow-blue-500/10 hover:shadow-blue-500/25', icon: Users },
+            { label: 'Expert Educators', value: platformHomeData.stats.totalEducators, color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-900/20', glow: 'shadow-emerald-500/10 hover:shadow-emerald-500/25', icon: GraduationCap },
+            { label: 'Curated Courses', value: platformHomeData.stats.totalCourses, color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-900/20', glow: 'shadow-orange-500/10 hover:shadow-orange-500/25', icon: Library },
+            { label: 'Total Enrollments', value: platformHomeData.stats.totalEnrollments, color: 'text-violet-600', bg: 'bg-violet-50 dark:bg-violet-900/20', glow: 'shadow-violet-500/10 hover:shadow-violet-500/25', icon: Award },
           ].map((stat, idx) => (
             <motion.div 
               key={stat.label}
@@ -24,11 +24,18 @@ const PlatformOverview = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className="group relative overflow-hidden rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1"
+              className={`group relative flex items-center gap-4 rounded-2xl border border-slate-200/90 bg-white px-5 py-5 text-left shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 dark:border-dk-border dark:bg-dk-surface dark:hover:border-white/20 sm:px-6 sm:py-6 ${stat.glow}`}
             >
-              <div className={`absolute top-0 right-0 h-24 w-24 -mr-8 -mt-8 rounded-full blur-3xl opacity-20 transition-opacity group-hover:opacity-40 ${stat.bg}`} />
-              <p className="text-sm font-medium text-slate-500 dark:text-dk-text-2">{stat.label}</p>
-              <p className={`mt-2 text-3xl font-bold font-space-grotesk ${stat.color} dark:text-dk-text`}>{stat.value}</p>
+              <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${stat.bg}`}>
+                <stat.icon className={`h-6 w-6 ${stat.color}`} strokeWidth={1.8} />
+              </div>
+              <div className="min-w-0">
+                <p className={`font-space-grotesk text-2xl font-bold leading-none ${stat.color} dark:text-dk-text`}>{stat.value}</p>
+                <p className="mt-2 truncate text-xs font-semibold text-slate-700 dark:text-dk-text">{stat.label}</p>
+                <p className="mt-0.5 text-[10px] text-slate-400 dark:text-dk-text-3">
+                  {idx === 0 ? 'Learning every day' : idx === 1 ? 'Industry professionals' : idx === 2 ? 'Across multiple domains' : 'Growing achievements'}
+                </p>
+              </div>
             </motion.div>
           ))
         ) : null}
