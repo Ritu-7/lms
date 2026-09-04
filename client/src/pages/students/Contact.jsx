@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'react-toastify';
 import {
   Sparkles,
   Mail,
@@ -19,6 +21,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import Footer from '../../components/students/Footer';
+import { AppContext } from '../../context/AppContext';
 
 // ─── Local Social/Brand Icons ──────────────────────────────────────────────────
 // Brand icons (GitHub, LinkedIn, Twitter/X, Instagram, YouTube) are defined
@@ -171,9 +174,9 @@ const OFFICES = [
 ];
 
 const SOCIAL_LINKS = [
-  { icon: TwitterIcon, label: 'Twitter / X', handle: '@LearnSphereAI', href: '#', color: 'hover:text-sky-500' },
-  { icon: LinkedinIcon, label: 'LinkedIn', handle: 'LearnSphereAI', href: '#', color: 'hover:text-blue-600' },
-  { icon: GithubIcon, label: 'GitHub', handle: 'learnsphereai', href: '#', color: 'hover:text-slate-900 dark:hover:text-white' },
+  { icon: TwitterIcon, label: 'Twitter / X', handle: '@LearnSphereAI', href: 'https://twitter.com/LearnSphereAI', color: 'hover:text-sky-500' },
+  { icon: LinkedinIcon, label: 'LinkedIn', handle: 'LearnSphereAI', href: 'https://www.linkedin.com/company/learnsphereai', color: 'hover:text-blue-600' },
+  { icon: GithubIcon, label: 'GitHub', handle: 'learnsphereai', href: 'https://github.com/learnsphereai', color: 'hover:text-slate-900 dark:hover:text-white' },
 ];
 
 const CONTACT_FAQS = [
@@ -275,6 +278,7 @@ const FAQItem = ({ faq, index }) => {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 const Contact = () => {
+  const { backendURL } = useContext(AppContext);
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -303,16 +307,47 @@ const Contact = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Prevent duplicate clicks while already submitting
+    if (status === 'submitting') return;
+
     const errs = validate();
     if (Object.keys(errs).length) {
       setErrors(errs);
       return;
     }
+
     setStatus('submitting');
-    // Simulated API call (no backend)
-    await new Promise((resolve) => setTimeout(resolve, 1800));
-    setStatus('success');
-    setForm({ name: '', email: '', subject: '', message: '' });
+    try {
+      const res = await axios.post(`${backendURL}/api/contact`, {
+        name: form.name.trim(),
+        email: form.email.trim(),
+        subject: form.subject,
+        message: form.message.trim(),
+      });
+
+      if (res.data?.success) {
+        toast.success(res.data.message || 'Message sent! We\'ll get back to you within 24 hours.');
+        setStatus('success');
+        setForm({ name: '', email: '', subject: '', message: '' });
+        setErrors({});
+      } else {
+        throw new Error(res.data?.message || 'Submission failed. Please try again.');
+      }
+    } catch (err) {
+      const serverMsg =
+        err.response?.data?.message ||
+        err.message ||
+        'Something went wrong. Please try again later.';
+
+      // Surface field-level errors from the server if provided
+      if (err.response?.data?.errors) {
+        setErrors(err.response.data.errors);
+      }
+
+      toast.error(serverMsg);
+      setStatus('idle');
+    }
   };
 
   const inputBase =

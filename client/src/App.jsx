@@ -58,6 +58,7 @@ import AdminPayments from './pages/admin/Payments.tsx'
 import AdminReports from './pages/admin/Reports.tsx'
 import AdminAnalytics from './pages/admin/Analytics.tsx'
 import AdminSettings from './pages/admin/Settings.tsx'
+import AdminContactMessages from './pages/admin/ContactMessages.tsx'
 import RoleRoute from './components/auth/RoleRoute.tsx'
 
 // Notification pages
@@ -200,6 +201,7 @@ const App = () => {
           <Route path="analytics" element={<AdminAnalytics />} />
           <Route path="settings" element={<AdminSettings />} />
           <Route path="notifications" element={<AdminNotifications />} />
+          <Route path="contact-messages" element={<AdminContactMessages />} />
         </Route>
       </Routes>
     </div>

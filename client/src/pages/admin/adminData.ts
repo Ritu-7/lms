@@ -16,6 +16,7 @@ export type AdminNavKey =
   | 'reports'
   | 'analytics'
   | 'settings'
+  | 'contact-messages'
 
 export interface AdminNavItem {
   key: AdminNavKey
@@ -59,6 +60,7 @@ export const adminNavItems: AdminNavItem[] = [
   { key: 'reports', label: 'Reports', path: '/admin/reports', icon: assets.time_clock_icon },
   { key: 'analytics', label: 'Analytics', path: '/admin/analytics', icon: assets.dropdown_icon },
   { key: 'settings', label: 'Settings', path: '/admin/settings', icon: assets.user_icon },
+  { key: 'contact-messages', label: 'Contact Messages', path: '/admin/contact-messages', icon: assets.lesson_icon },
 ]
 
 export const adminStats: AdminStatCardData[] = []
