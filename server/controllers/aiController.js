@@ -1,12 +1,13 @@
 import User from "../models/User.js";
 import AIUsageLog from "../models/AIUsageLog.js";
- import { analyzeCode,
+import { analyzeCode,
   generateStructuredSummary,
   generateTutorReply,
   retryWithBackoff,
   runCodeViaPiston,}
- from "../services/aiService.js";
+from "../services/aiService.js";
 import { encryptKey, decryptKey } from "../utils/encryption.js";
+import { getAdminOverview } from "../services/platformService.js";
 
 const resolveCurrentUser = async (clerkUserId) => {
   const user = await User.findOne({ clerkUserId }).lean();
@@ -462,6 +463,112 @@ export const testKey = async (req, res, next) => {
 
     res.json({ success: true, message: "Connection successful" });
   } catch (error) {
+    next(error);
+  }
+};
+
+export const adminCopilotChat = async (req, res, next) => {
+  try {
+    const user = await resolveCurrentUser(req.clerkUserId);
+    const { messages = [], model = "gemini-3.5-flash" } = req.body || {};
+
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return res.status(400).json({ success: false, message: "Message history is required" });
+    }
+
+    if (user.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Access denied." });
+    }
+
+    const userApiKey = decryptKey(user.encryptedGeminiKey);
+    if (!userApiKey) {
+      const err = new Error("NO_API_KEY");
+      err.status = 403;
+      throw err;
+    }
+
+    const overviewData = await getAdminOverview();
+    
+    const systemContext = `
+You are the LearnSphereAI Admin Copilot. You are an expert AI assistant for the LMS administrators.
+Use the following real-time platform data to answer the admin's questions. Be concise, helpful, and professional.
+
+PLATFORM STATS:
+Total Students: ${overviewData.stats.totalStudents}
+Total Educators: ${overviewData.stats.totalEducators}
+Total Courses: ${overviewData.stats.totalCourses}
+Total Enrollments: ${overviewData.stats.totalEnrollments}
+Total Revenue: $${overviewData.stats.totalRevenue}
+
+TOP COURSES (by enrollments):
+${overviewData.analytics.topCourses.map(c => `- ${c.name}: ${c.enrollments} enrollments`).join('\n')}
+
+RECENT TRENDS (Last 6 months):
+${overviewData.analytics.trend.map(t => `- ${t.month}: ${t.students} new students, ${t.courses} new courses, ${t.enrollments} new enrollments, $${t.revenue} revenue`).join('\n')}
+
+RECENT ENROLLMENTS:
+${overviewData.enrollments.slice(0, 5).map(e => `- ${e.cells.join(' | ')}`).join('\n')}
+
+RECENT COURSES:
+${overviewData.courses.slice(0, 5).map(c => `- ${c.cells.join(' | ')}`).join('\n')}
+
+Answer the user's questions based ONLY on this provided data. If they ask about something not in this data, explain that you currently only have access to high-level platform overviews, trends, and top courses. Use Markdown formatting.
+`;
+
+    const { GoogleGenAI } = await import('@google/genai');
+    const ai = new GoogleGenAI({ apiKey: userApiKey });
+
+    const contents = messages.map((message) => ({
+      role: message.role === "user" ? "user" : "model",
+      parts: [{ text: String(message.content || "") }],
+    }));
+
+    const response = await ai.models.generateContent({
+      model: model,
+      contents,
+      config: {
+        systemInstruction: systemContext,
+        temperature: 0.2,
+      },
+    });
+
+    let responseText = "I'm sorry, I couldn't generate a response.";
+    if (response.text) {
+        responseText = response.text;
+    } else if (response.candidates?.[0]?.content?.parts?.[0]?.text) {
+        responseText = response.candidates[0].content.parts[0].text;
+    }
+
+    await logUsage({
+      user,
+      feature: "admin_copilot",
+      model,
+      status: "success",
+      inputLength: JSON.stringify(messages).length,
+      outputLength: responseText.length,
+      title: "Admin Copilot",
+    });
+
+    res.json({ success: true, data: { response: responseText, model } });
+  } catch (error) {
+    if (req.clerkUserId) {
+      const user = await User.findOne({ clerkUserId: req.clerkUserId }).lean().catch(() => null);
+      if (user) {
+        await logUsage({
+          user,
+          feature: "admin_copilot",
+          model: req.body?.model || "",
+          status: "error",
+          inputLength: JSON.stringify(req.body?.messages || []).length,
+          title: "Admin Copilot",
+          errorMessage: error.message,
+        });
+      }
+    }
+    
+    if (error.message === "NO_API_KEY" || error.status === 403) {
+      return res.status(403).json({ success: false, message: "No API key configured" });
+    }
     next(error);
   }
 };

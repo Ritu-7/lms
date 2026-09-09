@@ -12,9 +12,9 @@ export type AdminNavKey =
   | 'certificates'
   | 'announcements'
   | 'notifications'
-  | 'payments'
   | 'reports'
   | 'analytics'
+  | 'copilot'
   | 'settings'
   | 'contact-messages'
 
@@ -59,6 +59,7 @@ export const adminNavItems: AdminNavItem[] = [
   { key: 'payments', label: 'Payments', path: '/admin/payments', icon: assets.earning_icon },
   { key: 'reports', label: 'Reports', path: '/admin/reports', icon: assets.time_clock_icon },
   { key: 'analytics', label: 'Analytics', path: '/admin/analytics', icon: assets.dropdown_icon },
+  { key: 'copilot', label: 'AI Copilot', path: '/admin/copilot', icon: assets.lesson_icon },
   { key: 'settings', label: 'Settings', path: '/admin/settings', icon: assets.user_icon },
   { key: 'contact-messages', label: 'Contact Messages', path: '/admin/contact-messages', icon: assets.lesson_icon },
 ]
