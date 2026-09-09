@@ -469,7 +469,7 @@ export const testKey = async (req, res, next) => {
 
 export const adminCopilotChat = async (req, res, next) => {
   try {
-    const user = await resolveCurrentUser(req.clerkUserId);
+    const user = req.user || (await resolveCurrentUser(req.clerkUserId));
     const { messages = [], model = "gemini-3.5-flash" } = req.body || {};
 
     if (!Array.isArray(messages) || messages.length === 0) {

@@ -19,6 +19,7 @@ export const protectAdminRoutes = async (req, res, next) => {
       return res.status(403).json({ success: false, message: "Access denied. Admin role required." });
     }
 
+    req.clerkUserId = userId;
     req.user = user;
     next();
   } catch (error) {
