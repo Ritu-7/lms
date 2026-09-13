@@ -230,9 +230,7 @@ const GlobalNavbar = () => {
                       <Link to="/educator/dashboard" className="text-sm font-medium px-3.5 py-2 rounded-lg text-slate-600 dark:text-dk-muted hover:text-slate-900 dark:hover:text-dk-text hover:bg-slate-100/80 dark:hover:bg-dk-surface-2 transition-colors duration-200">
                         Dashboard
                       </Link>
-                      <Link to="/educator/add-course" className="text-sm font-medium px-3.5 py-2 rounded-lg text-slate-600 dark:text-dk-muted hover:text-slate-900 dark:hover:text-dk-text hover:bg-slate-100/80 dark:hover:bg-dk-surface-2 transition-colors duration-200">
-                        Create Course
-                      </Link>
+                     
                     </>
                   ) : (
                     <Link to="/my-enrollments" className="text-sm font-medium px-3.5 py-2 rounded-lg text-slate-600 dark:text-dk-muted hover:text-slate-900 dark:hover:text-dk-text hover:bg-slate-100/80 dark:hover:bg-dk-surface-2 transition-colors duration-200">

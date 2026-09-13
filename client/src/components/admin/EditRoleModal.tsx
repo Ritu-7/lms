@@ -49,7 +49,7 @@ const EditRoleModal = ({ user, onClose, onSaved, includeStatus = false }: EditRo
 
     if (roleChanged && draftRole === 'admin' && currentRole !== 'admin') {
       const confirmed = window.confirm(
-        `Promote ${user.name || user.email || 'this user'} to Admin? This grants full Admin Dashboard access.`
+        `Promote ${user.name || user.email || 'this user'} to Admin? This grants full Admin  access.`
       )
       if (!confirmed) return
     }
