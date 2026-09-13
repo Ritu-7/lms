@@ -6,6 +6,7 @@ export type AdminNavKey =
   | 'students'
   | 'educators'
   | 'courses'
+  | 'course-health'
   | 'categories'
   | 'enrollments'
   | 'assignments'
@@ -50,6 +51,7 @@ export const adminNavItems: AdminNavItem[] = [
   { key: 'students', label: 'Students', path: '/admin/students', icon: assets.patients_icon },
   { key: 'educators', label: 'Educators', path: '/admin/educators', icon: assets.person_tick_icon },
   { key: 'courses', label: 'Courses', path: '/admin/courses', icon: assets.my_course_icon },
+  { key: 'course-health', label: 'Course Health', path: '/admin/course-health', icon: assets.earning_icon },
   { key: 'categories', label: 'Categories', path: '/admin/categories', icon: assets.add_icon },
   { key: 'enrollments', label: 'Enrollments', path: '/admin/enrollments', icon: assets.appointments_icon },
   { key: 'assignments', label: 'Assignments', path: '/admin/assignments', icon: assets.file_upload_icon },

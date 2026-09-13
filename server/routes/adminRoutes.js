@@ -17,6 +17,7 @@ import {
   deleteContactMessage,
 } from "../controllers/contactController.js";
 import { adminCopilotChat } from "../controllers/aiController.js";
+import { getCourseHealthScores, getCourseHealthDetail } from "../controllers/courseHealthController.js";
 import { protectAdminRoutes } from "../middlewares/adminMiddleware.js";
 
 const adminRouter = express.Router();
@@ -34,6 +35,10 @@ adminRouter.delete("/announcements/:id", protectAdminRoutes, deleteAnnouncement)
 adminRouter.get("/contact-messages", protectAdminRoutes, getContactMessages);
 adminRouter.patch("/contact-messages/:id/status", protectAdminRoutes, updateContactStatus);
 adminRouter.delete("/contact-messages/:id", protectAdminRoutes, deleteContactMessage);
+
+// Course Health Scores
+adminRouter.get("/course-health", protectAdminRoutes, getCourseHealthScores);
+adminRouter.get("/course-health/:courseId", protectAdminRoutes, getCourseHealthDetail);
 
 // Admin Copilot
 adminRouter.get("/copilot", protectAdminRoutes, (req, res) => res.json({ success: true, message: "Copilot API is ready" }));

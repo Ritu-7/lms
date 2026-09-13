@@ -45,14 +45,19 @@ export const getUserData = async (req, res) => {
     let user = await User.findOne({ clerkUserId: authId });
     if (!user) {
       const role = resolveUserRole({ clerkUserId: authId, email: "", existingRole: undefined });
-      user = await User.create({
-        clerkUserId: authId,
-        name: "User",
-        email: "",
-        imageUrl: "",
-        role,
-        enrolledCourses: [],
-      });
+      user = await User.findOneAndUpdate(
+        { clerkUserId: authId },
+        {
+          $setOnInsert: {
+            name: "User",
+            email: "",
+            imageUrl: "",
+            role,
+            enrolledCourses: [],
+          }
+        },
+        { upsert: true, new: true }
+      );
     }
     const [certificates, studyLibrary] = await Promise.all([
       listCertificatesForUser(user._id),

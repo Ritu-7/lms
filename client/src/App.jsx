@@ -58,6 +58,7 @@ import AdminPayments from './pages/admin/Payments.tsx'
 import AdminReports from './pages/admin/Reports.tsx'
 import AdminAnalytics from './pages/admin/Analytics.tsx'
 import AdminCopilot from './pages/admin/Copilot.tsx'
+import AdminCourseHealth from './pages/admin/CourseHealth.tsx'
 import AdminSettings from './pages/admin/Settings.tsx'
 import AdminContactMessages from './pages/admin/ContactMessages.tsx'
 import RoleRoute from './components/auth/RoleRoute.tsx'
@@ -200,6 +201,7 @@ const App = () => {
           <Route path="payments" element={<AdminPayments />} />
           <Route path="reports" element={<AdminReports />} />
           <Route path="analytics" element={<AdminAnalytics />} />
+          <Route path="course-health" element={<AdminCourseHealth />} />
           <Route path="copilot" element={<AdminCopilot />} />
           <Route path="settings" element={<AdminSettings />} />
           <Route path="notifications" element={<AdminNotifications />} />
