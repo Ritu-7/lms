@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useUser } from '@clerk/clerk-react'
+import { AppContext } from '../context/AppContext'
 import { useAuthModal } from '../contexts/AuthContext'
 import Home from './students/Home.jsx'
 import Navbar from '../components/navbar/GlobalNavbar.jsx'
@@ -13,9 +15,26 @@ type AuthView = 'login' | 'signup'
 const Login = () => {
   const { selectedRole } = useAuthModal()
   const location = useLocation()
+  const navigate = useNavigate()
+  const { isSignedIn, user } = useUser()
+  const { userData } = useContext(AppContext)
+
   const [view, setView] = useState<AuthView>(
     location.pathname === '/signup' ? 'signup' : 'login'
   )
+
+  useEffect(() => {
+    if (isSignedIn) {
+      const role = userData?.role || (user?.unsafeMetadata as { role?: string })?.role || (user?.publicMetadata as { role?: string })?.role || 'student'
+      if (role === 'admin') {
+        navigate('/admin', { replace: true })
+      } else if (role === 'educator') {
+        navigate('/educator', { replace: true })
+      } else {
+        navigate('/', { replace: true })
+      }
+    }
+  }, [isSignedIn, userData, user, navigate])
 
   return (
     <motion.div

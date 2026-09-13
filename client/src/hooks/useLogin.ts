@@ -5,6 +5,9 @@ import { useAuthModal } from '../contexts/AuthContext'
 import type { LoginFormValues, OAuthStrategy, ResetPasswordValues } from '../types/auth'
 
 const getClerkErrorMessage = (error: unknown) => {
+  if (error instanceof Error) {
+    return error.message
+  }
   if (error && typeof error === 'object') {
     const clerkError = error as { errors?: Array<{ longMessage?: string; message?: string }>; message?: string }
     return clerkError.errors?.[0]?.longMessage || clerkError.errors?.[0]?.message || clerkError.message || 'Authentication failed'
@@ -19,6 +22,7 @@ export const useLogin = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [loginError, setLoginError] = useState<string | null>(null)
+  const [needs2FA, setNeeds2FA] = useState(false)
   const [isResetting, setIsResetting] = useState(false)
   const [resetStep, setResetStep] = useState<'email' | 'code'>('email')
   const [resetEmail, setResetEmail] = useState('')
@@ -38,19 +42,60 @@ export const useLogin = () => {
       }
 
       const attempt = await signIn.create({
-        strategy: 'password',
         identifier: email,
         password: values.password,
       })
 
-      if (attempt.createdSessionId) {
+      if (attempt.status === 'complete' && attempt.createdSessionId) {
         await setActive({ session: attempt.createdSessionId })
         toast.success('Welcome back')
-        closeAuth()
         return
       }
 
-      toast.success('Login attempt completed')
+      if (attempt.status === 'needs_first_factor') {
+        throw new Error('Login incomplete. Please use the sign-in method you originally used to create this account (e.g. Google), or verify your email if you just signed up.')
+      }
+
+      if (attempt.status === 'needs_second_factor') {
+        setNeeds2FA(true)
+        return
+      }
+
+      throw new Error(`Login incomplete (Status: ${attempt.status}).`)
+    } catch (error) {
+      const msg = getClerkErrorMessage(error)
+      setLoginError(msg)
+      toast.error(msg)
+      throw error
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const verify2FA = async (code: string) => {
+    if (!isLoaded || !signIn) return
+    setIsSubmitting(true)
+    setLoginError(null)
+
+    try {
+      const factor = signIn.supportedSecondFactors[0]
+      if (!factor) {
+        throw new Error('No second factor found for this account.')
+      }
+
+      const attempt = await signIn.attemptSecondFactor({
+        strategy: factor.strategy as any,
+        code,
+      })
+
+      if (attempt.status === 'complete' && attempt.createdSessionId) {
+        await setActive({ session: attempt.createdSessionId })
+        toast.success('Welcome back')
+        setNeeds2FA(false)
+        return
+      }
+
+      throw new Error(`Login incomplete (Status: ${attempt.status}).`)
     } catch (error) {
       const msg = getClerkErrorMessage(error)
       setLoginError(msg)
@@ -75,7 +120,7 @@ export const useLogin = () => {
       await signIn.authenticateWithRedirect({
         strategy,
         redirectUrl: '/sso-callback',
-        redirectUrlComplete: '/',
+        redirectUrlComplete: '/login',
       })
     } catch (error) {
       toast.error(getClerkErrorMessage(error))
@@ -121,7 +166,6 @@ export const useLogin = () => {
       if (attempt.createdSessionId) {
         await setActive({ session: attempt.createdSessionId })
         toast.success('Password updated')
-        closeAuth()
       }
     } catch (error) {
       toast.error(getClerkErrorMessage(error))
@@ -142,6 +186,9 @@ export const useLogin = () => {
     beginPasswordReset,
     completePasswordReset,
     resetPasswordState,
+    verify2FA,
+    needs2FA,
+    setNeeds2FA,
     resetStep,
     resetEmail,
     isSubmitting,

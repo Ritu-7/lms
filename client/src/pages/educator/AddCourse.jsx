@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import uniqid from "uniqid";
 import Quill from "quill";
 import axios from "axios";
 import "quill/dist/quill.snow.css";
@@ -54,7 +53,7 @@ const AddCourse = () => {
     if (!title) return;
 
     const newModule = {
-      chapterId: uniqid(),
+      chapterId: crypto.randomUUID(),
       chapterTitle: title,
       chapterContent: [],
       collapsed: false,
@@ -109,8 +108,8 @@ const AddCourse = () => {
 
           const newLesson = {
             ...lesson,
-            lessonId: lesson.lessonId || uniqid(),
-            lectureId: lesson.lectureId || lesson.lessonId || uniqid(),
+            lessonId: lesson.lessonId || crypto.randomUUID(),
+            lectureId: lesson.lectureId || lesson.lessonId || crypto.randomUUID(),
           };
           return {
             ...module,
