@@ -4,6 +4,7 @@ export type AdminNavKey =
   | 'dashboard'
   | 'users'
   | 'students'
+  | 'student-risk'
   | 'educators'
   | 'courses'
   | 'course-health'
@@ -49,6 +50,7 @@ export const adminNavItems: AdminNavItem[] = [
   { key: 'dashboard', label: 'Dashboard', path: '/admin', icon: assets.home_icon },
   { key: 'users', label: 'Users', path: '/admin/users', icon: assets.user_icon },
   { key: 'students', label: 'Students', path: '/admin/students', icon: assets.patients_icon },
+  { key: 'student-risk', label: 'AI Risk Detection', path: '/admin/student-risk', icon: assets.appointments_icon },
   { key: 'educators', label: 'Educators', path: '/admin/educators', icon: assets.person_tick_icon },
   { key: 'courses', label: 'Courses', path: '/admin/courses', icon: assets.my_course_icon },
   { key: 'course-health', label: 'Course Health', path: '/admin/course-health', icon: assets.earning_icon },

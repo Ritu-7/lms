@@ -44,8 +44,10 @@ import Login from './pages/Login.tsx'
 import AdminLogin from './pages/admin/AdminLogin.tsx'
 import AccessDenied from './pages/AccessDenied.tsx'
 import AdminLayout from './pages/admin/AdminLayout.tsx'
+// Admin pages
 import AdminDashboard from './pages/admin/Dashboard.tsx'
 import AdminStudents from './pages/admin/Students.tsx'
+import AdminStudentRisk from './pages/admin/StudentRisk.tsx'
 import AdminUsers from './pages/admin/Users.tsx'
 import AdminEducators from './pages/admin/Educators.tsx'
 import AdminCourses from './pages/admin/Courses.tsx'
@@ -191,6 +193,7 @@ const App = () => {
           <Route index element={<AdminDashboard />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="students" element={<AdminStudents />} />
+          <Route path="student-risk" element={<AdminStudentRisk />} />
           <Route path="educators" element={<AdminEducators />} />
           <Route path="courses" element={<AdminCourses />} />
           <Route path="categories" element={<AdminCategories />} />
@@ -213,3 +216,4 @@ const App = () => {
 }
 
 export default App
+

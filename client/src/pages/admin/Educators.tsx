@@ -1,6 +1,7 @@
 import AdminSection from '../../components/admin/AdminSection'
 import AdminTable from '../../components/admin/AdminTable'
 import EditRoleModal, { type AdminUserRecord } from '../../components/admin/EditRoleModal'
+import EducatorInsightsPanel from '../../components/admin/EducatorInsightsPanel'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { AppContext } from '../../context/AppContext'
 import { roleLabel } from '../../utils/roleUtils'
@@ -16,6 +17,7 @@ const Educators = () => {
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)
   const [editingUser, setEditingUser] = useState<AdminUserRecord | null>(null)
+  const [insightsTarget, setInsightsTarget] = useState<{ id: string; name: string } | null>(null)
 
   const loadUsers = useCallback(async () => {
     try {
@@ -57,6 +59,16 @@ const Educators = () => {
   const handleAction = async (action: string, row: AdminTableRow) => {
     const user = row.meta as AdminUserRecord
     if (!user || actionLoading) return
+
+    if (action === 'AI Insights') {
+      // Toggle panel off if already showing for the same educator
+      if (insightsTarget?.id === user._id) {
+        setInsightsTarget(null)
+      } else {
+        setInsightsTarget({ id: user._id, name: user.name || user.email || 'Educator' })
+      }
+      return
+    }
 
     if (action === 'Edit Role') {
       setEditingUser(user)
@@ -129,14 +141,23 @@ const Educators = () => {
         </div>
       </div>
 
-      <AdminSection title="Educators" description="Approve, reject, edit roles, suspend, or delete instructors.">
+      <AdminSection title="Educators" description="Approve, reject, edit roles, suspend, or delete instructors. Click AI Insights to get Gemini-powered analysis for any educator.">
         <AdminTable
           columns={['Educator', 'Email', 'Courses', 'Role', 'Status']}
           rows={filteredRows}
-          rowActions={['Edit Role', 'Demote to Student', 'Suspend', 'Delete']}
+          rowActions={['AI Insights', 'Edit Role', 'Demote to Student', 'Suspend', 'Delete']}
           onAction={handleAction}
           emptyMessage={loading ? 'Loading educators...' : actionLoading ? 'Updating educator...' : 'No educator data available.'}
         />
+
+        {insightsTarget && (
+          <EducatorInsightsPanel
+            key={insightsTarget.id}
+            educatorId={insightsTarget.id}
+            educatorName={insightsTarget.name}
+            onClose={() => setInsightsTarget(null)}
+          />
+        )}
       </AdminSection>
 
       {editingUser ? (
@@ -147,3 +168,4 @@ const Educators = () => {
 }
 
 export default Educators
+

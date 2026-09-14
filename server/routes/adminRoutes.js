@@ -17,12 +17,19 @@ import {
   deleteContactMessage,
 } from "../controllers/contactController.js";
 import { adminCopilotChat } from "../controllers/aiController.js";
+import { analyzeStudentRisk } from "../controllers/studentRiskController.js";
+import { getEducatorInsights } from "../controllers/educatorInsightsController.js";
+import { sendOutreach } from "../controllers/outreachController.js";
 import { getCourseHealthScores, getCourseHealthDetail } from "../controllers/courseHealthController.js";
 import { protectAdminRoutes } from "../middlewares/adminMiddleware.js";
 
 const adminRouter = express.Router();
 
 adminRouter.get("/overview", protectAdminRoutes, getAdminOverviewData);
+adminRouter.get("/student-risk", protectAdminRoutes, analyzeStudentRisk);
+adminRouter.get("/educator-insights/:educatorId", protectAdminRoutes, getEducatorInsights);
+// Admin outreach (email + platform notifications to students/educators)
+adminRouter.post("/send-outreach", protectAdminRoutes, sendOutreach);
 adminRouter.get("/users", protectAdminRoutes, getAllUsers);
 adminRouter.patch("/users/:id/role", protectAdminRoutes, updateUserRole);
 adminRouter.patch("/users/:id/status", protectAdminRoutes, updateUserStatus);
