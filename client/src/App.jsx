@@ -50,6 +50,7 @@ import AdminStudents from './pages/admin/Students.tsx'
 import AdminStudentRisk from './pages/admin/StudentRisk.tsx'
 import AdminUsers from './pages/admin/Users.tsx'
 import AdminEducators from './pages/admin/Educators.tsx'
+import AdminUsersInsights from './pages/admin/UsersInsights.tsx'
 import AdminCourses from './pages/admin/Courses.tsx'
 import AdminCategories from './pages/admin/Categories.tsx'
 import AdminEnrollments from './pages/admin/Enrollments.tsx'
@@ -191,10 +192,12 @@ const App = () => {
         {/* --- ADMIN ROUTES --- */}
         <Route path="/admin" element={<RoleRoute roles={['admin']}><AdminLayout /></RoleRoute>}>
           <Route index element={<AdminDashboard />} />
-          <Route path="users" element={<AdminUsers />} />
-          <Route path="students" element={<AdminStudents />} />
-          <Route path="student-risk" element={<AdminStudentRisk />} />
-          <Route path="educators" element={<AdminEducators />} />
+          <Route path="users-insights" element={<AdminUsersInsights />} />
+          {/* Legacy routes redirect to the unified page */}
+          <Route path="users" element={<AdminUsersInsights />} />
+          <Route path="students" element={<AdminUsersInsights />} />
+          <Route path="student-risk" element={<AdminUsersInsights />} />
+          <Route path="educators" element={<AdminUsersInsights />} />
           <Route path="courses" element={<AdminCourses />} />
           <Route path="categories" element={<AdminCategories />} />
           <Route path="enrollments" element={<AdminEnrollments />} />

@@ -2,10 +2,7 @@ import { assets } from '../../assets/assets'
 
 export type AdminNavKey =
   | 'dashboard'
-  | 'users'
-  | 'students'
-  | 'student-risk'
-  | 'educators'
+  | 'users-insights'
   | 'courses'
   | 'course-health'
   | 'categories'
@@ -47,12 +44,9 @@ export interface AdminActionItem {
 }
 
 export const adminNavItems: AdminNavItem[] = [
-  { key: 'dashboard', label: 'Dashboard', path: '/admin', icon: assets.home_icon },
-  { key: 'users', label: 'Users', path: '/admin/users', icon: assets.user_icon },
-  { key: 'students', label: 'Students', path: '/admin/students', icon: assets.patients_icon },
-  { key: 'student-risk', label: 'AI Risk Detection', path: '/admin/student-risk', icon: assets.appointments_icon },
-  { key: 'educators', label: 'Educators', path: '/admin/educators', icon: assets.person_tick_icon },
-  { key: 'courses', label: 'Courses', path: '/admin/courses', icon: assets.my_course_icon },
+  { key: 'dashboard',      label: 'Dashboard',        path: '/admin',               icon: assets.home_icon },
+  { key: 'users-insights', label: 'Users & Insights',  path: '/admin/users-insights', icon: assets.user_icon },
+  { key: 'courses',        label: 'Courses',           path: '/admin/courses',        icon: assets.my_course_icon },
   { key: 'course-health', label: 'Course Health', path: '/admin/course-health', icon: assets.earning_icon },
   { key: 'categories', label: 'Categories', path: '/admin/categories', icon: assets.add_icon },
   { key: 'enrollments', label: 'Enrollments', path: '/admin/enrollments', icon: assets.appointments_icon },
