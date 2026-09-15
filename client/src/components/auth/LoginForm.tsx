@@ -33,7 +33,7 @@ interface LoginFormProps {
 
 const LoginForm = ({ role, onSwitchToSignUp }: LoginFormProps) => {
   const { selectRole } = useAuthModal()
-  const { completeLogin, signInWithProvider, isSubmitting, storedEmail, loginError, needs2FA, setNeeds2FA, verify2FA } = useLogin()
+  const { completeLogin, signInWithProvider, isSubmitting, storedEmail, loginError } = useLogin()
   const [view, setView] = useState<'login' | 'reset'>('login')
 
   const form = useForm<LoginFormValues>({
@@ -69,52 +69,6 @@ const LoginForm = ({ role, onSwitchToSignUp }: LoginFormProps) => {
           className="relative"
         >
           <ForgotPassword onBack={() => setView('login')} />
-        </motion.div>
-      ) : needs2FA ? (
-        <motion.div
-          key="2fa-view"
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 0.28, ease: 'easeOut' }}
-          className="relative space-y-6"
-        >
-          {isSubmitting ? <LoadingOverlay /> : null}
-          <div className="space-y-1.5">
-            <h2 className="font-space-grotesk text-2xl font-bold tracking-tight text-slate-900 dark:text-dk-text">
-              Two-Factor Authentication
-            </h2>
-            <p className="text-sm leading-6 text-slate-600 dark:text-dk-text-2">
-              Please enter the verification code from your authenticator app or SMS.
-            </p>
-          </div>
-          <form
-            onSubmit={async (e) => {
-              e.preventDefault();
-              const formData = new FormData(e.currentTarget);
-              await verify2FA(formData.get('code') as string);
-            }}
-            className="space-y-5"
-          >
-            <Input
-              id="code"
-              label="Verification Code"
-              type="text"
-              placeholder="123456"
-              autoComplete="one-time-code"
-              required
-            />
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="group flex w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500 px-4 py-4 text-sm font-semibold text-white shadow-[0_12px_32px_rgba(37,99,235,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_48px_rgba(37,99,235,0.45)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Verify Code
-            </button>
-            <button type="button" onClick={() => setNeeds2FA(false)} className="text-sm text-center w-full mt-4 text-blue-600 dark:text-cyan-300 font-semibold hover:underline">
-              Back to Login
-            </button>
-          </form>
         </motion.div>
       ) : (
         <motion.div

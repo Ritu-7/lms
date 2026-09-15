@@ -129,7 +129,7 @@ const Settings = () => {
   const [generalSaving, setGeneralSaving] = useState(false)
 
   // ── Security tab state ──────────────────────────────────────────────────────
-  const [security, setSecurity] = useState({ twoFactor: false, sessionTimeout: '24', enforceStrongPassword: true, maxLoginAttempts: '5', jwtSecret: '', allowedOrigins: 'https://learnsphereai.com', ipWhitelist: '' })
+  const [security, setSecurity] = useState({ sessionTimeout: '24', enforceStrongPassword: true, maxLoginAttempts: '5', jwtSecret: '', allowedOrigins: 'https://learnsphereai.com', ipWhitelist: '' })
   const [secSaving, setSecSaving] = useState(false)
 
   // ── Permissions tab state ───────────────────────────────────────────────────
@@ -257,7 +257,6 @@ const Settings = () => {
         <h3 className={sectionHeadCls}>Authentication</h3>
         <p className={sectionDescCls}>Control how users authenticate and session behaviour.</p>
         <div className="flex flex-col divide-y divide-slate-100 dark:divide-dk-border">
-          <Toggle enabled={security.twoFactor} onChange={() => setSecurity(p => ({ ...p, twoFactor: !p.twoFactor }))} label="Two-Factor Authentication" desc="Require 2FA for all admin accounts." />
           <Toggle enabled={security.enforceStrongPassword} onChange={() => setSecurity(p => ({ ...p, enforceStrongPassword: !p.enforceStrongPassword }))} label="Enforce Strong Passwords" desc="Minimum 8 chars with uppercase, number, and symbol." />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">

@@ -53,7 +53,6 @@ const defaultPreferences = {
   language: 'en',
   theme: 'system',
   accountVisibility: 'private',
-  twoFactorEnabled: false,
   marketingEmails: false,
   emailNotifications: true,
   courseUpdates: true,
@@ -305,7 +304,6 @@ const Settings = () => {
             <MotionDiv id="account" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm">
               <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Account Settings</h2>
               <div className="mt-6 grid gap-4 md:grid-cols-2">
-                <Toggle checked={formData.twoFactorEnabled} onChange={() => updateField('twoFactorEnabled', !formData.twoFactorEnabled)} label="Two-factor authentication" description="Add an extra layer of security to your student account." />
                 <Toggle checked={formData.marketingEmails} onChange={() => updateField('marketingEmails', !formData.marketingEmails)} label="Product tips and offers" description="Receive occasional LMS updates, tips, and promotions." />
               </div>
             </MotionDiv>
