@@ -135,6 +135,7 @@ const UsersInsights = () => {
   const [insightsTarget, setInsightsTarget]     = useState<{ id: string; name: string } | null>(null)
 
   // AI Risk
+  const [aiTab, setAiTab]             = useState<'student' | 'educator'>('student')
   const [riskData, setRiskData]       = useState<RiskData[]>([])
   const [riskLoading, setRiskLoading] = useState(false)
   const [riskLoaded, setRiskLoaded]   = useState(false)
@@ -183,8 +184,11 @@ const UsersInsights = () => {
   useEffect(() => {
     if (activeTab === 'students' && !studentsLoaded && !studentsLoading) loadStudents()
     if (activeTab === 'educators' && !educatorsLoaded && !educatorsLoading) loadEducators()
-    if (activeTab === 'ai-risk' && !riskLoaded && !riskLoading) fetchRiskData()
-  }, [activeTab]) // eslint-disable-line
+    if (activeTab === 'ai-risk') {
+      if (!riskLoaded && !riskLoading) fetchRiskData()
+      if (aiTab === 'educator' && !educatorsLoaded && !educatorsLoading) loadEducators()
+    }
+  }, [activeTab, aiTab]) // eslint-disable-line
 
   // Filtered rows
   const usersRows: AdminTableRow[] = useMemo(() => {
@@ -255,7 +259,6 @@ const UsersInsights = () => {
   const handleEducatorAction = async (action: string, row: AdminTableRow) => {
     const u = row.meta as AdminUserRecord
     if (!u || educatorsActing) return
-    if (action === 'AI Insights') { setInsightsTarget(insightsTarget?.id === u._id ? null : { id: u._id, name: u.name || u.email || 'Educator' }); return }
     if (action === 'Edit Role') { setEditingUser(u); return }
     if (action === 'Demote to Student') {
       if (!window.confirm(`Demote ${u.name || u.email} to student?`)) return
@@ -355,109 +358,163 @@ const UsersInsights = () => {
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
               <h2 className="text-xl font-bold">Educator Management</h2>
-              <p className="text-sm text-slate-500 dark:text-dk-text-2 mt-0.5">Manage instructors. Click AI Insights for Gemini-powered performance analysis.</p>
+              <p className="text-sm text-slate-500 dark:text-dk-text-2 mt-0.5">Manage instructors.</p>
             </div>
             <SearchBar search={educatorsSearch} onSearch={setEducatorsSearch} statusFilter={educatorsStatus} onStatusFilter={setEducatorsStatus} placeholder="Search educators…" />
           </div>
           {educatorsLoading && !educatorsLoaded ? <Loading /> : (
-            <AdminSection title="Educators" description="Approve, edit roles, suspend, or delete instructors. Use AI Insights for performance analysis.">
+            <AdminSection title="Educators" description="Approve, edit roles, suspend, or delete instructors.">
               <AdminTable columns={['Educator', 'Email', 'Courses', 'Role', 'Status']} rows={educatorsRows}
-                rowActions={['AI Insights', 'Edit Role', 'Demote to Student', 'Suspend', 'Delete']} onAction={handleEducatorAction}
+                rowActions={['Edit Role', 'Demote to Student', 'Suspend', 'Delete']} onAction={handleEducatorAction}
                 emptyMessage={educatorsActing ? 'Updating educator…' : 'No educator data available.'} />
-              {insightsTarget && (
-                <EducatorInsightsPanel key={insightsTarget.id} educatorId={insightsTarget.id} educatorName={insightsTarget.name} onClose={() => setInsightsTarget(null)} />
-              )}
             </AdminSection>
           )}
         </div>
       )}
 
-      {/* ── AI RISK ── */}
+      {/* ── AI RISK & INSIGHTS ── */}
       {activeTab === 'ai-risk' && (
         <div className="flex flex-col gap-6">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-              <h2 className="text-xl font-bold flex items-center gap-3">
-                AI Student Risk Detection
-                <span className="px-2 py-0.5 text-xs font-semibold bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300 rounded-md">BETA</span>
-              </h2>
-              <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">Powered by Google Gemini — analyzes behavior, course progress, and scores to identify at-risk students.</p>
-            </div>
-            <div className="flex items-center gap-2 bg-white dark:bg-dk-surface p-1 rounded-xl border border-slate-200 dark:border-dk-border shadow-sm">
-              {['All', 'High', 'Medium', 'Low'].map(f => (
-                <button key={f} onClick={() => setRiskFilter(f)}
-                  className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${riskFilter === f ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-dk-border/50'}`}
-                >{f}</button>
-              ))}
-              <button onClick={fetchRiskData} disabled={riskLoading} title="Refresh" className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition disabled:opacity-50">↻</button>
-            </div>
+          <div className="flex gap-2 p-1 bg-white dark:bg-dk-surface border border-slate-200 dark:border-dk-border rounded-xl w-fit">
+            <button
+              onClick={() => setAiTab('student')}
+              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${aiTab === 'student' ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' : 'text-slate-500 hover:text-slate-700'}`}
+            >Student Risk Detection</button>
+            <button
+              onClick={() => { setAiTab('educator'); if (!educatorsLoaded && !educatorsLoading) loadEducators() }}
+              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${aiTab === 'educator' ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' : 'text-slate-500 hover:text-slate-700'}`}
+            >Educator Insights</button>
           </div>
 
-          {riskLoading && !riskLoaded && <Loading />}
-
-          {!riskLoading && riskError && (
-            <div className="py-12 text-center border border-dashed border-red-300 dark:border-red-900 rounded-2xl">
-              <p className="text-sm text-red-500 mb-4">{riskError}</p>
-              <button onClick={fetchRiskData} className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-semibold">Try Again</button>
-            </div>
-          )}
-
-          {!riskLoading && !riskError && riskLoaded && (
+          {aiTab === 'student' && (
             <>
-              <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-                {filteredRisk.map(student => {
-                  const c = RISK_COLORS[student.riskLevel]
-                  return (
-                    <div key={student.studentId} className={`rounded-2xl border bg-white dark:bg-dk-surface shadow-sm overflow-hidden flex flex-col ${c.border}`}>
-                      <div className={`p-5 border-b ${c.header}`}>
-                        <div className="flex justify-between items-start mb-1">
-                          <h3 className="font-semibold text-slate-900 dark:text-white truncate pr-2">{student.studentName}</h3>
-                          <span className={`px-2.5 py-1 text-xs font-bold rounded-full flex-shrink-0 ${c.badge}`}>{student.riskLevel} Risk</span>
-                        </div>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{student.studentEmail}</p>
-                        <div className="mt-4 flex gap-3 text-xs">
-                          <div className="flex-1 bg-white/60 dark:bg-black/20 p-2 rounded border border-black/5 dark:border-white/5">
-                            <span className="block text-slate-500 mb-0.5">Last Active</span>
-                            <span className="font-medium text-slate-700 dark:text-slate-300">{student.daysSinceLastActivity !== null ? `${student.daysSinceLastActivity} days ago` : 'N/A'}</span>
-                          </div>
-                          <div className="flex-1 bg-white/60 dark:bg-black/20 p-2 rounded border border-black/5 dark:border-white/5">
-                            <span className="block text-slate-500 mb-0.5">Avg Score</span>
-                            <span className="font-medium text-slate-700 dark:text-slate-300">{student.avgQuizScore !== null ? `${student.avgQuizScore}%` : 'N/A'}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="p-5 flex-1 flex flex-col gap-4">
-                        <div>
-                          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Key Reasons</h4>
-                          <ul className="space-y-1.5">
-                            {student.reasons.map((r, i) => (
-                              <li key={i} className="text-sm text-slate-700 dark:text-slate-300 flex gap-2"><span className="text-slate-400 mt-0.5">•</span><span className="leading-snug">{r}</span></li>
-                            ))}
-                          </ul>
-                        </div>
-                        <div className="mt-auto pt-4 border-t border-slate-100 dark:border-dk-border">
-                          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">AI Recommendations</h4>
-                          <ul className="space-y-1.5 mb-4">
-                            {student.recommendations.map((r, i) => (
-                              <li key={i} className="text-sm text-slate-700 dark:text-slate-300 flex gap-2"><span className="text-blue-400 mt-0.5">→</span><span className="leading-snug">{r}</span></li>
-                            ))}
-                          </ul>
-                          <button onClick={() => setOutreachTarget(buildRiskDraft(student))}
-                            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 text-xs font-semibold hover:bg-blue-100 dark:hover:bg-blue-900/40 transition">
-                            <span>📬</span> Notify Student
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )
-                })}
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                  <h2 className="text-xl font-bold flex items-center gap-3">
+                    AI Student Risk Detection
+                    <span className="px-2 py-0.5 text-xs font-semibold bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300 rounded-md">BETA</span>
+                  </h2>
+                  <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">Powered by Google Gemini — analyzes behavior, course progress, and scores to identify at-risk students.</p>
+                </div>
+                <div className="flex items-center gap-2 bg-white dark:bg-dk-surface p-1 rounded-xl border border-slate-200 dark:border-dk-border shadow-sm">
+                  {['All', 'High', 'Medium', 'Low'].map(f => (
+                    <button key={f} onClick={() => setRiskFilter(f)}
+                      className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${riskFilter === f ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-dk-border/50'}`}
+                    >{f}</button>
+                  ))}
+                  <button onClick={fetchRiskData} disabled={riskLoading} title="Refresh" className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition disabled:opacity-50">↻</button>
+                </div>
               </div>
-              {filteredRisk.length === 0 && (
-                <div className="py-12 text-center text-slate-500 border border-dashed rounded-2xl border-slate-300 dark:border-dk-border">
-                  No students found matching the "{riskFilter}" risk criteria.
+
+              {riskLoading && !riskLoaded && <Loading />}
+
+              {!riskLoading && riskError && (
+                <div className="py-12 text-center border border-dashed border-red-300 dark:border-red-900 rounded-2xl">
+                  <p className="text-sm text-red-500 mb-4">{riskError}</p>
+                  <button onClick={fetchRiskData} className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-semibold">Try Again</button>
                 </div>
               )}
+
+              {!riskLoading && !riskError && riskLoaded && (
+                <>
+                  <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+                    {filteredRisk.map(student => {
+                      const c = RISK_COLORS[student.riskLevel]
+                      return (
+                        <div key={student.studentId} className={`rounded-2xl border bg-white dark:bg-dk-surface shadow-sm overflow-hidden flex flex-col ${c.border}`}>
+                          <div className={`p-5 border-b ${c.header}`}>
+                            <div className="flex justify-between items-start mb-1">
+                              <h3 className="font-semibold text-slate-900 dark:text-white truncate pr-2">{student.studentName}</h3>
+                              <span className={`px-2.5 py-1 text-xs font-bold rounded-full flex-shrink-0 ${c.badge}`}>{student.riskLevel} Risk</span>
+                            </div>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{student.studentEmail}</p>
+                            <div className="mt-4 flex gap-3 text-xs">
+                              <div className="flex-1 bg-white/60 dark:bg-black/20 p-2 rounded border border-black/5 dark:border-white/5">
+                                <span className="block text-slate-500 mb-0.5">Last Active</span>
+                                <span className="font-medium text-slate-700 dark:text-slate-300">{student.daysSinceLastActivity !== null ? `${student.daysSinceLastActivity} days ago` : 'N/A'}</span>
+                              </div>
+                              <div className="flex-1 bg-white/60 dark:bg-black/20 p-2 rounded border border-black/5 dark:border-white/5">
+                                <span className="block text-slate-500 mb-0.5">Avg Score</span>
+                                <span className="font-medium text-slate-700 dark:text-slate-300">{student.avgQuizScore !== null ? `${student.avgQuizScore}%` : 'N/A'}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="p-5 flex-1 flex flex-col gap-4">
+                            <div>
+                              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Key Reasons</h4>
+                              <ul className="space-y-1.5">
+                                {student.reasons.map((r, i) => (
+                                  <li key={i} className="text-sm text-slate-700 dark:text-slate-300 flex gap-2"><span className="text-slate-400 mt-0.5">•</span><span className="leading-snug">{r}</span></li>
+                                ))}
+                              </ul>
+                            </div>
+                            <div className="mt-auto pt-4 border-t border-slate-100 dark:border-dk-border">
+                              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">AI Recommendations</h4>
+                              <ul className="space-y-1.5 mb-4">
+                                {student.recommendations.map((r, i) => (
+                                  <li key={i} className="text-sm text-slate-700 dark:text-slate-300 flex gap-2"><span className="text-blue-400 mt-0.5">→</span><span className="leading-snug">{r}</span></li>
+                                ))}
+                              </ul>
+                              <button onClick={() => setOutreachTarget(buildRiskDraft(student))}
+                                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 text-xs font-semibold hover:bg-blue-100 dark:hover:bg-blue-900/40 transition">
+                                <span>📬</span> Notify Student
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                  {filteredRisk.length === 0 && (
+                    <div className="py-12 text-center text-slate-500 border border-dashed rounded-2xl border-slate-300 dark:border-dk-border">
+                      No students found matching the "{riskFilter}" risk criteria.
+                    </div>
+                  )}
+                </>
+              )}
             </>
+          )}
+
+          {aiTab === 'educator' && (
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                  <h2 className="text-xl font-bold flex items-center gap-3">
+                    Educator AI Insights
+                    <span className="px-2 py-0.5 text-xs font-semibold bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300 rounded-md">BETA</span>
+                  </h2>
+                  <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">Select an educator to generate a Gemini-powered performance analysis.</p>
+                </div>
+              </div>
+              
+              <div className="bg-white dark:bg-dk-surface border border-slate-200 dark:border-dk-border p-4 rounded-xl">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Select Educator</label>
+                <div className="flex gap-3">
+                  <select 
+                    className="w-full md:w-1/3 rounded-xl border border-slate-200 dark:border-dk-border bg-slate-50 dark:bg-dk-surface-2 px-4 py-2.5 text-sm outline-none focus:border-blue-500"
+                    value={insightsTarget?.id || ''}
+                    onChange={(e) => {
+                      const id = e.target.value;
+                      if (!id) {
+                        setInsightsTarget(null);
+                        return;
+                      }
+                      const ed = educators.find(x => x._id === id);
+                      if (ed) setInsightsTarget({ id: ed._id, name: ed.name || ed.email || 'Educator' });
+                    }}
+                  >
+                    <option value="">-- Choose an educator --</option>
+                    {educators.map(ed => (
+                      <option key={ed._id} value={ed._id}>{ed.name || ed.email}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {insightsTarget && (
+                <EducatorInsightsPanel key={insightsTarget.id} educatorId={insightsTarget.id} educatorName={insightsTarget.name} onClose={() => setInsightsTarget(null)} />
+              )}
+            </div>
           )}
         </div>
       )}
