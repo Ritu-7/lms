@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useSignIn, useClerk } from '@clerk/clerk-react'
+import { useSignIn } from '@clerk/clerk-react'
 import { toast } from 'react-toastify'
 import { useAuthModal } from '../contexts/AuthContext'
 import type { LoginFormValues, OAuthStrategy, ResetPasswordValues } from '../types/auth'
@@ -18,7 +18,6 @@ const getClerkErrorMessage = (error: unknown) => {
 
 export const useLogin = () => {
   const { isLoaded, signIn, setActive } = useSignIn()
-  const clerk = useClerk()
   const { closeAuth } = useAuthModal()
 
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -56,10 +55,6 @@ export const useLogin = () => {
         throw new Error('Login incomplete. Please use the sign-in method you originally used to create this account (e.g. Google), or verify your email if you just signed up.')
       }
 
-      if (attempt.status === 'needs_second_factor') {
-        clerk.redirectToSignIn()
-        return
-      }
 
       throw new Error(`Login incomplete (Status: ${attempt.status}).`)
     } catch (error) {
