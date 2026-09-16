@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useSignIn } from '@clerk/clerk-react'
+import { useSignIn, useClerk } from '@clerk/clerk-react'
 import { toast } from 'react-toastify'
 import { useAuthModal } from '../contexts/AuthContext'
 import type { LoginFormValues, OAuthStrategy, ResetPasswordValues } from '../types/auth'
@@ -18,6 +18,7 @@ const getClerkErrorMessage = (error: unknown) => {
 
 export const useLogin = () => {
   const { isLoaded, signIn, setActive } = useSignIn()
+  const clerk = useClerk()
   const { closeAuth } = useAuthModal()
 
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -56,7 +57,8 @@ export const useLogin = () => {
       }
 
       if (attempt.status === 'needs_second_factor') {
-        throw new Error('Two-factor authentication is configured on your account. Please use the hosted sign-in page to complete login.')
+        clerk.redirectToSignIn()
+        return
       }
 
       throw new Error(`Login incomplete (Status: ${attempt.status}).`)
