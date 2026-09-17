@@ -19,6 +19,18 @@ export default {
         'dk-accent': 'var(--dk-accent)',
         'dk-accent-glow': 'var(--dk-accent-glow)',
         'dk-navbar': 'var(--dk-navbar)',
+        // New Semantic Theme Colors
+        'bg-primary': 'var(--bg-primary)',
+        'text-primary': 'var(--text-primary)',
+        'text-secondary': 'var(--text-secondary)',
+        'card-bg': 'var(--card-bg)',
+        'card-border': 'var(--card-border)',
+        'accent-blue': 'var(--accent-blue)',
+        'glow-blue': 'var(--glow-blue)',
+        'accent-emerald': 'var(--accent-emerald)',
+        'glow-emerald': 'var(--glow-emerald)',
+        'accent-purple': 'var(--accent-purple)',
+        'glow-purple': 'var(--glow-purple)',
       },
       fontFamily: {
         outfit: ['Outfit', 'sans-serif'],

@@ -139,26 +139,33 @@ const Hero = () => {
   const item = { hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } } }
 
   return (
-    <section className="relative w-full overflow-hidden bg-gradient-to-br from-white via-slate-50 to-blue-50/30 dark:from-[#07070A] dark:via-[#0A0E1A] dark:to-[#07070A]">
+    <section className="relative w-full overflow-hidden bg-bg-primary transition-colors duration-500 min-h-[90vh] flex flex-col justify-center">
       {/* ── ambient blobs ── */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-[-20%] left-[10%] w-[500px] h-[500px] rounded-full bg-blue-400/[0.07] dark:bg-blue-600/[0.08] blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[5%] w-[400px] h-[400px] rounded-full bg-indigo-400/[0.07] dark:bg-purple-600/[0.06] blur-[100px]" />
-        <div className="absolute top-[30%] right-[30%] w-[300px] h-[300px] rounded-full bg-violet-400/[0.05] dark:bg-violet-500/[0.04] blur-[100px]" />
-      </div>
-
-      {/* ── particles (dark mode only) ── */}
-      <div className="hidden dark:block">
-        <Particles />
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <motion.div 
+          animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
+          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute top-[-10%] left-[10%] w-[500px] h-[500px] rounded-full bg-accent-blue/10 dark:bg-accent-blue/20 blur-[120px]" 
+        />
+        <motion.div 
+          animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
+          transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+          className="absolute bottom-[-10%] right-[5%] w-[400px] h-[400px] rounded-full bg-accent-purple/10 dark:bg-accent-purple/20 blur-[100px]" 
+        />
+        <motion.div 
+          animate={{ scale: [1, 1.15, 1], opacity: [0.2, 0.3, 0.2] }}
+          transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut', delay: 4 }}
+          className="absolute top-[30%] right-[30%] w-[300px] h-[300px] rounded-full bg-accent-emerald/10 dark:bg-accent-emerald/20 blur-[100px]" 
+        />
       </div>
 
       {/* ── grid lines (subtle) ── */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.04]"
-        style={{ backgroundImage: 'linear-gradient(rgba(148,163,184,.5) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,.5) 1px, transparent 1px)', backgroundSize: '60px 60px' }}
+        style={{ backgroundImage: 'linear-gradient(var(--text-primary) 1px, transparent 1px), linear-gradient(90deg, var(--text-primary) 1px, transparent 1px)', backgroundSize: '60px 60px' }}
       />
 
       {/* ── main content ── */}
-      <div className="relative mx-auto max-w-[1360px] px-5 sm:px-8 lg:px-10 pt-8 pb-20 md:pt-12 md:pb-28 lg:pt-16 lg:pb-32">
+      <div className="relative mx-auto w-full max-w-[1360px] px-5 sm:px-8 lg:px-10 pt-8 pb-20 md:pt-12 md:pb-28 lg:pt-16 lg:pb-32">
         <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-12">
 
           {/* ───── LEFT: copy ───── */}
@@ -170,7 +177,7 @@ const Hero = () => {
           >
             {/* badge */}
             <motion.div variants={item}
-              className="inline-flex items-center gap-2 rounded-full border border-blue-200/60 bg-blue-50/60 backdrop-blur px-4 py-1.5 text-sm font-semibold text-blue-600 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-400 mb-7"
+              className="inline-flex items-center gap-2 rounded-full border border-accent-blue/30 bg-accent-blue/10 backdrop-blur px-4 py-1.5 text-sm font-semibold text-accent-blue mb-7 shadow-sm transition-colors"
             >
               <Sparkles className="w-3.5 h-3.5" />
               Learn Smarter with AI
@@ -178,19 +185,19 @@ const Hero = () => {
 
             {/* heading */}
             <motion.h1 variants={item}
-              className="font-space-grotesk text-[2.6rem] leading-[1.12] sm:text-5xl md:text-[3.4rem] lg:text-[3.6rem] font-bold tracking-tight text-slate-900 dark:text-white"
+              className="font-space-grotesk text-[2.6rem] leading-[1.12] sm:text-5xl md:text-[3.4rem] lg:text-[3.6rem] font-bold tracking-tight text-text-primary transition-colors"
             >
               Empower Your Future{' '}
               <br className="hidden sm:block" />
               with{' '}
-              <span className="bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-500 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-accent-blue to-accent-purple bg-clip-text text-transparent drop-shadow-sm">
                 Learning
               </span>
             </motion.h1>
 
             {/* description */}
             <motion.p variants={item}
-              className="mt-6 text-base sm:text-lg leading-relaxed text-slate-600 dark:text-slate-400 max-w-md"
+              className="mt-6 text-base sm:text-lg leading-relaxed text-text-secondary max-w-md transition-colors"
             >
               Join world-class instructors and a global community to master the skills of tomorrow. LearnSphere AI bridges the gap between knowledge and lifetime achievement.
             </motion.p>
@@ -201,19 +208,23 @@ const Hero = () => {
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => navigate('/course-list')}
-                className="group relative inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition-shadow hover:shadow-xl hover:shadow-blue-600/30"
+                className="group relative overflow-hidden inline-flex items-center gap-2 rounded-xl bg-accent-blue px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-glow-blue transition-shadow hover:shadow-xl hover:shadow-accent-blue/30"
               >
                 Get Started Free
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-                {/* glow */}
-                <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 opacity-0 blur-xl transition-opacity group-hover:opacity-40" />
+                {/* shimmer sweep */}
+                <motion.div 
+                  className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12"
+                  animate={{ translateX: ['-100%', '200%'] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "linear", repeatDelay: 3 }}
+                />
               </motion.button>
 
               <motion.button
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => navigate('/course-list')}
-                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-7 py-3.5 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10 dark:hover:border-white/20"
+                className="inline-flex items-center gap-2 rounded-xl border border-card-border bg-card-bg px-7 py-3.5 text-sm font-semibold text-text-primary transition-colors hover:border-accent-blue/50 hover:shadow-lg hover:shadow-glow-blue"
               >
                 Explore Courses
               </motion.button>
@@ -228,20 +239,20 @@ const Hero = () => {
             <FloatingCard delay={0.5} y={-10} rotate={-2}
               className="absolute top-0 left-0 sm:left-4 z-20 w-[260px] sm:w-[280px]"
             >
-              <div className="rounded-2xl border border-slate-200/40 bg-white/70 backdrop-blur-xl shadow-2xl shadow-slate-900/[0.08] p-5 dark:border-white/[0.08] dark:bg-white/[0.06] dark:shadow-black/40">
+              <div className="rounded-2xl border border-card-border bg-card-bg backdrop-blur-xl shadow-2xl shadow-black/5 dark:shadow-black/40 p-5 transition-colors">
                 {/* tag */}
-                <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-amber-500 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 rounded-full px-2.5 py-1 mb-3">
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400 bg-amber-500/10 rounded-full px-2.5 py-1 mb-3">
                   <TrendingUp className="w-3 h-3" /> Currently Trending
                 </span>
 
-                <h3 className="text-base font-bold text-slate-900 dark:text-white leading-snug line-clamp-1">{trendingTitle}</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-1">{trendingSubtitle}</p>
+                <h3 className="text-base font-bold text-text-primary leading-snug line-clamp-1 transition-colors">{trendingTitle}</h3>
+                <p className="text-xs text-text-secondary mt-1 line-clamp-1 transition-colors">{trendingSubtitle}</p>
 
                 {/* stats row */}
                 <div className="flex items-center gap-4 mt-4">
                   <div className="flex items-center gap-1.5">
-                    <BookOpen className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400" />
-                    <span className="text-xs text-slate-600 dark:text-slate-300 font-medium"><AnimatedCounter target={trendingEnrolled} suffix="" /> enrolled</span>
+                    <BookOpen className="w-3.5 h-3.5 text-accent-blue" />
+                    <span className="text-xs text-text-primary font-medium transition-colors"><AnimatedCounter target={trendingEnrolled} suffix="" /> enrolled</span>
                   </div>
                   <div className="flex items-center gap-1">
                     {[1,2,3,4,5].map(i => (
@@ -253,7 +264,7 @@ const Hero = () => {
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </motion.svg>
                     ))}
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400 ml-0.5">{trendingRating.toFixed(1)}</span>
+                    <span className="text-[10px] text-text-secondary ml-0.5 transition-colors">{trendingRating.toFixed(1)}</span>
                   </div>
                 </div>
               </div>
@@ -263,18 +274,18 @@ const Hero = () => {
             <FloatingCard delay={0.75} y={8} rotate={3}
               className="absolute top-4 right-0 sm:right-0 z-10 w-[220px] sm:w-[240px]"
             >
-              <div className="rounded-2xl border border-slate-200/40 bg-white/70 backdrop-blur-xl shadow-2xl shadow-slate-900/[0.08] p-5 dark:border-white/[0.08] dark:bg-white/[0.06] dark:shadow-black/40">
-                <span className="inline-block text-[10px] font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 rounded-full px-2.5 py-1 mb-3">
+              <div className="rounded-2xl border border-card-border bg-card-bg backdrop-blur-xl shadow-2xl shadow-black/5 dark:shadow-black/40 p-5 transition-colors">
+                <span className="inline-block text-[10px] font-bold uppercase tracking-widest text-accent-blue bg-accent-blue/10 rounded-full px-2.5 py-1 mb-3">
                   Live Analytics
                 </span>
 
                 <div className="flex items-baseline gap-1.5">
-                  <p className="text-2xl font-bold text-slate-900 dark:text-white font-space-grotesk">
+                  <p className="text-2xl font-bold text-text-primary font-space-grotesk transition-colors">
                     <AnimatedCounter target={analyticsValue} suffix={totalEnrolled > 0 ? "%" : ""} duration={2.5} />
                   </p>
-                  <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />
+                  <TrendingUp className="w-3.5 h-3.5 text-accent-emerald" />
                 </div>
-                <p className="text-xs text-slate-500 dark:text-slate-400">{analyticsLabel}</p>
+                <p className="text-xs text-text-secondary transition-colors">{analyticsLabel}</p>
 
                 <div className="mt-3">
                   <MiniBarChart />
@@ -286,27 +297,27 @@ const Hero = () => {
             <FloatingCard delay={1} y={-12} rotate={-1}
               className="absolute bottom-0 left-1/2 -translate-x-1/2 sm:left-[12%] sm:translate-x-0 z-30 w-[280px] sm:w-[310px]"
             >
-              <div className="rounded-2xl border border-slate-200/40 bg-white/70 backdrop-blur-xl shadow-2xl shadow-slate-900/[0.08] p-5 dark:border-white/[0.08] dark:bg-white/[0.06] dark:shadow-black/40">
-                <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-500/10 rounded-full px-2.5 py-1 mb-3">
+              <div className="rounded-2xl border border-card-border bg-card-bg backdrop-blur-xl shadow-2xl shadow-black/5 dark:shadow-black/40 p-5 transition-colors">
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-accent-purple bg-accent-purple/10 rounded-full px-2.5 py-1 mb-3">
                   <Bot className="w-3 h-3" /> Active AI Agent
                 </span>
 
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">AI Spark Assistant</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center">
+                <h3 className="text-base font-bold text-text-primary transition-colors">AI Spark Assistant</h3>
+                <p className="text-xs text-text-secondary mt-1 flex items-center transition-colors">
                   Explaining Quantum Entanglement
                   <TypingDots />
                 </p>
 
-                <div className="flex items-center gap-2 mt-4 rounded-lg bg-slate-100/70 dark:bg-white/[0.04] px-3 py-2.5">
-                  <BookOpen className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                  <p className="text-xs text-slate-600 dark:text-slate-300 truncate">Generating tailored lesson plan…</p>
+                <div className="flex items-center gap-2 mt-4 rounded-lg bg-text-primary/5 px-3 py-2.5 transition-colors">
+                  <BookOpen className="w-3.5 h-3.5 text-accent-blue shrink-0" />
+                  <p className="text-xs text-text-secondary truncate transition-colors">Generating tailored lesson plan…</p>
                 </div>
               </div>
             </FloatingCard>
 
             {/* decorative orbit ring */}
             <motion.div
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] h-[380px] rounded-full border border-dashed border-slate-200/30 dark:border-white/[0.04] pointer-events-none"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] h-[380px] rounded-full border border-dashed border-text-primary/10 pointer-events-none transition-colors"
               animate={{ rotate: 360 }}
               transition={{ repeat: Infinity, duration: 60, ease: 'linear' }}
             />
@@ -315,9 +326,10 @@ const Hero = () => {
       </div>
 
       {/* ── bottom gradient fade ── */}
-      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-slate-50 via-slate-50/80 to-transparent dark:from-[#07070A] dark:via-[#07070A]/80 dark:to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-bg-primary to-transparent pointer-events-none transition-colors duration-500" />
     </section>
   )
 }
 
 export default Hero
+

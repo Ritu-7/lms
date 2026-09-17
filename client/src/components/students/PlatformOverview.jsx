@@ -42,18 +42,18 @@ const PlatformOverview = () => {
         ) : null}
       </div>
 
-      {/* How LearnSphereAI Works Section - Redesigned Dark Theme */}
-      <div className="relative w-full rounded-[2.5rem] bg-[#0a0a0f] overflow-hidden p-8 sm:p-12 lg:p-16 border border-white/5 shadow-2xl">
+      {/* How LearnSphereAI Works Section */}
+      <div className="relative w-full rounded-[2.5rem] bg-bg-primary overflow-hidden p-8 sm:p-12 lg:p-16 border border-card-border shadow-2xl transition-colors duration-500">
         {/* Subtle background gradient / noise texture */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/[0.03] via-transparent to-transparent pointer-events-none"></div>
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-text-primary/[0.03] via-transparent to-transparent pointer-events-none"></div>
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.08] dark:opacity-20 mix-blend-overlay pointer-events-none transition-opacity duration-500"></div>
 
         <div className="relative z-10 text-center mb-20">
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-4xl sm:text-5xl font-bold font-space-grotesk tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-slate-400 animate-gradient-x"
+            className="text-4xl sm:text-5xl font-bold font-space-grotesk tracking-tight text-text-primary transition-colors"
           >
             How LearnSphereAI Works
           </motion.h2>
@@ -62,7 +62,7 @@ const PlatformOverview = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="mt-4 text-lg text-slate-400 font-medium max-w-2xl mx-auto"
+            className="mt-4 text-lg text-text-secondary font-medium max-w-2xl mx-auto transition-colors"
           >
             A smarter way to learn, practice, and grow.
           </motion.p>
@@ -71,18 +71,18 @@ const PlatformOverview = () => {
         {/* 3 Steps Container */}
         <div className="relative grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-8 lg:gap-12 max-w-6xl mx-auto">
           {/* Connector Line (Desktop) */}
-          <div className="hidden md:block absolute top-[60px] left-[16%] right-[16%] h-[2px] bg-white/5 z-0 overflow-hidden">
+          <div className="hidden md:block absolute top-[60px] left-[16%] right-[16%] h-[2px] bg-text-primary/[0.05] z-0 overflow-hidden transition-colors">
              <motion.div 
-               className="h-full bg-gradient-to-r from-transparent via-blue-500/50 to-transparent w-1/3"
+               className="h-full bg-gradient-to-r from-transparent via-accent-blue/50 to-transparent w-1/3"
                animate={{ x: ['-100%', '300%'] }}
                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
              />
           </div>
           
           {/* Connector Line (Mobile) */}
-          <div className="md:hidden absolute left-[60px] top-[10%] bottom-[10%] w-[2px] bg-white/5 z-0 overflow-hidden">
+          <div className="md:hidden absolute left-[60px] top-[10%] bottom-[10%] w-[2px] bg-text-primary/[0.05] z-0 overflow-hidden transition-colors">
              <motion.div 
-               className="w-full bg-gradient-to-b from-transparent via-blue-500/50 to-transparent h-1/3"
+               className="w-full bg-gradient-to-b from-transparent via-accent-blue/50 to-transparent h-1/3"
                animate={{ y: ['-100%', '300%'] }}
                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
              />
@@ -96,37 +96,37 @@ const PlatformOverview = () => {
               accent: 'blue',
               icon: Search,
               theme: {
-                border: 'border-blue-500/20',
-                glow: 'shadow-blue-500/20',
-                hoverGlow: 'hover:shadow-blue-500/40',
-                hoverBorder: 'hover:border-blue-500/40',
-                text: 'text-blue-400',
-                bg: 'bg-blue-500/10',
-                iconBg: 'bg-blue-900/40',
-                ring: 'ring-blue-500'
+                border: 'border-accent-blue/20',
+                glow: 'shadow-glow-blue',
+                hoverGlow: 'hover:shadow-glow-blue hover:shadow-lg',
+                hoverBorder: 'hover:border-accent-blue/40',
+                text: 'text-accent-blue',
+                bg: 'bg-accent-blue/10',
+                iconBg: 'bg-accent-blue/40',
+                ring: 'ring-accent-blue'
               },
               Preview: () => (
-                <div className="mt-8 w-full max-w-[260px] rounded-xl bg-white/5 border border-white/10 p-4 space-y-3 backdrop-blur-sm group-hover:bg-blue-500/5 transition-colors duration-500">
+                <div className="mt-8 w-full max-w-[260px] rounded-xl bg-text-primary/5 border border-card-border p-4 space-y-3 backdrop-blur-sm group-hover:bg-accent-blue/5 transition-colors duration-500">
                   <div className="flex items-center gap-3">
-                    <div className="w-14 h-11 shrink-0 rounded-lg bg-blue-500/20 flex items-center justify-center border border-blue-500/30">
-                      <Search className="w-4 h-4 text-blue-400" />
+                    <div className="w-14 h-11 shrink-0 rounded-lg bg-accent-blue/20 flex items-center justify-center border border-accent-blue/30 transition-colors">
+                      <Search className="w-4 h-4 text-accent-blue transition-colors" />
                     </div>
                     <div className="space-y-2 flex-1">
-                      <div className="h-2 w-full bg-blue-500/20 rounded-full overflow-hidden">
-                        <div className="h-full bg-blue-500/40 w-0 group-hover:w-full transition-all duration-1000 ease-out"></div>
+                      <div className="h-2 w-full bg-accent-blue/20 rounded-full overflow-hidden transition-colors">
+                        <div className="h-full bg-accent-blue/40 w-0 group-hover:w-full transition-all duration-1000 ease-out"></div>
                       </div>
-                      <div className="h-1.5 w-2/3 bg-blue-500/10 rounded-full overflow-hidden">
-                        <div className="h-full bg-blue-500/30 w-0 group-hover:w-full transition-all duration-1000 delay-100 ease-out"></div>
+                      <div className="h-1.5 w-2/3 bg-accent-blue/10 rounded-full overflow-hidden transition-colors">
+                        <div className="h-full bg-accent-blue/30 w-0 group-hover:w-full transition-all duration-1000 delay-100 ease-out"></div>
                       </div>
-                      <div className="h-1.5 w-3/4 bg-blue-500/10 rounded-full overflow-hidden">
-                        <div className="h-full bg-blue-500/30 w-0 group-hover:w-full transition-all duration-1000 delay-200 ease-out"></div>
+                      <div className="h-1.5 w-3/4 bg-accent-blue/10 rounded-full overflow-hidden transition-colors">
+                        <div className="h-full bg-accent-blue/30 w-0 group-hover:w-full transition-all duration-1000 delay-200 ease-out"></div>
                       </div>
                     </div>
                   </div>
                   <div className="grid grid-cols-4 gap-1.5 pt-1">
                     {[1,2,3,4].map((i) => (
-                      <div key={i} className="h-6 rounded-md bg-blue-500/10 border border-blue-500/20 relative overflow-hidden">
-                        <div className={`absolute inset-0 bg-blue-400/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500`} style={{ transitionDelay: `${i * 100}ms` }}></div>
+                      <div key={i} className="h-6 rounded-md bg-accent-blue/10 border border-accent-blue/20 relative overflow-hidden transition-colors">
+                        <div className={`absolute inset-0 bg-accent-blue/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500`} style={{ transitionDelay: `${i * 100}ms` }}></div>
                       </div>
                     ))}
                   </div>
@@ -140,36 +140,36 @@ const PlatformOverview = () => {
               accent: 'emerald',
               icon: BookOpen,
               theme: {
-                border: 'border-emerald-500/20',
-                glow: 'shadow-emerald-500/20',
-                hoverGlow: 'hover:shadow-emerald-500/40',
-                hoverBorder: 'hover:border-emerald-500/40',
-                text: 'text-emerald-400',
-                bg: 'bg-emerald-500/10',
-                iconBg: 'bg-emerald-900/40',
-                ring: 'ring-emerald-500'
+                border: 'border-accent-emerald/20',
+                glow: 'shadow-glow-emerald',
+                hoverGlow: 'hover:shadow-glow-emerald hover:shadow-lg',
+                hoverBorder: 'hover:border-accent-emerald/40',
+                text: 'text-accent-emerald',
+                bg: 'bg-accent-emerald/10',
+                iconBg: 'bg-accent-emerald/40',
+                ring: 'ring-accent-emerald'
               },
               Preview: () => (
-                <div className="mt-8 w-full max-w-[260px] rounded-xl bg-white/5 border border-white/10 p-4 relative backdrop-blur-sm group-hover:bg-emerald-500/5 transition-colors duration-500">
+                <div className="mt-8 w-full max-w-[260px] rounded-xl bg-text-primary/5 border border-card-border p-4 relative backdrop-blur-sm group-hover:bg-accent-emerald/5 transition-colors duration-500">
                   <div className="flex items-center gap-3">
-                    <div className="w-16 h-12 shrink-0 rounded-lg bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30 relative overflow-hidden">
+                    <div className="w-16 h-12 shrink-0 rounded-lg bg-accent-emerald/20 flex items-center justify-center border border-accent-emerald/30 relative overflow-hidden transition-colors">
                       <motion.div 
-                        className="absolute inset-0 rounded-lg bg-emerald-400/20"
+                        className="absolute inset-0 rounded-lg bg-accent-emerald/20"
                         animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
                         transition={{ duration: 2, repeat: Infinity }}
                       />
-                      <svg className="w-5 h-5 text-emerald-400 fill-emerald-400 ml-0.5 relative z-10" viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg>
+                      <svg className="w-5 h-5 text-accent-emerald fill-accent-emerald ml-0.5 relative z-10 transition-colors" viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg>
                     </div>
                     <div className="space-y-2 flex-1">
-                      <div className="h-2 w-full bg-emerald-500/20 rounded-full"></div>
-                      <div className="h-1.5 w-2/3 bg-emerald-500/10 rounded-full"></div>
-                      <div className="h-1.5 w-4/5 bg-emerald-500/10 rounded-full"></div>
+                      <div className="h-2 w-full bg-accent-emerald/20 rounded-full transition-colors"></div>
+                      <div className="h-1.5 w-2/3 bg-accent-emerald/10 rounded-full transition-colors"></div>
+                      <div className="h-1.5 w-4/5 bg-accent-emerald/10 rounded-full transition-colors"></div>
                     </div>
                   </div>
-                  <div className="w-full h-1.5 bg-emerald-500/10 rounded-full mt-4 overflow-hidden flex">
-                    <div className="h-full bg-emerald-500 w-1/3 group-hover:w-full transition-all duration-1000 ease-out"></div>
+                  <div className="w-full h-1.5 bg-accent-emerald/10 rounded-full mt-4 overflow-hidden flex transition-colors">
+                    <div className="h-full bg-accent-emerald w-1/3 group-hover:w-full transition-all duration-1000 ease-out"></div>
                   </div>
-                  <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30 opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500 delay-500 ease-out">
+                  <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-lg bg-accent-emerald text-white flex items-center justify-center shadow-lg shadow-glow-emerald opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500 delay-500 ease-out">
                     <Check className="w-5 h-5" strokeWidth={3} />
                   </div>
                 </div>
@@ -182,21 +182,21 @@ const PlatformOverview = () => {
               accent: 'purple',
               icon: TrendingUp,
               theme: {
-                border: 'border-purple-500/20',
-                glow: 'shadow-purple-500/20',
-                hoverGlow: 'hover:shadow-purple-500/40',
-                hoverBorder: 'hover:border-purple-500/40',
-                text: 'text-purple-400',
-                bg: 'bg-purple-500/10',
-                iconBg: 'bg-purple-900/40',
-                ring: 'ring-purple-500'
+                border: 'border-accent-purple/20',
+                glow: 'shadow-glow-purple',
+                hoverGlow: 'hover:shadow-glow-purple hover:shadow-lg',
+                hoverBorder: 'hover:border-accent-purple/40',
+                text: 'text-accent-purple',
+                bg: 'bg-accent-purple/10',
+                iconBg: 'bg-accent-purple/40',
+                ring: 'ring-accent-purple'
               },
               Preview: () => (
-                <div className="mt-8 w-full max-w-[260px] rounded-xl bg-white/5 border border-white/10 p-4 flex items-center justify-between min-h-[76px] backdrop-blur-sm group-hover:bg-purple-500/5 transition-colors duration-500">
+                <div className="mt-8 w-full max-w-[260px] rounded-xl bg-text-primary/5 border border-card-border p-4 flex items-center justify-between min-h-[76px] backdrop-blur-sm group-hover:bg-accent-purple/5 transition-colors duration-500">
                   <div className="space-y-2 flex-1 mr-4">
-                    <div className="h-2 w-full bg-purple-500/20 rounded-full"></div>
-                    <div className="h-1.5 w-2/3 bg-purple-500/10 rounded-full"></div>
-                    <div className="h-1.5 w-4/5 bg-purple-500/10 rounded-full"></div>
+                    <div className="h-2 w-full bg-accent-purple/20 rounded-full transition-colors"></div>
+                    <div className="h-1.5 w-2/3 bg-accent-purple/10 rounded-full transition-colors"></div>
+                    <div className="h-1.5 w-4/5 bg-accent-purple/10 rounded-full transition-colors"></div>
                   </div>
                   <div className="flex items-center">
                     <div className="relative">
@@ -204,13 +204,13 @@ const PlatformOverview = () => {
                          animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.1, 1] }}
                          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                        >
-                         <svg className="w-8 h-8 text-purple-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 15.228l-4.326 2.274.826-4.817L4.996 9.27l4.836-.703L12 4.186l2.168 4.382 4.836.703-3.504 3.415.826 4.817z"/></svg>
+                         <svg className="w-8 h-8 text-accent-purple transition-colors" fill="currentColor" viewBox="0 0 24 24"><path d="M12 15.228l-4.326 2.274.826-4.817L4.996 9.27l4.836-.703L12 4.186l2.168 4.382 4.836.703-3.504 3.415.826 4.817z"/></svg>
                        </motion.div>
                     </div>
                     <div className="flex items-end gap-1 ml-2.5 h-8">
-                      <div className="w-1.5 bg-purple-600/40 rounded-t-sm h-3 group-hover:h-5 transition-all duration-500"></div>
-                      <div className="w-1.5 bg-purple-500/60 rounded-t-sm h-5 group-hover:h-7 transition-all duration-500 delay-100"></div>
-                      <div className="w-1.5 bg-purple-400 rounded-t-sm h-4 group-hover:h-8 transition-all duration-500 delay-200"></div>
+                      <div className="w-1.5 bg-accent-purple/40 rounded-t-sm h-3 group-hover:h-5 transition-all duration-500"></div>
+                      <div className="w-1.5 bg-accent-purple/60 rounded-t-sm h-5 group-hover:h-7 transition-all duration-500 delay-100"></div>
+                      <div className="w-1.5 bg-accent-purple rounded-t-sm h-4 group-hover:h-8 transition-all duration-500 delay-200"></div>
                     </div>
                   </div>
                 </div>
@@ -240,9 +240,9 @@ const PlatformOverview = () => {
                      <motion.div 
                        animate={{ scale: [1, 1.05, 1] }}
                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: idx * 0.5 }}
-                       className={`w-20 h-20 sm:w-28 sm:h-28 rounded-full border border-white/10 bg-white/5 backdrop-blur-md flex items-center justify-center relative shadow-2xl ${step.theme.border} group-hover:border-white/20 transition-colors`}
+                       className={`w-20 h-20 sm:w-28 sm:h-28 rounded-full border border-card-border bg-card-bg backdrop-blur-md flex items-center justify-center relative shadow-xl ${step.theme.border} group-hover:border-text-primary/20 transition-colors`}
                      >
-                        <step.icon className={`w-8 h-8 sm:w-12 sm:h-12 ${step.theme.text}`} strokeWidth={1.5} />
+                        <step.icon className={`w-8 h-8 sm:w-12 sm:h-12 ${step.theme.text} transition-colors`} strokeWidth={1.5} />
                      </motion.div>
                    </div>
                    
@@ -252,20 +252,20 @@ const PlatformOverview = () => {
                      whileInView={{ scale: 1 }}
                      viewport={{ once: true }}
                      transition={{ type: "spring", bounce: 0.5, delay: idx * 0.15 + 0.3 }}
-                     className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full ${step.theme.bg} backdrop-blur-md border border-white/20 text-white font-bold text-sm sm:text-base flex items-center justify-center shadow-lg relative z-20 -mb-6 ring-4 ring-[#0a0a0f]`}
+                     className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full ${step.theme.bg} backdrop-blur-md border border-card-border text-text-primary font-bold text-sm sm:text-base flex items-center justify-center shadow-lg relative z-20 -mb-6 ring-4 ring-bg-primary transition-colors`}
                    >
                      0{step.id}
                    </motion.div>
                    
                    {/* Card Content */}
-                   <div className={`w-full h-full rounded-3xl border border-white/5 bg-white/[0.02] backdrop-blur-sm pt-12 pb-8 px-6 sm:px-8 shadow-2xl transition-all duration-500
+                   <div className={`w-full h-full rounded-3xl border border-card-border bg-card-bg backdrop-blur-sm pt-12 pb-8 px-6 sm:px-8 shadow-xl transition-all duration-500
                      group-hover:-translate-y-2 ${step.theme.hoverGlow} ${step.theme.hoverBorder}
                      flex flex-col items-center text-center justify-between
-                     ${isActive ? `${step.theme.glow} ${step.theme.border} bg-white/[0.04]` : ''}
+                     ${isActive ? `${step.theme.glow} ${step.theme.border} bg-text-primary/[0.02]` : ''}
                    `}>
                      <div>
-                       <h3 className={`text-2xl font-bold font-space-grotesk ${step.theme.text}`}>{step.title}</h3>
-                       <p className="mt-3 text-sm text-slate-400 leading-relaxed max-w-[260px] mx-auto">{step.desc}</p>
+                       <h3 className={`text-2xl font-bold font-space-grotesk ${step.theme.text} transition-colors`}>{step.title}</h3>
+                       <p className="mt-3 text-sm text-text-secondary leading-relaxed max-w-[260px] mx-auto transition-colors">{step.desc}</p>
                      </div>
                      
                      {/* Custom Graphic */}

@@ -9,13 +9,13 @@ const CoursesSection = () => {
   const courses = platformHomeData.featuredCourses.length > 0 ? platformHomeData.featuredCourses : allCourses.slice(0, 4);
 
   return (
-    <div className="py-20 px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto">
+    <div className="py-20 px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto transition-colors duration-500">
       <div className="text-center mb-16 space-y-4">
         <motion.h2 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-3xl md:text-4xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text"
+          className="text-3xl md:text-4xl font-bold font-space-grotesk text-text-primary transition-colors"
         >
           Featured Learning Paths
         </motion.h2>
@@ -24,7 +24,7 @@ const CoursesSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1 }}
-          className="text-slate-500 dark:text-dk-text-2 max-w-2xl mx-auto text-sm md:text-base"
+          className="text-text-secondary max-w-2xl mx-auto text-sm md:text-base transition-colors"
         >
           Hand-picked courses from our top instructors to help you jumpstart your career in AI, Tech, and Design.
         </motion.p>
@@ -49,11 +49,11 @@ const CoursesSection = () => {
       <div className="text-center">
         <Link
           to="/course-list"
-          className="inline-flex items-center gap-2 px-8 py-3 rounded-xl font-semibold text-slate-700 dark:text-dk-text border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface hover:bg-slate-50 dark:hover:bg-dk-surface-2 transition-all duration-200 shadow-sm hover:shadow-md group"
+          className="inline-flex items-center gap-2 px-8 py-3 rounded-xl font-semibold text-text-primary border border-card-border bg-card-bg hover:bg-text-primary/5 transition-all duration-200 shadow-sm hover:shadow-lg hover:shadow-glow-blue hover:border-accent-blue/50 group"
         >
           Browse All Courses
           <svg 
-            className="h-4 w-4 transition-transform group-hover:translate-x-1" 
+            className="h-4 w-4 transition-transform group-hover:translate-x-1 text-accent-blue" 
             fill="none" viewBox="0 0 24 24" stroke="currentColor"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

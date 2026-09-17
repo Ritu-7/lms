@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import Logo from '../common/Logo'
 import { Mail } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 // Brand Icons (lucide-react does not export brand logos)
 const TwitterIcon = ({ size = 18 }) => (
@@ -33,39 +34,55 @@ const InstagramIcon = ({ size = 18 }) => (
   </svg>
 )
 
+const FooterLink = ({ to, children }) => (
+  <Link 
+    to={to} 
+    className="group relative inline-block text-text-secondary hover:text-text-primary transition-colors duration-200"
+  >
+    {children}
+    <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-text-primary transition-all duration-300 group-hover:w-full"></span>
+  </Link>
+)
+
 const Footer = () => {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="relative w-full overflow-hidden bg-slate-900 dark:bg-dk-base pt-20 pb-10 border-t border-slate-700/50 dark:border-dk-border mt-auto">
+    <footer className="relative w-full overflow-hidden bg-bg-primary pt-20 pb-10 border-t border-card-border mt-auto transition-colors duration-500">
       {/* Background Glows */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10">
-        <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-blue-600/10 blur-[120px]" />
-        <div className="absolute bottom-0 -left-24 h-72 w-72 rounded-full bg-indigo-600/10 blur-[100px]" />
+        <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-accent-blue/5 blur-[120px] transition-colors" />
+        <div className="absolute bottom-0 -left-24 h-72 w-72 rounded-full bg-accent-purple/5 blur-[100px] transition-colors" />
       </div>
 
       <div className="relative mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16 pb-16 border-b border-white/10">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16 pb-16 border-b border-card-border"
+        >
           
           {/* Logo & Description */}
           <div className="lg:col-span-4 flex flex-col space-y-6">
             <Link to="/" className="inline-block w-fit transition-transform hover:scale-105">
-              <Logo light showText />
+              <Logo showText />
             </Link>
-            <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
+            <p className="text-text-secondary text-sm leading-relaxed max-w-sm transition-colors">
               LearnSphereAI is the next generation of learning. Empowering students and educators with AI-driven tools to master any skill, anywhere in the world.
             </p>
             <div className="flex items-center gap-3 pt-2">
-              <a href="https://twitter.com" target="_blank" rel="noreferrer" className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-slate-400 hover:bg-blue-500 hover:text-white hover:scale-110 transition-all duration-300">
+              <a href="https://twitter.com" target="_blank" rel="noreferrer" className="flex h-9 w-9 items-center justify-center rounded-full bg-text-primary/5 text-text-secondary hover:bg-accent-blue hover:text-white hover:scale-110 transition-all duration-300 shadow-sm">
                 <TwitterIcon size={18} />
               </a>
-              <a href="https://github.com" target="_blank" rel="noreferrer" className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-slate-400 hover:bg-slate-700 hover:text-white hover:scale-110 transition-all duration-300">
+              <a href="https://github.com" target="_blank" rel="noreferrer" className="flex h-9 w-9 items-center justify-center rounded-full bg-text-primary/5 text-text-secondary hover:bg-slate-700 hover:text-white hover:scale-110 transition-all duration-300 shadow-sm">
                 <GithubIcon size={18} />
               </a>
-              <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-slate-400 hover:bg-blue-600 hover:text-white hover:scale-110 transition-all duration-300">
+              <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="flex h-9 w-9 items-center justify-center rounded-full bg-text-primary/5 text-text-secondary hover:bg-blue-600 hover:text-white hover:scale-110 transition-all duration-300 shadow-sm">
                 <LinkedinIcon size={18} />
               </a>
-              <a href="https://instagram.com" target="_blank" rel="noreferrer" className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-slate-400 hover:bg-pink-600 hover:text-white hover:scale-110 transition-all duration-300">
+              <a href="https://instagram.com" target="_blank" rel="noreferrer" className="flex h-9 w-9 items-center justify-center rounded-full bg-text-primary/5 text-text-secondary hover:bg-pink-600 hover:text-white hover:scale-110 transition-all duration-300 shadow-sm">
                 <InstagramIcon size={18} />
               </a>
             </div>
@@ -73,63 +90,69 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div className="lg:col-span-2">
-            <h3 className="font-space-grotesk text-base font-bold text-white mb-5">Quick Links</h3>
-            <ul className="space-y-3.5 text-sm text-slate-400">
-              <li><Link to="/" className="hover:text-blue-400 transition-colors duration-200">Home</Link></li>
-              <li><Link to="/course-list" className="hover:text-blue-400 transition-colors duration-200">All Courses</Link></li>
-              <li><Link to="/announcements" className="hover:text-blue-400 transition-colors duration-200">Announcements</Link></li>
-              <li><Link to="/about" className="hover:text-blue-400 transition-colors duration-200">About Us</Link></li>
-              <li><Link to="/contact" className="hover:text-blue-400 transition-colors duration-200">Contact</Link></li>
+            <h3 className="font-space-grotesk text-base font-bold text-text-primary mb-5 transition-colors">Quick Links</h3>
+            <ul className="space-y-3.5 text-sm">
+              <li><FooterLink to="/">Home</FooterLink></li>
+              <li><FooterLink to="/course-list">All Courses</FooterLink></li>
+              <li><FooterLink to="/announcements">Announcements</FooterLink></li>
+              <li><FooterLink to="/about">About Us</FooterLink></li>
+              <li><FooterLink to="/contact">Contact</FooterLink></li>
             </ul>
           </div>
 
           {/* AI Tools */}
           <div className="lg:col-span-2">
-            <h3 className="font-space-grotesk text-base font-bold text-white mb-5">AI Tools</h3>
-            <ul className="space-y-3.5 text-sm text-slate-400">
-              <li><Link to="/ai-tutor" className="hover:text-purple-400 transition-colors duration-200">AI Tutor</Link></li>
-              <li><Link to="/pdf-summary" className="hover:text-purple-400 transition-colors duration-200">PDF Summary</Link></li>
-              <li><Link to="/video-summary" className="hover:text-purple-400 transition-colors duration-200">Video Summary</Link></li>
-              <li><Link to="/notes-generator" className="hover:text-purple-400 transition-colors duration-200">Notes Generator</Link></li>
-              <li><Link to="/ai-coding-assistant" className="hover:text-purple-400 transition-colors duration-200">Coding Assistant</Link></li>
+            <h3 className="font-space-grotesk text-base font-bold text-text-primary mb-5 transition-colors">AI Tools</h3>
+            <ul className="space-y-3.5 text-sm">
+              <li><FooterLink to="/ai-tutor">AI Tutor</FooterLink></li>
+              <li><FooterLink to="/pdf-summary">PDF Summary</FooterLink></li>
+              <li><FooterLink to="/video-summary">Video Summary</FooterLink></li>
+              <li><FooterLink to="/notes-generator">Notes Generator</FooterLink></li>
+              <li><FooterLink to="/ai-coding-assistant">Coding Assistant</FooterLink></li>
             </ul>
           </div>
 
           {/* Newsletter */}
           <div className="lg:col-span-4">
-            <h3 className="font-space-grotesk text-base font-bold text-white mb-5">Stay Updated</h3>
-            <p className="text-sm text-slate-400 mb-4 leading-relaxed">
+            <h3 className="font-space-grotesk text-base font-bold text-text-primary mb-5 transition-colors">Stay Updated</h3>
+            <p className="text-sm text-text-secondary mb-4 leading-relaxed transition-colors">
               Get the latest AI learning tips, course updates, and exclusive offers delivered directly to your inbox.
             </p>
-            <form className="relative mt-2 flex items-center" onSubmit={(e) => e.preventDefault()}>
+            <form className="relative mt-2 flex items-center group" onSubmit={(e) => e.preventDefault()}>
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                <Mail size={16} className="text-slate-500" />
+                <Mail size={16} className="text-text-secondary/60 group-focus-within:text-accent-blue transition-colors" />
               </div>
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="w-full pl-10 pr-32 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all duration-300 placeholder:text-slate-500"
+                className="w-full pl-10 pr-32 py-3 rounded-xl bg-card-bg border border-card-border text-text-primary text-sm outline-none focus:border-accent-blue/50 focus:ring-2 focus:ring-accent-blue/20 transition-all duration-300 placeholder:text-text-secondary/50 shadow-sm"
                 required
               />
               <button 
                 type="submit"
-                className="absolute right-1.5 top-1.5 bottom-1.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg text-white text-sm font-semibold hover:from-blue-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-blue-500/25 flex items-center justify-center group"
+                className="absolute right-1.5 top-1.5 bottom-1.5 px-4 bg-accent-blue rounded-lg text-white text-sm font-semibold hover:bg-accent-blue/90 transition-all duration-300 shadow-md flex items-center justify-center active:scale-95"
               >
                 <span>Subscribe</span>
               </button>
             </form>
           </div>
-        </div>
+        </motion.div>
 
         {/* Bottom Bar */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-medium text-slate-500">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-medium text-text-secondary transition-colors"
+        >
           <p>© {currentYear} LearnSphereAI Inc. All rights reserved.</p>
           <div className="flex flex-wrap items-center justify-center gap-6">
-            <Link to="/contact" className="hover:text-white transition-colors duration-200">Support</Link>
-            <Link to="#" className="hover:text-white transition-colors duration-200">Privacy Policy</Link>
-            <Link to="#" className="hover:text-white transition-colors duration-200">Terms of Service</Link>
+            <FooterLink to="/contact">Support</FooterLink>
+            <FooterLink to="#">Privacy Policy</FooterLink>
+            <FooterLink to="#">Terms of Service</FooterLink>
           </div>
-        </div>
+        </motion.div>
       </div>
     </footer>
   )
