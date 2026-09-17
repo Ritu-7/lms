@@ -130,7 +130,7 @@ Output valid JSON ONLY. The output must be an array of objects, one for each stu
     const ai = new GoogleGenAI({ apiKey: userApiKey });
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: "gemini-3.6-flash",
       contents: JSON.stringify(compiledData),
       config: {
         systemInstruction: systemContext,
@@ -166,7 +166,7 @@ Output valid JSON ONLY. The output must be an array of objects, one for each stu
     const aiUsage = new AIUsageLog({
         user: user._id,
         feature: "student_risk",
-        model: "gemini-3.5-flash",
+        model: "gemini-3.6-flash",
         status: "success",
         inputLength: JSON.stringify(compiledData).length,
         outputLength: responseText.length,
@@ -186,7 +186,7 @@ Output valid JSON ONLY. The output must be an array of objects, one for each stu
             const aiUsage = new AIUsageLog({
                 user: user._id,
                 feature: "student_risk",
-                model: "gemini-3.5-flash",
+                model: "gemini-3.6-flash",
                 status: "error",
                 errorMessage: error.message,
                 title: "Student Risk Detection"

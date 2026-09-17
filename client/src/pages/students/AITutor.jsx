@@ -53,14 +53,14 @@ import NoApiKeyState from '../../components/ai/NoApiKeyState'
 
 const AI_MODELS = [
   {
-    id: 'gemini-3.5-flash',
+    id: 'gemini-3.6-flash',
     name: 'Gemini Flash',
     description: 'Fast & smart',
     icon: Zap,
     iconColor: 'text-amber-500',
   },
   {
-    id: 'gemini-3.5-flash-thinking',
+    id: 'gemini-3.6-flash',
     name: 'Gemini Thinking',
     description: 'Deep reasoning',
     icon: Brain,

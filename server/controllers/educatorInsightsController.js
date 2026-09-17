@@ -190,7 +190,7 @@ Guidelines:
     const ai = new GoogleGenAI({ apiKey: userApiKey });
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: "gemini-3.6-flash",
       contents: JSON.stringify(promptPayload),
       config: {
         systemInstruction: systemPrompt,
@@ -211,7 +211,7 @@ Guidelines:
     await AIUsageLog.create({
       user: adminUser._id,
       feature: "educator_insights",
-      model: "gemini-3.5-flash",
+      model: "gemini-3.6-flash",
       status: "success",
       inputLength: JSON.stringify(promptPayload).length,
       outputLength: responseText.length,
@@ -234,7 +234,7 @@ Guidelines:
       await AIUsageLog.create({
         user: req.user._id,
         feature: "educator_insights",
-        model: "gemini-3.5-flash",
+        model: "gemini-3.6-flash",
         status: "error",
         errorMessage: error.message,
         title: "Educator Insights",

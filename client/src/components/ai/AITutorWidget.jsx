@@ -219,7 +219,7 @@ const AITutorWidget = ({ onOpenFull }) => {
           path: '/api/ai/tutor/chat',
           data: {
             messages: historyForApi,
-            model: 'gemini-3.5-flash',
+            model: 'gemini-3.6-flash',
             courseTitle,
           },
           retries: 1,

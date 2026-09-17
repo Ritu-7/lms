@@ -21,6 +21,7 @@ import { analyzeStudentRisk } from "../controllers/studentRiskController.js";
 import { getEducatorInsights } from "../controllers/educatorInsightsController.js";
 import { sendOutreach } from "../controllers/outreachController.js";
 import { getCourseHealthScores, getCourseHealthDetail } from "../controllers/courseHealthController.js";
+import { getAnalyticsInsights } from "../controllers/analyticsInsightsController.js";
 import { protectAdminRoutes } from "../middlewares/adminMiddleware.js";
 
 const adminRouter = express.Router();
@@ -51,4 +52,7 @@ adminRouter.get("/course-health/:courseId", protectAdminRoutes, getCourseHealthD
 adminRouter.get("/copilot", protectAdminRoutes, (req, res) => res.json({ success: true, message: "Copilot API is ready" }));
 adminRouter.post("/copilot", protectAdminRoutes, adminCopilotChat);
 
-export default adminRouter;
+// AI Analytics Insights
+adminRouter.post("/analytics/ai-insights", protectAdminRoutes, getAnalyticsInsights);
+
+export default adminRouter;

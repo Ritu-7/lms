@@ -134,7 +134,7 @@ const AdminCopilot = () => {
         getToken,
         method: 'POST',
         path: '/api/admin/copilot',
-        data: { messages: chatHistory, model: 'gemini-3.5-flash' },
+        data: { messages: chatHistory, model: 'gemini-3.6-flash' },
       });
 
       if (res.success) {

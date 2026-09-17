@@ -110,7 +110,7 @@ const requestGemini = async ({ model, contents, systemInstruction, generationCon
     throw error;
   }
 
-  const resolvedModel = model || "gemini-3.5-flash";
+  const resolvedModel = model || "gemini-3.6-flash";
   const ai = new GoogleGenAI({ apiKey: activeKey });
 
   try {
@@ -253,7 +253,7 @@ ${code}
 \`\`\``;
 
   return callGeminiText({
-    model: model || "gemini-3.5-flash",
+    model: model || "gemini-3.6-flash",
     contents: [{ role: "user", parts: [{ text: prompt }] }],
     systemInstruction: `You analyze ${language} code carefully and explain only what is supported by the input.`,
     generationConfig: { temperature: 0.25, maxOutputTokens: 3072 },
@@ -439,7 +439,7 @@ const COURSE_JSON_SCHEMA = `{
 
 export const generateCourseStructure = async ({
   topic, level = "Beginner", numModules = 3, lessonsPerModule = 3,
-  targetAudience = "", instructions = "", model = "gemini-3.5-flash", userApiKey,
+  targetAudience = "", instructions = "", model = "gemini-3.6-flash", userApiKey,
 }) => {
   const prompt = `You are an expert instructional designer creating a complete online course.
 
@@ -469,7 +469,7 @@ ${COURSE_JSON_SCHEMA}`;
 
 export const generateLessonContent = async ({
   courseTitle, moduleTitle, lessonTitle, level = "Beginner",
-  action = "generate", existingContent = "", model = "gemini-3.5-flash", userApiKey,
+  action = "generate", existingContent = "", model = "gemini-3.6-flash", userApiKey,
 }) => {
   const actionMap = {
     generate: "Create detailed educational content for this lesson.",
@@ -502,7 +502,7 @@ Return ONLY valid JSON:
 
 export const generateQuizQuestions = async ({
   topic, courseTitle, lessonTitle = "", numQuestions = 5,
-  difficulty = "medium", level = "Beginner", model = "gemini-3.5-flash", userApiKey,
+  difficulty = "medium", level = "Beginner", model = "gemini-3.6-flash", userApiKey,
 }) => {
   const prompt = `Generate ${numQuestions} high-quality MCQ questions about "${topic}" for a ${level} course titled "${courseTitle}".
 ${lessonTitle ? `Lesson: "${lessonTitle}"` : ""}
@@ -538,7 +538,7 @@ Return ONLY valid JSON:
 };
 
 export const generateAssignmentDetails = async ({
-  topic, courseTitle, moduleTitle = "", level = "Beginner", model = "gemini-3.5-flash", userApiKey,
+  topic, courseTitle, moduleTitle = "", level = "Beginner", model = "gemini-3.6-flash", userApiKey,
 }) => {
   const prompt = `Create a practical assignment for topic "${topic}" in a ${level} course titled "${courseTitle}".
 ${moduleTitle ? `Module: "${moduleTitle}"` : ""}
@@ -567,7 +567,7 @@ Return ONLY valid JSON:
 
 export const generateFromPdfText = async ({
   pdfText, numModules = 3, lessonsPerModule = 3, level = "Beginner",
-  targetAudience = "", model = "gemini-3.5-flash", userApiKey,
+  targetAudience = "", model = "gemini-3.6-flash", userApiKey,
 }) => {
   const truncated = String(pdfText || "").slice(0, 25000);
   const prompt = `Based on the following document content, create a structured ${level} online course with ${numModules} modules and ${lessonsPerModule} lessons per module.
@@ -591,7 +591,7 @@ ${COURSE_JSON_SCHEMA}`;
 };
 
 export const generateFromYouTubeTranscript = async ({
-  transcript, videoTitle = "", model = "gemini-3.5-flash", userApiKey,
+  transcript, videoTitle = "", model = "gemini-3.6-flash", userApiKey,
 }) => {
   const truncated = String(transcript || "").slice(0, 15000);
   const prompt = `Based on this YouTube transcript, create a structured lesson with quiz.

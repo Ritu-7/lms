@@ -45,7 +45,7 @@ export const generateCourse = async (req, res) => {
   const user = getUser(req);
   const {
     topic, level = "Beginner", numModules = 3, lessonsPerModule = 3,
-    targetAudience = "", instructions = "", model = "gemini-3.5-flash",
+    targetAudience = "", instructions = "", model = "gemini-3.6-flash",
   } = req.body || {};
 
   if (!topic || !String(topic).trim()) {
@@ -83,7 +83,7 @@ export const generateCourse = async (req, res) => {
 // ─────────────────────────────────────────────────────────────
 export const generateCourseFromPdf = async (req, res) => {
   const user = getUser(req);
-  const { pdfText, numModules = 3, lessonsPerModule = 3, level = "Beginner", targetAudience = "", model = "gemini-3.5-flash" } = req.body || {};
+  const { pdfText, numModules = 3, lessonsPerModule = 3, level = "Beginner", targetAudience = "", model = "gemini-3.6-flash" } = req.body || {};
 
   if (!pdfText || !String(pdfText).trim()) {
     return res.status(400).json({ success: false, message: "PDF text is required." });
@@ -110,7 +110,7 @@ export const generateCourseFromPdf = async (req, res) => {
 // ─────────────────────────────────────────────────────────────
 export const generateLesson = async (req, res) => {
   const user = getUser(req);
-  const { courseTitle, moduleTitle, lessonTitle, level, action = "generate", existingContent = "", model = "gemini-3.5-flash" } = req.body || {};
+  const { courseTitle, moduleTitle, lessonTitle, level, action = "generate", existingContent = "", model = "gemini-3.6-flash" } = req.body || {};
 
   if (!lessonTitle) return res.status(400).json({ success: false, message: "lessonTitle is required." });
 
@@ -134,7 +134,7 @@ export const generateLesson = async (req, res) => {
 // ─────────────────────────────────────────────────────────────
 export const generateLessonFromYoutube = async (req, res) => {
   const user = getUser(req);
-  const { transcript, videoTitle = "", model = "gemini-3.5-flash" } = req.body || {};
+  const { transcript, videoTitle = "", model = "gemini-3.6-flash" } = req.body || {};
 
   if (!transcript || !String(transcript).trim()) {
     return res.status(400).json({ success: false, message: "Transcript text is required." });
@@ -160,7 +160,7 @@ export const generateLessonFromYoutube = async (req, res) => {
 // ─────────────────────────────────────────────────────────────
 export const generateQuiz = async (req, res) => {
   const user = getUser(req);
-  const { topic, courseTitle, lessonTitle, numQuestions = 5, difficulty = "medium", level = "Beginner", model = "gemini-3.5-flash" } = req.body || {};
+  const { topic, courseTitle, lessonTitle, numQuestions = 5, difficulty = "medium", level = "Beginner", model = "gemini-3.6-flash" } = req.body || {};
 
   if (!topic) return res.status(400).json({ success: false, message: "topic is required." });
 
@@ -184,7 +184,7 @@ export const generateQuiz = async (req, res) => {
 // ─────────────────────────────────────────────────────────────
 export const generateAssignment = async (req, res) => {
   const user = getUser(req);
-  const { topic, courseTitle, moduleTitle, level = "Beginner", model = "gemini-3.5-flash" } = req.body || {};
+  const { topic, courseTitle, moduleTitle, level = "Beginner", model = "gemini-3.6-flash" } = req.body || {};
 
   if (!topic) return res.status(400).json({ success: false, message: "topic is required." });
 
