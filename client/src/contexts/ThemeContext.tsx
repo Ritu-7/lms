@@ -23,7 +23,13 @@ const resolveTheme = (preference: Theme): 'light' | 'dark' =>
 
 const applyTheme = (resolved: 'light' | 'dark') => {
   if (typeof document === 'undefined') return
-  document.documentElement.classList.toggle('dark', resolved === 'dark')
+  if (resolved === 'dark') {
+    document.documentElement.classList.add('dark')
+    document.documentElement.style.colorScheme = 'dark'
+  } else {
+    document.documentElement.classList.remove('dark')
+    document.documentElement.style.colorScheme = 'light'
+  }
 }
 
 // ─── Inline script to avoid FOUC — inject this in index.html <head> ────────
@@ -65,6 +71,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   }, [])
 
   const toggleTheme = useCallback(() => {
+    console.log('toggleTheme called. current resolvedTheme:', resolvedTheme)
     setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
   }, [resolvedTheme, setTheme])
 

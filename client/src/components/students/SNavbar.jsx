@@ -17,7 +17,7 @@ const SNavbar = () => {
   const { user } = useUser()
   
   return (
-    <div className={`flex items-center justify-between px-4 sm:px-10 md:px-14 lg:px-36 border-b border-card-border py-4 sticky top-0 z-50 backdrop-blur-md transition-colors duration-500 ${isCourseListPage ? 'bg-bg-primary/90' : 'bg-bg-primary/80'}`}>
+    <div className={`flex items-center justify-between px-4 sm:px-10 md:px-14 lg:px-36 border-b border-card-border py-4 sticky top-0 z-50 backdrop-blur-md transition-colors duration-500 bg-bg-primary`}>
       
       <div className="cursor-pointer transition-transform hover:scale-105" onClick={() => navigate('/')}>
         <Logo />

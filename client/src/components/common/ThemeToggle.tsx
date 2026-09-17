@@ -67,31 +67,12 @@ const ThemeToggle = ({ variant = 'icon', className = '' }: ThemeToggleProps) => 
         hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-900 dark:hover:text-white
         transition-all duration-200 overflow-hidden ${className}`}
     >
-      <AnimatePresence mode="wait" initial={false}>
-        {isDark ? (
-          <motion.span
-            key="moon"
-            initial={{ rotate: -90, opacity: 0, scale: 0.6 }}
-            animate={{ rotate: 0, opacity: 1, scale: 1 }}
-            exit={{ rotate: 90, opacity: 0, scale: 0.6 }}
-            transition={{ duration: 0.22, ease: 'easeOut' }}
-            className="flex items-center justify-center"
-          >
-            <MoonIcon />
-          </motion.span>
-        ) : (
-          <motion.span
-            key="sun"
-            initial={{ rotate: 90, opacity: 0, scale: 0.6 }}
-            animate={{ rotate: 0, opacity: 1, scale: 1 }}
-            exit={{ rotate: -90, opacity: 0, scale: 0.6 }}
-            transition={{ duration: 0.22, ease: 'easeOut' }}
-            className="flex items-center justify-center"
-          >
-            <SunIcon />
-          </motion.span>
-        )}
-      </AnimatePresence>
+      <div className={`transition-transform duration-300 flex items-center justify-center absolute ${isDark ? 'scale-100 rotate-0 opacity-100' : 'scale-50 -rotate-90 opacity-0'}`}>
+        <MoonIcon />
+      </div>
+      <div className={`transition-transform duration-300 flex items-center justify-center absolute ${!isDark ? 'scale-100 rotate-0 opacity-100' : 'scale-50 rotate-90 opacity-0'}`}>
+        <SunIcon />
+      </div>
     </button>
   )
 }
