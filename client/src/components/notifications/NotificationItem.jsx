@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 // ── Relative time formatter ──────────────────────────────────────────────────
 const timeAgo = (dateStr) => {
@@ -60,11 +60,17 @@ const NotificationItem = ({
     createdAt,
   } = notification;
 
+  const [isExpanded, setIsExpanded] = useState(false);
+
   const iconStyle = TYPE_STYLES[type] || TYPE_STYLES.system;
 
   const handleClick = () => {
     if (!isRead && onMarkRead) onMarkRead(_id);
-    if (actionUrl && onNavigate) onNavigate(actionUrl);
+    if (actionUrl && onNavigate) {
+      onNavigate(actionUrl);
+    } else {
+      setIsExpanded(!isExpanded);
+    }
   };
 
   const handleMarkRead = (e) => {
@@ -108,8 +114,10 @@ const NotificationItem = ({
           )}
         </div>
         <p
-          className={`text-gray-500 dark:text-dk-text-2 mt-0.5 ${
-            compact ? "text-[11px] line-clamp-1" : "text-xs line-clamp-2"
+          className={`text-gray-500 dark:text-dk-text-2 mt-0.5 transition-all duration-200 ${
+            compact 
+              ? "text-[11px] line-clamp-1" 
+              : `text-xs ${isExpanded ? "" : "line-clamp-2"}`
           }`}
         >
           {message}

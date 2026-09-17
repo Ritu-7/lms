@@ -6,6 +6,7 @@ import { Search, BookOpen, TrendingUp, Sparkles, ArrowRight, Check, Users, Gradu
 
 const PlatformOverview = () => {
   const { platformHomeData } = useContext(AppContext)
+  const [activeStep, setActiveStep] = React.useState(null)
 
   return (
     <div className="w-full px-4 sm:px-6 lg:px-8 py-16 max-w-[1400px] mx-auto space-y-20">
@@ -41,130 +42,240 @@ const PlatformOverview = () => {
         ) : null}
       </div>
 
-      {/* How LearnSphereAI Works Section */}
-      <div className="relative">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text tracking-tight">How LearnSphereAI Works</h2>
-          <p className="mt-3 text-lg text-slate-500 dark:text-dk-text-2 font-medium">A smarter way to learn, practice, and grow.</p>
+      {/* How LearnSphereAI Works Section - Redesigned Dark Theme */}
+      <div className="relative w-full rounded-[2.5rem] bg-[#0a0a0f] overflow-hidden p-8 sm:p-12 lg:p-16 border border-white/5 shadow-2xl">
+        {/* Subtle background gradient / noise texture */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/[0.03] via-transparent to-transparent pointer-events-none"></div>
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none"></div>
+
+        <div className="relative z-10 text-center mb-20">
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-4xl sm:text-5xl font-bold font-space-grotesk tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-slate-400 animate-gradient-x"
+          >
+            How LearnSphereAI Works
+          </motion.h2>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="mt-4 text-lg text-slate-400 font-medium max-w-2xl mx-auto"
+          >
+            A smarter way to learn, practice, and grow.
+          </motion.p>
         </div>
 
-        {/* 3 Steps Cards */}
-        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 lg:gap-10">
-          {/* Dashed line background (desktop) */}
-          <div className="hidden md:block absolute top-[44px] left-[16%] right-[16%] h-0 border-t-2 border-dashed border-blue-200 dark:border-blue-900/40 z-0 pointer-events-none" />
+        {/* 3 Steps Container */}
+        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-8 lg:gap-12 max-w-6xl mx-auto">
+          {/* Connector Line (Desktop) */}
+          <div className="hidden md:block absolute top-[60px] left-[16%] right-[16%] h-[2px] bg-white/5 z-0 overflow-hidden">
+             <motion.div 
+               className="h-full bg-gradient-to-r from-transparent via-blue-500/50 to-transparent w-1/3"
+               animate={{ x: ['-100%', '300%'] }}
+               transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+             />
+          </div>
+          
+          {/* Connector Line (Mobile) */}
+          <div className="md:hidden absolute left-[60px] top-[10%] bottom-[10%] w-[2px] bg-white/5 z-0 overflow-hidden">
+             <motion.div 
+               className="w-full bg-gradient-to-b from-transparent via-blue-500/50 to-transparent h-1/3"
+               animate={{ y: ['-100%', '300%'] }}
+               transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+             />
+          </div>
 
-          {/* Step 1: Choose */}
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="relative z-10 flex flex-col mt-4 md:mt-0">
-            <div className="flex flex-col items-center h-full">
-              {/* Icon Circle */}
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-blue-50/90 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/40 flex items-center justify-center mb-0 relative z-10 shadow-inner">
-                <Search className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600 dark:text-blue-400" strokeWidth={2} />
-              </div>
-              {/* Badge */}
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-600 text-white font-bold text-sm sm:text-base flex items-center justify-center shadow-md ring-4 ring-white dark:ring-dk-base relative z-20 -mb-5">01</div>
-              {/* Card Content */}
-              <div className="w-full h-full rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-dk-border bg-white dark:bg-dk-surface pt-10 pb-6 px-5 sm:px-6 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 flex flex-col items-center text-center justify-between">
-                <div>
-                  <h3 className="text-xl font-bold text-blue-600 dark:text-blue-400 font-space-grotesk">Choose</h3>
-                  <p className="mt-2.5 text-sm text-slate-600 dark:text-dk-text-2 leading-relaxed max-w-[260px] mx-auto">Discover courses that match your goals and interests.</p>
-                </div>
-                {/* Custom Graphic */}
-                <div className="mt-8 w-full max-w-[260px] rounded-xl bg-blue-50/60 dark:bg-blue-900/10 border border-blue-100/90 dark:border-blue-900/30 p-3.5 space-y-3">
+          {[
+            {
+              id: 1,
+              title: 'Choose',
+              desc: 'Discover courses that match your goals and interests.',
+              accent: 'blue',
+              icon: Search,
+              theme: {
+                border: 'border-blue-500/20',
+                glow: 'shadow-blue-500/20',
+                hoverGlow: 'hover:shadow-blue-500/40',
+                hoverBorder: 'hover:border-blue-500/40',
+                text: 'text-blue-400',
+                bg: 'bg-blue-500/10',
+                iconBg: 'bg-blue-900/40',
+                ring: 'ring-blue-500'
+              },
+              Preview: () => (
+                <div className="mt-8 w-full max-w-[260px] rounded-xl bg-white/5 border border-white/10 p-4 space-y-3 backdrop-blur-sm group-hover:bg-blue-500/5 transition-colors duration-500">
                   <div className="flex items-center gap-3">
-                    <div className="w-14 h-11 shrink-0 rounded-lg bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center border border-blue-200/60 dark:border-blue-800/50">
-                      <svg className="w-4 h-4 text-blue-500 fill-blue-500 ml-0.5" viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg>
+                    <div className="w-14 h-11 shrink-0 rounded-lg bg-blue-500/20 flex items-center justify-center border border-blue-500/30">
+                      <Search className="w-4 h-4 text-blue-400" />
                     </div>
                     <div className="space-y-2 flex-1">
-                      <div className="h-2 w-full bg-blue-200/90 dark:bg-blue-800/80 rounded-full"></div>
-                      <div className="h-1.5 w-2/3 bg-blue-100 dark:bg-blue-900/50 rounded-full"></div>
-                      <div className="h-1.5 w-3/4 bg-blue-100 dark:bg-blue-900/50 rounded-full"></div>
+                      <div className="h-2 w-full bg-blue-500/20 rounded-full overflow-hidden">
+                        <div className="h-full bg-blue-500/40 w-0 group-hover:w-full transition-all duration-1000 ease-out"></div>
+                      </div>
+                      <div className="h-1.5 w-2/3 bg-blue-500/10 rounded-full overflow-hidden">
+                        <div className="h-full bg-blue-500/30 w-0 group-hover:w-full transition-all duration-1000 delay-100 ease-out"></div>
+                      </div>
+                      <div className="h-1.5 w-3/4 bg-blue-500/10 rounded-full overflow-hidden">
+                        <div className="h-full bg-blue-500/30 w-0 group-hover:w-full transition-all duration-1000 delay-200 ease-out"></div>
+                      </div>
                     </div>
                   </div>
                   <div className="grid grid-cols-4 gap-1.5 pt-1">
-                    {[1,2,3,4].map(i => <div key={i} className="h-6 rounded-md bg-blue-100/70 dark:bg-blue-900/40 border border-blue-200/40 dark:border-blue-800/30"></div>)}
+                    {[1,2,3,4].map((i) => (
+                      <div key={i} className="h-6 rounded-md bg-blue-500/10 border border-blue-500/20 relative overflow-hidden">
+                        <div className={`absolute inset-0 bg-blue-400/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500`} style={{ transitionDelay: `${i * 100}ms` }}></div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Step 2: Learn */}
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="relative z-10 flex flex-col mt-4 md:mt-0">
-            <div className="flex flex-col items-center h-full">
-              {/* Icon Circle */}
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-emerald-50/90 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/40 flex items-center justify-center mb-0 relative z-10 shadow-inner">
-                <BookOpen className="w-8 h-8 sm:w-10 sm:h-10 text-emerald-500 dark:text-emerald-400" strokeWidth={2} />
-              </div>
-              {/* Badge */}
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-emerald-500 text-white font-bold text-sm sm:text-base flex items-center justify-center shadow-md ring-4 ring-white dark:ring-dk-base relative z-20 -mb-5">02</div>
-              {/* Card Content */}
-              <div className="w-full h-full rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-dk-border bg-white dark:bg-dk-surface pt-10 pb-6 px-5 sm:px-6 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 flex flex-col items-center text-center justify-between">
-                <div>
-                  <h3 className="text-xl font-bold text-emerald-500 dark:text-emerald-400 font-space-grotesk">Learn</h3>
-                  <p className="mt-2.5 text-sm text-slate-600 dark:text-dk-text-2 leading-relaxed max-w-[260px] mx-auto">Learn with engaging lessons, hands-on practice, and assessments.</p>
-                </div>
-                {/* Custom Graphic */}
-                <div className="mt-8 w-full max-w-[260px] rounded-xl bg-emerald-50/60 dark:bg-emerald-900/10 border border-emerald-100/90 dark:border-emerald-900/30 p-3.5 relative">
+              )
+            },
+            {
+              id: 2,
+              title: 'Learn',
+              desc: 'Learn with engaging lessons, hands-on practice, and assessments.',
+              accent: 'emerald',
+              icon: BookOpen,
+              theme: {
+                border: 'border-emerald-500/20',
+                glow: 'shadow-emerald-500/20',
+                hoverGlow: 'hover:shadow-emerald-500/40',
+                hoverBorder: 'hover:border-emerald-500/40',
+                text: 'text-emerald-400',
+                bg: 'bg-emerald-500/10',
+                iconBg: 'bg-emerald-900/40',
+                ring: 'ring-emerald-500'
+              },
+              Preview: () => (
+                <div className="mt-8 w-full max-w-[260px] rounded-xl bg-white/5 border border-white/10 p-4 relative backdrop-blur-sm group-hover:bg-emerald-500/5 transition-colors duration-500">
                   <div className="flex items-center gap-3">
-                    <div className="w-16 h-12 shrink-0 rounded-lg bg-emerald-100/90 dark:bg-emerald-900/40 flex items-center justify-center border border-emerald-200/60 dark:border-emerald-800/50">
-                      <svg className="w-5 h-5 text-emerald-500 fill-emerald-500 ml-0.5" viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg>
+                    <div className="w-16 h-12 shrink-0 rounded-lg bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30 relative overflow-hidden">
+                      <motion.div 
+                        className="absolute inset-0 rounded-lg bg-emerald-400/20"
+                        animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      />
+                      <svg className="w-5 h-5 text-emerald-400 fill-emerald-400 ml-0.5 relative z-10" viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg>
                     </div>
                     <div className="space-y-2 flex-1">
-                      <div className="h-2 w-full bg-emerald-200/90 dark:bg-emerald-800/80 rounded-full"></div>
-                      <div className="h-1.5 w-2/3 bg-emerald-100 dark:bg-emerald-900/50 rounded-full"></div>
-                      <div className="h-1.5 w-4/5 bg-emerald-100 dark:bg-emerald-900/50 rounded-full"></div>
+                      <div className="h-2 w-full bg-emerald-500/20 rounded-full"></div>
+                      <div className="h-1.5 w-2/3 bg-emerald-500/10 rounded-full"></div>
+                      <div className="h-1.5 w-4/5 bg-emerald-500/10 rounded-full"></div>
                     </div>
                   </div>
-                  <div className="w-full h-1.5 bg-emerald-100 dark:bg-emerald-900/40 rounded-full mt-4 overflow-hidden flex">
-                    <div className="w-3/5 h-full bg-emerald-400 dark:bg-emerald-500 rounded-full"></div>
+                  <div className="w-full h-1.5 bg-emerald-500/10 rounded-full mt-4 overflow-hidden flex">
+                    <div className="h-full bg-emerald-500 w-1/3 group-hover:w-full transition-all duration-1000 ease-out"></div>
                   </div>
-                  <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-lg bg-emerald-500 text-white flex items-center justify-center shadow-md border-2 border-white dark:border-dk-surface">
-                    <Check className="w-4 h-4" strokeWidth={3} />
+                  <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30 opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500 delay-500 ease-out">
+                    <Check className="w-5 h-5" strokeWidth={3} />
                   </div>
                 </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Step 3: Grow */}
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className="relative z-10 flex flex-col mt-4 md:mt-0">
-            <div className="flex flex-col items-center h-full">
-              {/* Icon Circle */}
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-purple-50/90 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800/40 flex items-center justify-center mb-0 relative z-10 shadow-inner">
-                <TrendingUp className="w-8 h-8 sm:w-10 sm:h-10 text-purple-600 dark:text-purple-400" strokeWidth={2} />
-              </div>
-              {/* Badge */}
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-purple-600 text-white font-bold text-sm sm:text-base flex items-center justify-center shadow-md ring-4 ring-white dark:ring-dk-base relative z-20 -mb-5">03</div>
-              {/* Card Content */}
-              <div className="w-full h-full rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-dk-border bg-white dark:bg-dk-surface pt-10 pb-6 px-5 sm:px-6 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 flex flex-col items-center text-center justify-between">
-                <div>
-                  <h3 className="text-xl font-bold text-purple-600 dark:text-purple-400 font-space-grotesk">Grow</h3>
-                  <p className="mt-2.5 text-sm text-slate-600 dark:text-dk-text-2 leading-relaxed max-w-[260px] mx-auto">Track your progress, earn certificates, and get AI support.</p>
-                </div>
-                {/* Custom Graphic */}
-                <div className="mt-8 w-full max-w-[260px] rounded-xl bg-purple-50/60 dark:bg-purple-900/10 border border-purple-100/90 dark:border-purple-900/30 p-3.5 flex items-center justify-between min-h-[76px]">
+              )
+            },
+            {
+              id: 3,
+              title: 'Grow',
+              desc: 'Track your progress, earn certificates, and get AI support.',
+              accent: 'purple',
+              icon: TrendingUp,
+              theme: {
+                border: 'border-purple-500/20',
+                glow: 'shadow-purple-500/20',
+                hoverGlow: 'hover:shadow-purple-500/40',
+                hoverBorder: 'hover:border-purple-500/40',
+                text: 'text-purple-400',
+                bg: 'bg-purple-500/10',
+                iconBg: 'bg-purple-900/40',
+                ring: 'ring-purple-500'
+              },
+              Preview: () => (
+                <div className="mt-8 w-full max-w-[260px] rounded-xl bg-white/5 border border-white/10 p-4 flex items-center justify-between min-h-[76px] backdrop-blur-sm group-hover:bg-purple-500/5 transition-colors duration-500">
                   <div className="space-y-2 flex-1 mr-4">
-                    <div className="h-2 w-full bg-purple-200/90 dark:bg-purple-800/80 rounded-full"></div>
-                    <div className="h-1.5 w-2/3 bg-purple-100 dark:bg-purple-900/50 rounded-full"></div>
-                    <div className="h-1.5 w-4/5 bg-purple-100 dark:bg-purple-900/50 rounded-full"></div>
+                    <div className="h-2 w-full bg-purple-500/20 rounded-full"></div>
+                    <div className="h-1.5 w-2/3 bg-purple-500/10 rounded-full"></div>
+                    <div className="h-1.5 w-4/5 bg-purple-500/10 rounded-full"></div>
                   </div>
                   <div className="flex items-center">
                     <div className="relative">
-                      <svg className="w-8 h-8 text-purple-400 dark:text-purple-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 15.228l-4.326 2.274.826-4.817L4.996 9.27l4.836-.703L12 4.186l2.168 4.382 4.836.703-3.504 3.415.826 4.817z"/></svg>
+                       <motion.div
+                         animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.1, 1] }}
+                         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                       >
+                         <svg className="w-8 h-8 text-purple-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 15.228l-4.326 2.274.826-4.817L4.996 9.27l4.836-.703L12 4.186l2.168 4.382 4.836.703-3.504 3.415.826 4.817z"/></svg>
+                       </motion.div>
                     </div>
                     <div className="flex items-end gap-1 ml-2.5 h-8">
-                      <div className="w-1.5 h-3 bg-purple-300 dark:bg-purple-700 rounded-t-sm"></div>
-                      <div className="w-1.5 h-5 bg-purple-400 dark:bg-purple-500 rounded-t-sm"></div>
-                      <div className="w-1.5 h-7 bg-purple-500 dark:bg-purple-400 rounded-t-sm"></div>
+                      <div className="w-1.5 bg-purple-600/40 rounded-t-sm h-3 group-hover:h-5 transition-all duration-500"></div>
+                      <div className="w-1.5 bg-purple-500/60 rounded-t-sm h-5 group-hover:h-7 transition-all duration-500 delay-100"></div>
+                      <div className="w-1.5 bg-purple-400 rounded-t-sm h-4 group-hover:h-8 transition-all duration-500 delay-200"></div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </motion.div>
+              )
+            }
+          ].map((step, idx) => {
+             const isDimmed = activeStep !== null && activeStep !== step.id;
+             const isActive = activeStep === step.id;
+             
+             return (
+               <motion.div
+                 key={step.id}
+                 initial={{ opacity: 0, y: 30 }}
+                 whileInView={{ opacity: 1, y: 0 }}
+                 viewport={{ once: true }}
+                 transition={{ delay: idx * 0.15, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                 className={`relative z-10 flex flex-col md:mt-0 transition-all duration-500 ease-out cursor-pointer
+                   ${isDimmed ? 'opacity-40 scale-95 grayscale-[0.5]' : 'opacity-100'}
+                   ${isActive ? 'scale-[1.02]' : ''}
+                 `}
+                 onClick={() => setActiveStep(isActive ? null : step.id)}
+               >
+                 <div className="flex flex-col items-center h-full group">
+                   {/* Icon Circle */}
+                   <div className="relative mb-0 z-10">
+                     <div className={`absolute inset-0 rounded-full blur-xl opacity-30 group-hover:opacity-60 transition-opacity duration-500 ${step.theme.bg}`}></div>
+                     <motion.div 
+                       animate={{ scale: [1, 1.05, 1] }}
+                       transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: idx * 0.5 }}
+                       className={`w-20 h-20 sm:w-28 sm:h-28 rounded-full border border-white/10 bg-white/5 backdrop-blur-md flex items-center justify-center relative shadow-2xl ${step.theme.border} group-hover:border-white/20 transition-colors`}
+                     >
+                        <step.icon className={`w-8 h-8 sm:w-12 sm:h-12 ${step.theme.text}`} strokeWidth={1.5} />
+                     </motion.div>
+                   </div>
+                   
+                   {/* Badge */}
+                   <motion.div 
+                     initial={{ scale: 0 }}
+                     whileInView={{ scale: 1 }}
+                     viewport={{ once: true }}
+                     transition={{ type: "spring", bounce: 0.5, delay: idx * 0.15 + 0.3 }}
+                     className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full ${step.theme.bg} backdrop-blur-md border border-white/20 text-white font-bold text-sm sm:text-base flex items-center justify-center shadow-lg relative z-20 -mb-6 ring-4 ring-[#0a0a0f]`}
+                   >
+                     0{step.id}
+                   </motion.div>
+                   
+                   {/* Card Content */}
+                   <div className={`w-full h-full rounded-3xl border border-white/5 bg-white/[0.02] backdrop-blur-sm pt-12 pb-8 px-6 sm:px-8 shadow-2xl transition-all duration-500
+                     group-hover:-translate-y-2 ${step.theme.hoverGlow} ${step.theme.hoverBorder}
+                     flex flex-col items-center text-center justify-between
+                     ${isActive ? `${step.theme.glow} ${step.theme.border} bg-white/[0.04]` : ''}
+                   `}>
+                     <div>
+                       <h3 className={`text-2xl font-bold font-space-grotesk ${step.theme.text}`}>{step.title}</h3>
+                       <p className="mt-3 text-sm text-slate-400 leading-relaxed max-w-[260px] mx-auto">{step.desc}</p>
+                     </div>
+                     
+                     {/* Custom Graphic */}
+                     <step.Preview />
+                   </div>
+                 </div>
+               </motion.div>
+             )
+          })}
         </div>
-
-
       </div>
 
       {/* Platform Updates Section */}
