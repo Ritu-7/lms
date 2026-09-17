@@ -51,12 +51,7 @@ export const useLogin = () => {
         return
       }
 
-      if (attempt.status === 'needs_first_factor') {
-        throw new Error('Login incomplete. Please use the sign-in method you originally used to create this account (e.g. Google), or verify your email if you just signed up.')
-      }
-
-
-      throw new Error(`Login incomplete (Status: ${attempt.status}).`)
+      throw new Error('Invalid email or password.')
     } catch (error) {
       const msg = getClerkErrorMessage(error)
       setLoginError(msg)
