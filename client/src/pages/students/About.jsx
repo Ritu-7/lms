@@ -635,7 +635,7 @@ const About = () => {
           <div className="pointer-events-none absolute inset-0">
             <div className="absolute -top-20 -right-20 h-60 w-60 rounded-full bg-white/10 blur-3xl" />
             <div className="absolute -bottom-20 -left-20 h-60 w-60 rounded-full bg-white/10 blur-3xl" />
-            <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]" />
+            {/* <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]" /> */}
           </div>
           <div className="relative">
             <motion.div
