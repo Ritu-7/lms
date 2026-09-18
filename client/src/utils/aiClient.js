@@ -46,6 +46,7 @@ export const aiRequest = async ({
 
   const err = new Error(getErrorMessage(lastError))
   err.statusCode = lastError?.response?.status || null
+  err.isNoKey = err.statusCode === 403 && /api key|gemini/i.test(err.message)
   throw err
 }
 

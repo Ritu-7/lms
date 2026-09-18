@@ -18,6 +18,7 @@ import {
   Shield,
   SlidersHorizontal,
   Sparkles,
+  Briefcase,
   Sun,
   Trash2,
   UserRound,
@@ -27,6 +28,8 @@ import { AppContext } from '../../context/AppContext';
 import Footer from '../../components/students/Footer';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
+import { SkillGapPanel, CareerReadinessPanel } from '../../components/students/ai/CareerAndGapPanels';
+import { useStudentAi } from '../../components/students/ai/studentAiShared';
 
 const MotionDiv = motion.div;
 
@@ -72,6 +75,7 @@ const settingsSections = [
   { id: 'profile', label: 'Profile', icon: UserRound },
   { id: 'account', label: 'Account', icon: SlidersHorizontal },
   { id: 'ai', label: 'AI Features', icon: Sparkles },
+  { id: 'career', label: 'Career & skills', icon: Briefcase },
   { id: 'password', label: 'Password', icon: KeyRound },
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'privacy', label: 'Privacy', icon: Shield },
@@ -120,6 +124,7 @@ const inputClass = 'w-full rounded-xl border border-slate-200 dark:border-dk-bor
 
 const Settings = () => {
   const { userData } = useContext(AppContext);
+  const { post, get } = useStudentAi();
   const { user, isLoaded } = useUser();
   const navigate = useNavigate();
   const { theme: currentTheme, setTheme } = useTheme();
@@ -135,6 +140,9 @@ const Settings = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [learningGoals, setLearningGoals] = useState('');
+  const [targetRole, setTargetRole] = useState('');
+  const [savingGoals, setSavingGoals] = useState(false);
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -153,6 +161,30 @@ const Settings = () => {
 
     return () => window.clearTimeout(timer);
   }, [initialSettings, isLoaded]);
+
+  useEffect(() => {
+    let cancelled = false;
+    get('/api/ai/student/portfolio')
+      .then((data) => {
+        if (cancelled) return;
+        setLearningGoals(data?.learningGoals || '');
+        setTargetRole(data?.targetRole || '');
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [get]);
+
+  const saveCareerGoals = async () => {
+    try {
+      setSavingGoals(true);
+      await post('/api/ai/student/profile', { learningGoals, targetRole });
+      toast.success('Learning goals saved');
+    } catch (err) {
+      toast.error(err.message || 'Could not save learning goals');
+    } finally {
+      setSavingGoals(false);
+    }
+  };
 
   const updateField = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -299,6 +331,18 @@ const Settings = () => {
                   </Field>
                 </div>
               </div>
+              <div className="mt-6 grid gap-5 md:grid-cols-2">
+                <Field label="Learning goals">
+                  <textarea className={inputClass} rows="3" value={learningGoals} onChange={(e) => setLearningGoals(e.target.value)} placeholder="What you want to learn — used by your learning path." />
+                </Field>
+                <Field label="Target role">
+                  <input className={inputClass} value={targetRole} onChange={(e) => setTargetRole(e.target.value)} placeholder="Used by skill gap and career readiness" />
+                </Field>
+              </div>
+              <button type="button" onClick={saveCareerGoals} disabled={savingGoals} className="mt-4 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60">
+                {savingGoals ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+                Save goals
+              </button>
             </MotionDiv>
 
             <MotionDiv id="account" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm">
@@ -374,6 +418,11 @@ const Settings = () => {
                 </button>
               </div>
             </MotionDiv>
+
+            <div id="career" className="space-y-6">
+              <SkillGapPanel />
+              <CareerReadinessPanel />
+            </div>
 
             <MotionDiv id="password" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm">
               <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Password Change</h2>

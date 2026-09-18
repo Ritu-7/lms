@@ -1,10 +1,12 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AppContext } from "../../context/AppContext";
 import Footer from "../../components/students/Footer";
 import Loading from "../../components/students/Loading";
+import ExamPrepPanel from "../../components/students/ai/ExamPrepPanel";
+import { aiRequest } from "../../utils/aiClient";
 
 const badgeClasses = {
   graded: "bg-emerald-100 text-emerald-700",
@@ -17,6 +19,7 @@ const badgeClasses = {
 const QuizPlayer = () => {
   const navigate = useNavigate();
   const { quizId } = useParams();
+  const [searchParams] = useSearchParams();
   const { backendURL, getToken, userData } = useContext(AppContext);
   const [quiz, setQuiz] = useState(null);
   const [attempt, setAttempt] = useState(null);
@@ -26,7 +29,15 @@ const QuizPlayer = () => {
   const [submitting, setSubmitting] = useState(false);
   const [history, setHistory] = useState([]);
   const [now, setNow] = useState(Date.now());
+  const [adaptiveMode, setAdaptiveMode] = useState(true);
+  const [adaptiveQuestion, setAdaptiveQuestion] = useState(null);
+  const [adaptiveFeedback, setAdaptiveFeedback] = useState(null);
+  const [adaptiveRemaining, setAdaptiveRemaining] = useState(0);
+  const [answeredIds, setAnsweredIds] = useState([]);
+  const [checking, setChecking] = useState(false);
+  const [weakConcepts, setWeakConcepts] = useState([]);
   const timerRef = useRef(null);
+  const prepRef = useRef(null);
 
   const fetchQuiz = useCallback(async () => {
     try {
@@ -61,6 +72,43 @@ const QuizPlayer = () => {
     }
   }, [backendURL, getToken, quizId]);
 
+  const loadAdaptiveQuestion = useCallback(async (payload) => {
+    const token = await getToken();
+    const { data } = await aiRequest({
+      backendURL,
+      getToken: async () => token,
+      path: "/api/ai/student/quiz/adaptive",
+      data: { quizId, ...payload },
+    });
+    return data;
+  }, [backendURL, getToken, quizId]);
+
+  useEffect(() => {
+    if (!quiz || !attempt || attempt.status !== "in_progress" || !adaptiveMode) return undefined;
+    let cancelled = false;
+    const already = Array.from(new Set((attempt.responses || []).map((item) => String(item.questionId))));
+    const fromAttempt = {};
+    (attempt.responses || []).forEach((item) => {
+      fromAttempt[item.questionId] = {
+        selectedOptions: item.selectedOptions || [],
+        textAnswer: item.textAnswer || "",
+      };
+    });
+    setResponses((prev) => ({ ...fromAttempt, ...prev }));
+    setAnsweredIds(already);
+    loadAdaptiveQuestion({ startOnly: true, answeredIds: already })
+      .then((data) => {
+        if (cancelled) return;
+        setAdaptiveQuestion(data.nextQuestion || null);
+        setAdaptiveRemaining(data.remainingCount || 0);
+        setAdaptiveFeedback(null);
+      })
+      .catch((error) => {
+        if (!cancelled) toast.error(error.message);
+      });
+    return () => { cancelled = true; };
+  }, [adaptiveMode, attempt, loadAdaptiveQuestion, quiz]);
+
   useEffect(() => {
     if (userData) {
       fetchQuiz();
@@ -73,6 +121,14 @@ const QuizPlayer = () => {
     timerRef.current = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(timerRef.current);
   }, [attempt?.expiresAt]);
+
+  useEffect(() => {
+    if (searchParams.get("prep") !== "1") return undefined;
+    const timer = window.setTimeout(() => {
+      prepRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 400);
+    return () => window.clearTimeout(timer);
+  }, [searchParams, quiz]);
 
   const timeLeftSeconds = useMemo(() => {
     if (!attempt?.expiresAt) return null;
@@ -98,6 +154,36 @@ const QuizPlayer = () => {
       const next = current.includes(optionId) ? current.filter((item) => item !== optionId) : [...current, optionId];
       return { ...prev, [questionId]: { ...(prev[questionId] || {}), selectedOptions: next } };
     });
+  };
+
+  const checkAdaptiveAnswer = useCallback(async () => {
+    if (!adaptiveQuestion) return;
+    const response = responses[adaptiveQuestion.questionId] || { selectedOptions: [], textAnswer: "" };
+    try {
+      setChecking(true);
+      const data = await loadAdaptiveQuestion({
+        questionId: adaptiveQuestion.questionId,
+        answeredIds,
+        response,
+      });
+      setAdaptiveFeedback(data);
+      if (data.weakConcept) {
+        setWeakConcepts((prev) => Array.from(new Set([...prev, data.weakConcept])));
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setChecking(false);
+    }
+  }, [adaptiveQuestion, answeredIds, loadAdaptiveQuestion, responses]);
+
+  const goToNextAdaptive = () => {
+    if (!adaptiveQuestion) return;
+    const nextIds = [...answeredIds, String(adaptiveQuestion.questionId)];
+    setAnsweredIds(nextIds);
+    setAdaptiveQuestion(adaptiveFeedback?.nextQuestion || null);
+    setAdaptiveRemaining(adaptiveFeedback?.remainingCount || 0);
+    setAdaptiveFeedback(null);
   };
 
   const submitQuiz = useCallback(async () => {
@@ -141,8 +227,66 @@ const QuizPlayer = () => {
   const activeQuiz = quiz || {};
   const questions = Array.isArray(activeQuiz.questions) ? activeQuiz.questions : [];
   const historySummary = Array.isArray(history) ? history : [];
+  const isReadOnly = attempt?.status === "graded" || attempt?.status === "needs_review" || attempt?.status === "expired";
+  const inProgress = attempt?.status === "in_progress";
+
+  const renderQuestionInputs = (question, { locked = false } = {}) => {
+    const response = responses[question.questionId] || { selectedOptions: [], textAnswer: "" };
+    const disabled = isReadOnly || locked;
+    return (
+      <>
+        {question.questionType === "mcq" || question.questionType === "true_false" ? (
+          <div className="space-y-2">
+            {(question.options || []).map((option) => (
+              <label key={option.optionId} className={`flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2 ${disabled ? "bg-gray-50" : "hover:bg-gray-50"}`}>
+                <input
+                  type="radio"
+                  name={question.questionId}
+                  value={option.optionId}
+                  disabled={disabled}
+                  checked={response.selectedOptions?.[0] === option.optionId}
+                  onChange={() => updateSingleResponse(question.questionId, "selectedOptions", [option.optionId])}
+                />
+                <span className="text-sm text-gray-700">{option.label}</span>
+              </label>
+            ))}
+          </div>
+        ) : null}
+
+        {question.questionType === "multiple_select" ? (
+          <div className="space-y-2">
+            {(question.options || []).map((option) => (
+              <label key={option.optionId} className={`flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2 ${disabled ? "bg-gray-50" : "hover:bg-gray-50"}`}>
+                <input
+                  type="checkbox"
+                  disabled={disabled}
+                  checked={(response.selectedOptions || []).includes(option.optionId)}
+                  onChange={() => toggleMultiResponse(question.questionId, option.optionId)}
+                />
+                <span className="text-sm text-gray-700">{option.label}</span>
+              </label>
+            ))}
+          </div>
+        ) : null}
+
+        {question.questionType === "short_answer" ? (
+          <textarea
+            rows="3"
+            value={response.textAnswer || ""}
+            disabled={disabled}
+            onChange={(e) => updateSingleResponse(question.questionId, "textAnswer", e.target.value)}
+            className="w-full rounded-lg border px-3 py-2 outline-none focus:border-blue-500"
+            placeholder="Type your answer"
+          />
+        ) : null}
+      </>
+    );
+  };
 
   if (loading && !quiz) return <Loading />;
+
+  const adaptiveComplete = adaptiveMode && inProgress && !adaptiveQuestion && answeredIds.length > 0;
+  const nextDifficulty = adaptiveFeedback?.nextQuestion?.difficulty;
 
   return (
     <div className="min-h-screen bg-gray-50/30">
@@ -190,94 +334,129 @@ const QuizPlayer = () => {
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900">Quiz questions</h2>
-                  <p className="text-sm text-gray-500">Answer each item, then submit before the timer expires.</p>
+                  <p className="text-sm text-gray-500">
+                    {adaptiveMode && inProgress
+                      ? "Adaptive mode shows one question at a time. Difficulty shifts from your last answer; explanations appear immediately. Submit still saves through the normal quiz pipeline."
+                      : "Answer each item, then submit before the timer expires."}
+                  </p>
                 </div>
                 <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${badgeClasses[attempt?.status] || badgeClasses.in_progress}`}>{attempt?.status || "in_progress"}</span>
               </div>
 
-              <div className="space-y-4">
-                {questions.map((question, index) => {
-                  const response = responses[question.questionId] || { selectedOptions: [], textAnswer: "" };
-                  const attemptResponse = attempt?.responses?.find((item) => item.questionId === question.questionId);
-                  const isReadOnly = attempt?.status === "graded" || attempt?.status === "needs_review" || attempt?.status === "expired";
+              {inProgress ? (
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setAdaptiveMode(true)}
+                    className={`rounded-full px-3 py-1.5 text-xs font-semibold border ${adaptiveMode ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600"}`}
+                  >
+                    Adaptive
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAdaptiveMode(false)}
+                    className={`rounded-full px-3 py-1.5 text-xs font-semibold border ${!adaptiveMode ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600"}`}
+                  >
+                    All questions
+                  </button>
+                </div>
+              ) : null}
 
-                  return (
-                    <div key={question.questionId} className="rounded-xl border p-4 space-y-3">
+              {weakConcepts.length ? (
+                <p className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
+                  Weak concepts so far: {weakConcepts.join(" · ")}
+                </p>
+              ) : null}
+
+              {adaptiveMode && inProgress ? (
+                <div className="space-y-4">
+                  {adaptiveQuestion ? (
+                    <div className="rounded-xl border p-4 space-y-3">
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">Question {index + 1}</p>
-                          <h3 className="mt-1 text-base font-semibold text-gray-900">{question.prompt}</h3>
+                          <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">
+                            Question {answeredIds.length + 1}
+                            {adaptiveQuestion.difficulty ? ` · ${adaptiveQuestion.difficulty}` : ""}
+                          </p>
+                          <h3 className="mt-1 text-base font-semibold text-gray-900">{adaptiveQuestion.prompt}</h3>
                         </div>
-                        <span className="rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold text-gray-600">{question.points || 1} pts</span>
+                        <span className="rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold text-gray-600">{adaptiveQuestion.points || 1} pts</span>
                       </div>
-
-                      {question.questionType === "mcq" || question.questionType === "true_false" ? (
-                        <div className="space-y-2">
-                          {(question.options || []).map((option) => (
-                            <label key={option.optionId} className={`flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2 ${isReadOnly ? "bg-gray-50" : "hover:bg-gray-50"}`}>
-                              <input
-                                type="radio"
-                                name={question.questionId}
-                                value={option.optionId}
-                                disabled={isReadOnly}
-                                checked={response.selectedOptions?.[0] === option.optionId}
-                                onChange={() => updateSingleResponse(question.questionId, "selectedOptions", [option.optionId])}
-                              />
-                              <span className="text-sm text-gray-700">{option.label}</span>
-                            </label>
-                          ))}
+                      {renderQuestionInputs(adaptiveQuestion, { locked: Boolean(adaptiveFeedback) })}
+                      {adaptiveFeedback ? (
+                        <div className={`rounded-lg p-3 text-sm ${adaptiveFeedback.isCorrect ? "bg-emerald-50 text-emerald-800" : "bg-rose-50 text-rose-800"}`}>
+                          <p className="font-semibold">{adaptiveFeedback.isCorrect ? "Correct" : "Needs work"}</p>
+                          <p className="mt-1">{adaptiveFeedback.explanation || adaptiveFeedback.feedback}</p>
+                          {nextDifficulty ? (
+                            <p className="mt-2 text-xs opacity-80">Next question difficulty: {nextDifficulty}</p>
+                          ) : null}
                         </div>
                       ) : null}
-
-                      {question.questionType === "multiple_select" ? (
-                        <div className="space-y-2">
-                          {(question.options || []).map((option) => (
-                            <label key={option.optionId} className={`flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2 ${isReadOnly ? "bg-gray-50" : "hover:bg-gray-50"}`}>
-                              <input
-                                type="checkbox"
-                                disabled={isReadOnly}
-                                checked={(response.selectedOptions || []).includes(option.optionId)}
-                                onChange={() => toggleMultiResponse(question.questionId, option.optionId)}
-                              />
-                              <span className="text-sm text-gray-700">{option.label}</span>
-                            </label>
-                          ))}
-                        </div>
-                      ) : null}
-
-                      {question.questionType === "short_answer" ? (
-                        <textarea
-                          rows="3"
-                          value={response.textAnswer || ""}
-                          disabled={isReadOnly}
-                          onChange={(e) => updateSingleResponse(question.questionId, "textAnswer", e.target.value)}
-                          className="w-full rounded-lg border px-3 py-2 outline-none focus:border-blue-500"
-                          placeholder="Type your answer"
-                        />
-                      ) : null}
-
-                      {(attemptResponse || evaluationResponses.find((item) => item.questionId === question.questionId)) && activeQuiz.reviewMode ? (
-                        (() => {
-                          const evaluated = attemptResponse || evaluationResponses.find((item) => item.questionId === question.questionId);
-                          return (
-                        <div className="rounded-lg bg-gray-50 p-3 text-sm text-gray-600">
-                          <p className="font-semibold text-gray-800">Review</p>
-                          <p className="mt-1">{evaluated.feedback || (evaluated.isCorrect ? "Correct" : "Incorrect")}</p>
-                          {evaluated.explanation ? <p className="mt-1 text-gray-500">{evaluated.explanation}</p> : null}
-                        </div>
-                          );
-                        })()
-                      ) : null}
+                      <div className="flex flex-wrap gap-2">
+                        {!adaptiveFeedback ? (
+                          <button
+                            type="button"
+                            onClick={checkAdaptiveAnswer}
+                            disabled={checking}
+                            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+                          >
+                            {checking ? "Checking…" : "Check answer"}
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={goToNextAdaptive}
+                            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white"
+                          >
+                            {adaptiveFeedback.nextQuestion ? "Next question" : "Finish adaptive set"}
+                          </button>
+                        )}
+                        <span className="self-center text-xs text-gray-500">{adaptiveRemaining} remaining after this item</span>
+                      </div>
                     </div>
-                  );
-                })}
-              </div>
+                  ) : adaptiveComplete ? (
+                    <p className="text-sm text-slate-600">Every question has been answered adaptively. Submit to save your score through the normal quiz pipeline.</p>
+                  ) : (
+                    <p className="text-sm text-slate-500">Loading the first adaptive question from this quiz…</p>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {questions.map((question, index) => {
+                    const attemptResponse = attempt?.responses?.find((item) => item.questionId === question.questionId);
+                    return (
+                      <div key={question.questionId} className="rounded-xl border p-4 space-y-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">Question {index + 1}</p>
+                            <h3 className="mt-1 text-base font-semibold text-gray-900">{question.prompt}</h3>
+                          </div>
+                          <span className="rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold text-gray-600">{question.points || 1} pts</span>
+                        </div>
+                        {renderQuestionInputs(question)}
+                        {(attemptResponse || evaluationResponses.find((item) => item.questionId === question.questionId)) && activeQuiz.reviewMode ? (
+                          (() => {
+                            const evaluated = attemptResponse || evaluationResponses.find((item) => item.questionId === question.questionId);
+                            return (
+                              <div className="rounded-lg bg-gray-50 p-3 text-sm text-gray-600">
+                                <p className="font-semibold text-gray-800">Review</p>
+                                <p className="mt-1">{evaluated.feedback || (evaluated.isCorrect ? "Correct" : "Incorrect")}</p>
+                                {evaluated.explanation ? <p className="mt-1 text-gray-500">{evaluated.explanation}</p> : null}
+                              </div>
+                            );
+                          })()
+                        ) : null}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
 
               <div className="flex flex-wrap gap-3">
                 <button
                   type="button"
                   onClick={submitQuiz}
-                  disabled={!attempt || submitting || attempt?.status === "graded" || attempt?.status === "needs_review" || attempt?.status === "expired"}
+                  disabled={!attempt || submitting || isReadOnly}
                   className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
                 >
                   {submitting ? "Submitting..." : attempt?.status === "graded" ? "Submitted" : "Submit Quiz"}
@@ -313,6 +492,10 @@ const QuizPlayer = () => {
               <p><span className="font-semibold text-gray-800">Review mode:</span> {activeQuiz.reviewMode ? "Enabled" : "Disabled"}</p>
               <p><span className="font-semibold text-gray-800">Instant evaluation:</span> {activeQuiz.instantEvaluation ? "Enabled" : "Disabled"}</p>
             </div>
+
+            <div ref={prepRef}>
+              <ExamPrepPanel quizId={quizId} compact />
+            </div>
           </aside>
         </div>
       </div>
@@ -322,4 +505,3 @@ const QuizPlayer = () => {
 };
 
 export default QuizPlayer;
-

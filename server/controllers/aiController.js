@@ -4,7 +4,7 @@ import { analyzeCode,
   generateStructuredSummary,
   generateTutorReply,
   retryWithBackoff,
-  runCodeViaPiston,}
+  runCodeExecution,}
 from "../services/aiService.js";
 import { encryptKey, decryptKey } from "../utils/encryption.js";
 import { getAdminOverview } from "../services/platformService.js";
@@ -237,15 +237,29 @@ export const generateNotes = async (req, res, next) => {
 export const analyzeCodingTask = async (req, res, next) => {
   try {
     const user = await resolveCurrentUser(req.clerkUserId);
-    const { code = "", language = "javascript", model = "gemini-3.6-flash", tool = "analyze" } = req.body || {};
+    const { code = "", language = "javascript", model = "gemini-3.6-flash", tool = "analyze", execution = null } = req.body || {};
 
     if (!String(code || "").trim()) {
       return res.status(400).json({ success: false, message: "Code is required" });
     }
 
     const userApiKey = decryptKey(user.encryptedGeminiKey);
+    const executionPayload = execution && typeof execution === "object" ? {
+      stdout: execution.stdout || "",
+      stderr: execution.stderr || "",
+      compileError: execution.compileError || "",
+      exitCode: execution.exitCode,
+      success: Boolean(execution.success),
+    } : null;
 
-    const analysis = await retryWithBackoff(() => analyzeCode({ model, code, language, tool, userApiKey }), 1);
+    const analysis = await retryWithBackoff(() => analyzeCode({
+      model,
+      code,
+      language,
+      tool,
+      userApiKey,
+      execution: executionPayload,
+    }), 1);
     await logUsage({
       user,
       feature: "coding_assistant",
@@ -282,19 +296,46 @@ export const runCodingTask = async (req, res, next) => {
     const user = await resolveCurrentUser(req.clerkUserId);
     const { code = "", language = "javascript" } = req.body || {};
 
-    const output = await retryWithBackoff(() => runCodeViaPiston({ code, language }), 1);
+    const execution = await retryWithBackoff(() => runCodeExecution({ code, language }), 1);
+    await User.findByIdAndUpdate(user._id, {
+      codingPractice: {
+        runCount: Number(user.codingPractice?.runCount || 0) + 1,
+        lastLanguage: language,
+        lastSuccess: Boolean(execution.success),
+        lastExitCode: execution.exitCode,
+        lastRunAt: new Date(),
+      },
+    });
     await logUsage({
       user,
       feature: "coding_run",
-      status: "success",
+      status: execution.success ? "success" : "error",
       inputLength: String(code).length,
-      outputLength: output.length,
+      outputLength: String(execution.output || "").length,
       title: `${language} run`,
       sourceType: "code",
-      metadata: { language },
+      metadata: {
+        language,
+        exitCode: execution.exitCode,
+        success: execution.success,
+        compiler: execution.compiler,
+      },
     });
 
-    res.json({ success: true, data: { output } });
+    res.json({
+      success: true,
+      data: {
+        output: execution.output,
+        stdout: execution.stdout,
+        stderr: execution.stderr,
+        compileError: execution.compileError,
+        exitCode: execution.exitCode,
+        signal: execution.signal,
+        success: execution.success,
+        language: execution.language,
+        compiler: execution.compiler,
+      },
+    });
   } catch (error) {
     const user = req.clerkUserId ? await User.findOne({ clerkUserId: req.clerkUserId }).lean().catch(() => null) : null;
     if (user) {

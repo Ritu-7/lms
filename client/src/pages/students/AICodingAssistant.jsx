@@ -6,7 +6,7 @@ import { toast } from 'react-toastify'
 import {
   Play, Copy, MessageSquare, Bug, Zap, Activity, Terminal, Code2,
   CheckCircle2, AlertCircle, Cpu, X, Loader2, RotateCcw, Sparkles,
-  ChevronRight, Check, Clock, AlertTriangle,
+  ChevronRight, Check, Clock, AlertTriangle, Lightbulb,
 } from 'lucide-react'
 import { aiRequest } from '../../utils/aiClient'
 import NoApiKeyState from '../../components/ai/NoApiKeyState'
@@ -65,7 +65,19 @@ const ToolButton = ({ active, onClick, icon: Icon, label }) => (
 )
 
 // ─── AI Result Panel ──────────────────────────────────────────────────────────
-const AiResultPanel = ({ result, loading, error, activeTool, onRetry }) => {
+const AiResultPanel = ({
+  result,
+  loading,
+  error,
+  activeTool,
+  onRetry,
+  hint,
+  hintLoading,
+  hintError,
+  hintLevel,
+  onHint,
+  hasExecution,
+}) => {
   const tool = TOOLS.find((t) => t.id === activeTool)
 
   return (
@@ -140,6 +152,35 @@ const AiResultPanel = ({ result, loading, error, activeTool, onRetry }) => {
           </div>
         )}
       </div>
+
+      <div className="border-t border-black/20 p-4 space-y-3">
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-xs font-semibold text-gray-300 flex items-center gap-1.5">
+            <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
+            Progressive hint
+          </p>
+          <span className="text-[10px] text-gray-500">Level {Math.min(hintLevel, 3)} / 3</span>
+        </div>
+        <p className="text-[11px] text-gray-500">
+          {hasExecution
+            ? 'Hints use your last real run (stdout, stderr, exit code). The first hint stays conceptual.'
+            : 'Run the code first so hints can discuss actual output and errors — they never invent a run.'}
+        </p>
+        {hintError ? (
+          hintError.isNoKey ? <NoApiKeyState /> : <p className="text-xs text-rose-400">{hintError.message}</p>
+        ) : null}
+        {hint ? (
+          <div className="text-xs text-gray-300 bg-black/30 rounded-lg p-3 max-h-40 overflow-auto whitespace-pre-wrap">{hint}</div>
+        ) : null}
+        <button
+          type="button"
+          onClick={onHint}
+          disabled={hintLoading}
+          className="w-full rounded-lg bg-amber-700/80 hover:bg-amber-600 text-white text-xs font-semibold py-2 disabled:opacity-50"
+        >
+          {hintLoading ? 'Writing a hint…' : hint ? 'Stronger hint' : 'Get a hint'}
+        </button>
+      </div>
     </div>
   )
 }
@@ -157,6 +198,11 @@ const AICodingAssistant = () => {
   const [analysisResult, setAnalysisResult] = useState(null)
   const [analysisError, setAnalysisError]   = useState(null)
   const [isAnalyzing, setIsAnalyzing]     = useState(false)
+  const [lastExecution, setLastExecution] = useState(null)
+  const [hint, setHint] = useState('')
+  const [hintLevel, setHintLevel] = useState(1)
+  const [hintLoading, setHintLoading] = useState(false)
+  const [hintError, setHintError] = useState(null)
   const editorRef    = useRef(null)
   const terminalRef  = useRef(null)
   const backendURL   = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
@@ -197,23 +243,40 @@ const AICodingAssistant = () => {
         retries: 1,
       })
 
-      const rawOutput = data?.output ?? ''
+      const execution = {
+        stdout: data?.stdout || '',
+        stderr: data?.stderr || '',
+        compileError: data?.compileError || '',
+        exitCode: data?.exitCode,
+        success: Boolean(data?.success),
+        output: data?.output || '',
+        compiler: data?.compiler || '',
+        language: data?.language || language,
+      }
+      setLastExecution(execution)
+      setHint('')
+      setHintLevel(1)
 
-      // Split output into labelled lines for the terminal renderer
-      const outputLines = rawOutput.split('\n')
-      const hasError = rawOutput.includes('[stderr]') || rawOutput.includes('[compile error]') || rawOutput.includes('[error]')
+      const labelled = []
+      if (execution.compileError) labelled.push(`[compile error] ${execution.compileError}`)
+      if (execution.stdout) labelled.push(...execution.stdout.split('\n'))
+      if (execution.stderr) labelled.push(...execution.stderr.split('\n').map((line) => (line ? `[stderr] ${line}` : '[stderr]')))
+      if (!labelled.length && execution.output) labelled.push(...String(execution.output).split('\n'))
+      labelled.push(`[exit code ${execution.exitCode}]`)
+      if (execution.compiler) labelled.push(`[info] compiler ${execution.compiler}`)
+      labelled.push('[info] No automated unit tests were attached to this run.')
 
       setTerminalLines([
         `$ Running ${language} · ${timestamp}`,
         '',
-        ...outputLines,
+        ...labelled,
         '',
-        hasError
-          ? '[info] Process finished with errors'
-          : '[info] Process finished successfully',
+        execution.success
+          ? '[info] Process finished successfully'
+          : '[info] Process finished with errors',
       ])
 
-      if (hasError) {
+      if (!execution.success) {
         toast.error('Code ran with errors — check the terminal')
       }
     } catch (err) {
@@ -229,6 +292,35 @@ const AICodingAssistant = () => {
       setIsRunning(false)
     }
   }, [backendURL, code, getToken, language])
+
+  const requestHint = useCallback(async () => {
+    if (!code.trim()) {
+      toast.warn('Write some code before asking for a hint.')
+      return
+    }
+    setHintLoading(true)
+    setHintError(null)
+    try {
+      const { data } = await aiRequest({
+        backendURL,
+        getToken,
+        path: '/api/ai/coding/hint',
+        data: {
+          code,
+          language,
+          hintLevel,
+          execution: lastExecution,
+        },
+        retries: 1,
+      })
+      setHint(data.hint)
+      setHintLevel((prev) => Math.min(3, prev + 1))
+    } catch (err) {
+      setHintError({ message: err.message, isNoKey: err.statusCode === 403 })
+    } finally {
+      setHintLoading(false)
+    }
+  }, [backendURL, code, getToken, hintLevel, language, lastExecution])
 
   // ── AI Analysis ───────────────────────────────────────────────────────────
   const runAnalysis = useCallback(async () => {
@@ -246,7 +338,7 @@ const AICodingAssistant = () => {
         backendURL,
         getToken,
         path: '/api/ai/coding/analyze',
-        data: { code, language, tool: activeTool },
+        data: { code, language, tool: activeTool, execution: lastExecution },
         retries: 1,
       })
       setAnalysisResult(data.analysis)
@@ -258,7 +350,7 @@ const AICodingAssistant = () => {
     } finally {
       setIsAnalyzing(false)
     }
-  }, [activeTool, backendURL, code, getToken, language])
+  }, [activeTool, backendURL, code, getToken, language, lastExecution])
 
   // ── Tool Switch ───────────────────────────────────────────────────────────
   const handleToolChange = (toolId) => {
@@ -315,6 +407,19 @@ const AICodingAssistant = () => {
           </button>
           <span className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">
             Analyze
+          </span>
+        </div>
+        <div className="group relative flex items-center justify-center">
+          <button
+            onClick={requestHint}
+            disabled={hintLoading}
+            className="p-2 rounded-lg transition-all bg-amber-800 hover:bg-amber-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Progressive hint"
+          >
+            {hintLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Lightbulb className="w-5 h-5" />}
+          </button>
+          <span className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">
+            Hint
           </span>
         </div>
       </div>
@@ -467,6 +572,12 @@ const AICodingAssistant = () => {
         error={analysisError}
         activeTool={activeTool}
         onRetry={runAnalysis}
+        hint={hint}
+        hintLoading={hintLoading}
+        hintError={hintError}
+        hintLevel={hintLevel}
+        onHint={requestHint}
+        hasExecution={Boolean(lastExecution)}
       />
     </div>
   )

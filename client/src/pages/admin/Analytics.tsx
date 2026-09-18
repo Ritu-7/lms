@@ -32,6 +32,7 @@ import AdminSection from '../../components/admin/AdminSection'
 import AdminEmptyState from '../../components/admin/AdminEmptyState'
 import AdminStatCard from '../../components/admin/AdminStatCard'
 import AdminAIInsights from '../../components/admin/AdminAIInsights'
+import AdminAIRecommendations from '../../components/admin/AdminAIRecommendations'
 import { AppContext } from '../../context/AppContext'
 import { useTheme } from '../../contexts/ThemeContext'
 
@@ -475,6 +476,9 @@ const Analytics = () => {
 
       {/* AI Insights — Isolated Panel */}
       <AdminAIInsights />
+
+      {/* AI Platform Recommendations — Isolated Panel */}
+      <AdminAIRecommendations />
     </motion.div>
   )
 }

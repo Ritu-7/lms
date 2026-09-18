@@ -23,6 +23,7 @@ const quizQuestionSchema = new mongoose.Schema(
     acceptableAnswers: { type: [String], default: [] },
     explanation: { type: String, default: "", trim: true },
     points: { type: Number, default: 1, min: 0 },
+    difficulty: { type: String, enum: ["easy", "medium", "hard", ""], default: "" },
     shuffleOptions: { type: Boolean, default: false },
     allowPartialCredit: { type: Boolean, default: false },
     caseSensitive: { type: Boolean, default: false },

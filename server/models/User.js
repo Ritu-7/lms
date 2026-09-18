@@ -49,6 +49,35 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    learningGoals: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    targetRole: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    portfolioDraft: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
+    },
+    portfolioPublished: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
+    },
+    lastSkillGap: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
+    },
+    codingPractice: {
+      runCount: { type: Number, default: 0 },
+      lastLanguage: { type: String, default: "" },
+      lastSuccess: { type: Boolean, default: false },
+      lastExitCode: { type: Number, default: null },
+      lastRunAt: { type: Date, default: null },
+    },
   },
   { 
     timestamps: true,

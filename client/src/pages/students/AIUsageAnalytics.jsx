@@ -4,6 +4,7 @@ import { Zap, Trophy, TrendingUp, Flame, ArrowUpRight, Search, Calendar, Loader2
 import { motion } from 'framer-motion'
 import { AppContext } from '../../context/AppContext'
 import { aiGetRequest } from '../../utils/aiClient'
+import LearningAnalyticsPanel from '../../components/students/ai/LearningAnalyticsPanel'
 
 const COLORS = ['#2563EB', '#0EA5E9', '#6366F1', '#8B5CF6', '#A855F7']
 
@@ -68,6 +69,8 @@ const AIUsageAnalytics = () => {
           </button>
         </div>
       </div>
+
+      <LearningAnalyticsPanel />
 
       {loading ? (
         <div className="flex items-center gap-3 text-slate-500"><Loader2 className="animate-spin" size={16} />Loading real AI activity…</div>

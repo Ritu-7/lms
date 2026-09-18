@@ -14,6 +14,7 @@ import {
   normalizeResourceCollection,
 } from "../../utils/resourceUtils";
 import { ChevronDown, CheckCircle2, PlayCircle } from "lucide-react";
+import CourseChatPanel from "../../components/students/ai/CourseChatPanel";
 import { motion, AnimatePresence } from "framer-motion";
 
 const Player = () => {
@@ -579,6 +580,14 @@ const Player = () => {
                   </button>
                 </div>
               </div>
+            )}
+
+            {isEnrolled && (
+              <CourseChatPanel
+                courseId={courseId}
+                courseTitle={courseData.courseTitle}
+                currentLessonTitle={playerData?.lectureTitle || playerData?.lessonTitle}
+              />
             )}
           </div>
 

@@ -18,6 +18,7 @@ import {
 import { AppContext } from '../../context/AppContext';
 import Footer from '../../components/students/Footer';
 import CertificateViewer from '../../components/students/CertificateViewer';
+import PortfolioGeneratorPanel from '../../components/students/ai/PortfolioGeneratorPanel';
 
 const MotionDiv = motion.div;
 const MotionArticle = motion.article;
@@ -197,6 +198,10 @@ const Certificates = () => {
               </MotionDiv>
             );
           })}
+        </div>
+
+        <div className="mb-10">
+          <PortfolioGeneratorPanel />
         </div>
 
         {/* Generate Certificate for completed courses without a cert */}

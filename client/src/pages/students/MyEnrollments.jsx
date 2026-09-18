@@ -7,6 +7,9 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
 import { BookOpen, Award, CheckCircle2, Search, FileCheck2 } from 'lucide-react';
+import LearningPathPanel from '../../components/students/ai/LearningPathPanel';
+import StudyCoachPanel from '../../components/students/ai/StudyCoachPanel';
+import LearningAnalyticsPanel from '../../components/students/ai/LearningAnalyticsPanel';
 
 const MyEnrollments = () => {
   const navigate = useNavigate();
@@ -157,6 +160,14 @@ const MyEnrollments = () => {
               <p className={`mt-2 text-3xl font-bold font-space-grotesk ${stat.color} dark:text-dk-text`}>{stat.value}</p>
             </motion.div>
           ))}
+        </div>
+
+        <div className="grid gap-6 mb-10 xl:grid-cols-2">
+          <LearningPathPanel />
+          <StudyCoachPanel />
+        </div>
+        <div className="mb-10">
+          <LearningAnalyticsPanel />
         </div>
 
         {/* Courses Table */}

@@ -7,6 +7,7 @@ import { Award, CheckCircle2, HelpCircle, PlayCircle, RefreshCw, Timer } from "l
 import { AppContext } from "../../context/AppContext";
 import Footer from "../../components/students/Footer";
 import Loading from "../../components/students/Loading";
+import ExamPrepPanel from "../../components/students/ai/ExamPrepPanel";
 
 const badgeClasses = {
   not_started: "bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800/60 dark:text-slate-300 dark:border-slate-700",
@@ -102,6 +103,8 @@ const Quizzes = () => {
           })}
         </div>
 
+        <ExamPrepPanel />
+
         {/* Quiz Cards */}
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {quizzes.map((quiz, index) => {
@@ -156,6 +159,13 @@ const Quizzes = () => {
                   >
                     <PlayCircle size={16} />
                     {summary.status === "graded" || summary.status === "submitted" ? "Review Quiz" : "Take Quiz"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/quiz/${quiz._id}?prep=1`)}
+                    className="rounded-xl border border-indigo-200 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-950/30 px-3 py-2.5 text-xs font-semibold text-indigo-700 dark:text-indigo-300"
+                  >
+                    Exam prep
                   </button>
                   {summary.passed ? (
                     <span className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/30 px-3 py-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300">

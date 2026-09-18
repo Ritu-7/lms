@@ -16,6 +16,9 @@ export const normalizeQuizQuestions = (questions = []) =>
     acceptableAnswers: Array.isArray(question.acceptableAnswers) ? question.acceptableAnswers.filter(Boolean) : [],
     explanation: question.explanation || "",
     points: Number(question.points || 1),
+    difficulty: ["easy", "medium", "hard"].includes(String(question.difficulty || "").toLowerCase())
+      ? String(question.difficulty).toLowerCase()
+      : "",
     shuffleOptions: Boolean(question.shuffleOptions),
     allowPartialCredit: Boolean(question.allowPartialCredit),
     caseSensitive: Boolean(question.caseSensitive),

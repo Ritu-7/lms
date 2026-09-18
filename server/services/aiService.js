@@ -153,7 +153,7 @@ const extractGeminiText = (payload) => {
   return typeof fallback === "string" ? fallback.trim() : "";
 };
 
-const callGeminiText = async ({ model, contents, systemInstruction, generationConfig, userApiKey }) => {
+export const callGeminiText = async ({ model, contents, systemInstruction, generationConfig, userApiKey }) => {
   const payload = await requestGemini({ model, contents, systemInstruction, generationConfig, userApiKey });
   const text = extractGeminiText(payload);
   if (!text) {
@@ -164,7 +164,7 @@ const callGeminiText = async ({ model, contents, systemInstruction, generationCo
   return text;
 };
 
-const callGeminiJson = async ({ model, contents, systemInstruction, generationConfig, userApiKey }) => {
+export const callGeminiJson = async ({ model, contents, systemInstruction, generationConfig, userApiKey }) => {
   const text = await callGeminiText({
     model,
     contents,
@@ -242,11 +242,25 @@ export const generateStructuredSummary = async ({ model, title, sourceType, sour
   });
 };
 
-export const analyzeCode = async ({ model, code, language, tool, userApiKey }) => {
+export const analyzeCode = async ({ model, code, language, tool, userApiKey, execution = null }) => {
+  const executionBlock = execution && typeof execution === "object"
+    ? `
+Actual execution result (do not invent a different run):
+- success: ${Boolean(execution.success)}
+- exitCode: ${execution.exitCode ?? "unknown"}
+- stdout: ${String(execution.stdout || "").slice(0, 2000) || "(empty)"}
+- stderr: ${String(execution.stderr || "").slice(0, 1200) || "(empty)"}
+- compileError: ${String(execution.compileError || "").slice(0, 800) || "(none)"}
+`
+    : `
+No execution result was provided. Do not invent stdout, stderr, test results, or exit codes.
+Discuss complexity only from the source.`;
+
   const prompt = `You are an expert ${language} engineer.
 Task: ${tool} the following code.
 Return markdown with clear headings, concrete findings, and corrected snippets when useful.
-Do not invent runtime output.
+Never fabricate runtime output, test results, or errors.
+${executionBlock}
 
 \`\`\`${language}
 ${code}
@@ -255,7 +269,7 @@ ${code}
   return callGeminiText({
     model: model || "gemini-3.6-flash",
     contents: [{ role: "user", parts: [{ text: prompt }] }],
-    systemInstruction: `You analyze ${language} code carefully and explain only what is supported by the input.`,
+    systemInstruction: `You analyze ${language} code carefully and explain only what is supported by the source and the provided execution result.`,
     generationConfig: { temperature: 0.25, maxOutputTokens: 3072 },
     userApiKey,
   });
@@ -273,6 +287,11 @@ const WANDBOX_COMPILERS = {
 };
 
 export const runCodeViaPiston = async ({ code, language }) => {
+  const result = await runCodeExecution({ code, language });
+  return result.output;
+};
+
+export const runCodeExecution = async ({ code, language }) => {
   const compiler = WANDBOX_COMPILERS[language];
   if (!compiler) {
     const error = new Error(`Running ${language} is not supported yet.`);
@@ -340,7 +359,19 @@ export const runCodeViaPiston = async ({ code, language }) => {
   }
   if (!output.trim()) output = "[Program ran with no output]";
 
-  return output.trimEnd();
+  const normalizedExit = exitCode === "0" || exitCode === 0 ? 0 : Number(exitCode) || 1;
+
+  return {
+    output: output.trimEnd(),
+    stdout: String(stdout || ""),
+    stderr: String(stderr || ""),
+    compileError: String(compileErr || ""),
+    exitCode: normalizedExit,
+    signal: String(signal || ""),
+    success: !compileErr && normalizedExit === 0,
+    language,
+    compiler,
+  };
 };
 
 export const retryWithBackoff = async (fn, retries = 1, delayMs = 350) => {

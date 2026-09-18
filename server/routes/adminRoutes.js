@@ -22,6 +22,7 @@ import { getEducatorInsights } from "../controllers/educatorInsightsController.j
 import { sendOutreach } from "../controllers/outreachController.js";
 import { getCourseHealthScores, getCourseHealthDetail } from "../controllers/courseHealthController.js";
 import { getAnalyticsInsights } from "../controllers/analyticsInsightsController.js";
+import { getAnalyticsRecommendations } from "../controllers/analyticsRecommendationsController.js";
 import { protectAdminRoutes } from "../middlewares/adminMiddleware.js";
 
 const adminRouter = express.Router();
@@ -54,5 +55,8 @@ adminRouter.post("/copilot", protectAdminRoutes, adminCopilotChat);
 
 // AI Analytics Insights
 adminRouter.post("/analytics/ai-insights", protectAdminRoutes, getAnalyticsInsights);
+
+// AI Platform Recommendations
+adminRouter.get("/analytics/recommendations", protectAdminRoutes, getAnalyticsRecommendations);
 
 export default adminRouter;
