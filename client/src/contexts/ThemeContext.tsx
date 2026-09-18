@@ -23,17 +23,17 @@ const resolveTheme = (preference: Theme): 'light' | 'dark' =>
 
 const applyTheme = (resolved: 'light' | 'dark') => {
   if (typeof document === 'undefined') return
+  const el = document.documentElement
   if (resolved === 'dark') {
-    document.documentElement.classList.add('dark')
-    document.documentElement.style.colorScheme = 'dark'
+    el.classList.add('dark')
+    el.setAttribute('data-theme', 'dark')
+    el.style.colorScheme = 'dark'
   } else {
-    document.documentElement.classList.remove('dark')
-    document.documentElement.style.colorScheme = 'light'
+    el.classList.remove('dark')
+    el.setAttribute('data-theme', 'light')
+    el.style.colorScheme = 'light'
   }
 }
-
-// ─── Inline script to avoid FOUC — inject this in index.html <head> ────────
-// (Not needed here, handled by the provider's synchronous initial state)
 
 // ─── Context ───────────────────────────────────────────────────────────────
 export const ThemeContext = createContext<ThemeContextValue | null>(null)
@@ -47,7 +47,16 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     return 'system' // first visit: use system preference
   })
 
-  const resolvedTheme = useMemo(() => resolveTheme(theme), [theme])
+  const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>(getSystemTheme)
+
+  const resolvedTheme = useMemo(() => {
+    return theme === 'system' ? systemTheme : theme
+  }, [theme, systemTheme])
+
+  // Synchronously apply theme to <html> as early as possible
+  if (typeof window !== 'undefined') {
+    applyTheme(resolvedTheme)
+  }
 
   // Apply theme to <html> whenever it changes
   useEffect(() => {
@@ -58,7 +67,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (theme !== 'system') return
     const mq = window.matchMedia('(prefers-color-scheme: dark)')
-    const handler = () => applyTheme(getSystemTheme())
+    const handler = (e: MediaQueryListEvent) => setSystemTheme(e.matches ? 'dark' : 'light')
     mq.addEventListener('change', handler)
     return () => mq.removeEventListener('change', handler)
   }, [theme])

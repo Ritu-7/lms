@@ -11,6 +11,18 @@
 }
 
 :root {
+    --dk-base: #f8fafc;
+    --dk-surface: #ffffff;
+    --dk-surface-2: #f1f5f9;
+    --dk-border: rgba(15, 23, 42, 0.08);
+    --dk-border-2: rgba(15, 23, 42, 0.12);
+    --dk-text: #0f172a;
+    --dk-text-2: #475569;
+    --dk-text-3: #94a3b8;
+    --dk-accent: #2563eb;
+    --dk-accent-glow: rgba(37, 99, 235, 0.15);
+    --dk-navbar: rgba(255, 255, 255, 0.88);
+
     --bg-primary: #f8f9fc;
     --text-primary: #0f172a;
     --text-secondary: #475569;

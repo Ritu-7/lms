@@ -9,13 +9,24 @@
 
     <!-- Theme: apply before paint to prevent flash of wrong theme (FOUC) -->
     <script>
-      ;(function () {
-        var stored = localStorage.getItem('lms-theme')
-        var dark =
-          stored === 'dark' ||
-          (stored !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-        if (dark) document.documentElement.classList.add('dark')
-      })()
+      (function () {
+        try {
+          var stored = localStorage.getItem('lms-theme');
+          var dark =
+            stored === 'dark' ||
+            (stored !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          var el = document.documentElement;
+          if (dark) {
+            el.classList.add('dark');
+            el.setAttribute('data-theme', 'dark');
+            el.style.colorScheme = 'dark';
+          } else {
+            el.classList.remove('dark');
+            el.setAttribute('data-theme', 'light');
+            el.style.colorScheme = 'light';
+          }
+        } catch (e) {}
+      })();
     </script>
 
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
