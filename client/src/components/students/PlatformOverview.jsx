@@ -46,7 +46,7 @@ const PlatformOverview = () => {
       <div className="relative w-full rounded-[2.5rem] bg-bg-primary overflow-hidden p-8 sm:p-12 lg:p-16 border border-card-border shadow-2xl transition-colors duration-500">
         {/* Subtle background gradient / noise texture */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-text-primary/[0.03] via-transparent to-transparent pointer-events-none"></div>
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.08] dark:opacity-20 mix-blend-overlay pointer-events-none transition-opacity duration-500"></div>
+        <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.08] dark:opacity-20 mix-blend-overlay pointer-events-none transition-opacity duration-500"></div>
 
         <div className="relative z-10 text-center mb-20">
           <motion.h2 

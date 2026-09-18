@@ -13,7 +13,7 @@ const Educator = () => {
       <div className='flex flex-1'>
         <Sidebar />
         
-        <main className='flex-1 overflow-y-auto bg-slate-50 dark:bg-[#0D0D10]'>
+        <main className='flex-1 overflow-y-auto bg-slate-50 dark:bg-dk-base'>
           <Outlet />
         </main>
       </div>

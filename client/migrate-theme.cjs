@@ -66,13 +66,8 @@ function processFile(filePath) {
             }
         });
 
-        // Admin-specific background adjustment: Admin pages get #0D0D10 content area instead of base
-        if (filePath.includes('src\\pages\\admin') && filePath.includes('.tsx')) {
-            if (updatedData.includes('dark:bg-dk-base')) {
-               updatedData = updatedData.replace(/dark:bg-dk-base/g, 'dark:bg-[#0D0D10]');
-               modified = true;
-            }
-        }
+        // Admin background uses standard dk-base theme variable
+        // (no hardcoded #0D0D10 override)
 
         if (modified) {
             fs.writeFile(filePath, updatedData, 'utf8', err => {
