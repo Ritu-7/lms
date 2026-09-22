@@ -8,13 +8,15 @@ import { callGeminiJson, callGeminiText, retryWithBackoff } from "../services/ai
 import { evaluateQuizQuestion } from "../services/quizService.js";
 import {
   buildStudentLearningSnapshot,
+  buildCourseChatContext,
   compactSnapshotForPrompt,
-  flattenCourseLessons,
 } from "../services/studentLearningSnapshotService.js";
 import {
   collectStudentEvidenceSkills,
+  matchGapSkill,
   normalizeSkillGapResult,
 } from "../services/studentSkillGapService.js";
+import { pickAdaptiveNext, sanitizeQuizQuestion } from "../services/adaptiveQuizService.js";
 import AIUsageLog from "../models/AIUsageLog.js";
 
 const MODEL = "gemini-3.6-flash";
@@ -436,10 +438,13 @@ Rules:
       .filter((item) => item.title)
       .slice(0, 6),
     gapReferences: (Array.isArray(raw.gapReferences) ? raw.gapReferences : [])
-      .map((item) => ({
-        skill: String(item.skill || "").trim(),
-        note: String(item.note || "").trim(),
-      }))
+      .map((item) => {
+        const skill = matchGapSkill(item.skill, [...allowedGapSkills]) || String(item.skill || "").trim();
+        return {
+          skill,
+          note: String(item.note || "").trim(),
+        };
+      })
       .filter((item) => allowedGapSkills.has(item.skill))
       .slice(0, 8),
     skillGap: gaps,
@@ -599,6 +604,7 @@ export const chatWithCourse = wrap(async (req, res) => {
   const userApiKey = requireStudentKey(user);
   const courseId = String(req.body?.courseId || "").trim();
   const question = String(req.body?.question || "").trim();
+  const currentLessonId = String(req.body?.currentLessonId || "").trim();
   const history = Array.isArray(req.body?.messages) ? req.body.messages.slice(-8) : [];
   if (!courseId || !question) {
     return res.status(400).json({ success: false, message: "Ask a question about the course you are viewing." });
@@ -612,20 +618,11 @@ export const chatWithCourse = wrap(async (req, res) => {
     .lean();
   if (!course) return res.status(404).json({ success: false, message: "Course not found." });
 
-  const lessons = flattenCourseLessons(course).map((lesson) => ({
-    lessonId: lesson.lessonId,
-    title: lesson.title,
-    chapterTitle: lesson.chapterTitle,
-    excerpt: lesson.excerpt,
-    hasPdf: Boolean(lesson.hasPdf),
-    resourceTitles: lesson.resourceTitles || [],
-    type: lesson.type,
-  }));
-
   const courseNotes = await PersonalNote.find({ user: user._id, course: course._id })
     .sort({ updatedAt: -1 })
     .limit(12)
     .lean();
+  const context = buildCourseChatContext(course, courseNotes, currentLessonId);
 
   const raw = await geminiJson(
     userApiKey,
@@ -633,21 +630,13 @@ export const chatWithCourse = wrap(async (req, res) => {
 Return JSON: {"answer": string, "citations":[{"lessonId": string, "lessonTitle": string, "chapterTitle": string, "section": string}]}
 If the answer is not in the course materials, say so and cite nothing invented. Citations must copy lessonId from the payload.`,
     {
-      courseTitle: course.courseTitle,
-      courseDescription: String(course.courseDescription || "").slice(0, 500),
+      ...context,
       question,
       history,
-      lessons,
-      studentNotes: courseNotes.map((note) => ({
-        lessonId: note.lessonId,
-        lessonTitle: note.lessonTitle,
-        section: note.positionLabel || note.positionType || "lesson",
-        excerpt: String(note.noteText || "").slice(0, 240),
-      })),
     }
   );
 
-  const lessonMap = new Map(lessons.map((item) => [item.lessonId, item]));
+  const lessonMap = new Map((context.lessons || []).map((item) => [item.lessonId, item]));
   const citations = (Array.isArray(raw.citations) ? raw.citations : [])
     .map((item) => {
       const lesson = lessonMap.get(String(item.lessonId || ""));
@@ -673,51 +662,6 @@ If the answer is not in the course materials, say so and cite nothing invented. 
 });
 
 const clipPrompt = (value) => String(value || "").slice(0, 80);
-
-const difficultyRank = (question = {}) => {
-  const named = String(question.difficulty || "").toLowerCase();
-  if (named === "easy") return 1;
-  if (named === "medium") return 2;
-  if (named === "hard") return 3;
-  const points = Number(question.points || 1);
-  if (points <= 1) return 1;
-  if (points <= 2) return 2;
-  return 3;
-};
-
-const sanitizeQuizQuestion = (question) => {
-  if (!question) return null;
-  return {
-    questionId: question.questionId,
-    prompt: question.prompt,
-    questionType: question.questionType,
-    points: question.points,
-    difficulty: question.difficulty || "",
-    options: (question.options || []).map((option) => ({
-      optionId: option.optionId,
-      label: option.label,
-    })),
-  };
-};
-
-const pickAdaptiveNext = (remaining = [], { lastCorrect, lastQuestion, quizTags = [] } = {}) => {
-  if (!remaining.length) return null;
-  const currentRank = lastQuestion ? difficultyRank(lastQuestion) : 2;
-  const target = lastCorrect ? Math.min(3, currentRank + 1) : Math.max(1, currentRank - 1);
-  const tokens = new Set(
-    [...(quizTags || []), ...(String(lastQuestion?.prompt || "").split(/\W+/))]
-      .map((item) => String(item || "").toLowerCase())
-      .filter((item) => item.length > 4)
-  );
-  const scored = remaining.map((item) => {
-    const words = String(item.prompt || "").toLowerCase().split(/\W+/);
-    const conceptOverlap = words.filter((word) => tokens.has(word)).length;
-    const rankDelta = Math.abs(difficultyRank(item) - target);
-    return { item, score: rankDelta * 4 + (lastCorrect ? 0 : -conceptOverlap) };
-  });
-  scored.sort((a, b) => a.score - b.score);
-  return scored[0].item;
-};
 
 export const adaptiveQuizStep = wrap(async (req, res) => {
   const user = await resolveStudent(req.clerkUserId);
@@ -774,7 +718,7 @@ export const adaptiveQuizStep = wrap(async (req, res) => {
     quizTags: quiz.tags,
   });
 
-  let explanation = evaluation.explanation || "";
+  let explanation = evaluation.explanation || question.explanation || "";
   if (!explanation) {
     try {
       const userApiKey = requireStudentKey(user);
@@ -889,11 +833,29 @@ Rules:
   );
 
   const enrolledLessons = new Map();
+  const enrolledCourseIds = new Set();
+  const allowedSources = [];
   for (const course of snapshot.enrollments || []) {
+    enrolledCourseIds.add(course.courseId);
+    allowedSources.push(course.title);
     for (const lesson of course.lessons || []) {
       enrolledLessons.set(`${course.courseId}:${lesson.lessonId}`, lesson);
+      allowedSources.push(lesson.title, lesson.chapterTitle);
     }
   }
+  for (const quiz of snapshot.quizzes || []) {
+    allowedSources.push(quiz.title);
+  }
+  if (focusQuiz) {
+    allowedSources.push(focusQuiz.title);
+    (focusQuiz.questions || []).forEach((item) => allowedSources.push(clipPrompt(item.prompt)));
+  }
+  const sourceNeedles = [...new Set(allowedSources.map((item) => String(item || "").trim().toLowerCase()).filter((item) => item.length > 3))];
+  const matchesSource = (value) => {
+    const hay = String(value || "").toLowerCase();
+    if (!hay) return false;
+    return sourceNeedles.some((needle) => hay.includes(needle) || needle.includes(hay));
+  };
 
   const topics = (Array.isArray(raw.topics) ? raw.topics : [])
     .map((item, index) => ({
@@ -905,8 +867,9 @@ Rules:
     }))
     .filter((item) => {
       if (!item.topic || !item.why) return false;
-      if (item.courseId && !enrolledLessons.has(`${item.courseId}:${item.lessonId}`) && ![...enrolledLessons.keys()].some((key) => key.startsWith(`${item.courseId}:`))) {
-        return Boolean(item.why) && !item.lessonId;
+      if (item.courseId && !enrolledCourseIds.has(item.courseId)) return false;
+      if (item.lessonId && item.courseId && !enrolledLessons.has(`${item.courseId}:${item.lessonId}`)) {
+        item.lessonId = "";
       }
       return true;
     })
@@ -925,7 +888,7 @@ Rules:
           hint: String(item.hint || "").trim(),
           sourceLesson: String(item.sourceLesson || "").trim(),
         }))
-        .filter((item) => item.prompt)
+        .filter((item) => item.prompt && (matchesSource(item.sourceLesson) || matchesSource(item.prompt)))
         .slice(0, 8),
       weakAreaFocus: Array.isArray(raw.weakAreaFocus) ? raw.weakAreaFocus.map(String).slice(0, 8) : [],
       generatedAt: new Date().toISOString(),

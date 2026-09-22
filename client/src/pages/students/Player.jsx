@@ -586,6 +586,7 @@ const Player = () => {
               <CourseChatPanel
                 courseId={courseId}
                 courseTitle={courseData.courseTitle}
+                currentLessonId={playerData?.lectureId || playerData?.lessonId}
                 currentLessonTitle={playerData?.lectureTitle || playerData?.lessonTitle}
               />
             )}

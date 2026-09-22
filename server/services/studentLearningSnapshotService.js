@@ -287,6 +287,34 @@ export const buildStudentLearningSnapshot = async (user) => {
   };
 };
 
+export const buildCourseChatContext = (course = {}, notes = [], currentLessonId = "") => {
+  const lessons = flattenCourseLessons(course).map((lesson) => ({
+    lessonId: lesson.lessonId,
+    title: lesson.title,
+    chapterTitle: lesson.chapterTitle,
+    excerpt: lesson.excerpt,
+    hasPdf: Boolean(lesson.hasPdf),
+    resourceTitles: lesson.resourceTitles || [],
+    type: lesson.type,
+  }));
+  const current = lessons.find((lesson) => lesson.lessonId === String(currentLessonId));
+  const ordered = current
+    ? [current, ...lessons.filter((lesson) => lesson.lessonId !== current.lessonId)]
+    : lessons;
+  return {
+    courseTitle: course.courseTitle,
+    courseDescription: clip(course.courseDescription, 500),
+    currentLessonId: current?.lessonId || "",
+    lessons: ordered.slice(0, 40),
+    studentNotes: (Array.isArray(notes) ? notes : []).map((note) => ({
+      lessonId: note.lessonId,
+      lessonTitle: note.lessonTitle,
+      section: note.positionLabel || note.positionType || "lesson",
+      excerpt: clip(note.noteText, 240),
+    })),
+  };
+};
+
 export const compactSnapshotForPrompt = (snapshot) => ({
   profile: snapshot.profile,
   enrollments: (snapshot.enrollments || []).map((course) => ({
