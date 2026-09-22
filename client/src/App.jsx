@@ -125,8 +125,8 @@ const App = () => {
           element={<AuthenticateWithRedirectCallback />}
         />
         {/* --- Navbar ROUTES --- */}
-        <Route path="/about" element={<><Navbar /><About /><Footer /></>} />
-        <Route path="/contact" element={<><Navbar /><Contact /><Footer /></>} />
+        <Route path="/about" element={<><Navbar /><About /></>} />
+        <Route path="/contact" element={<><Navbar /><Contact /></>} />
         <Route path="/announcements" element={<><Navbar /><Announcements /><Footer /></>} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Login />} />
@@ -134,13 +134,13 @@ const App = () => {
         <Route path="/access-denied" element={<AccessDenied />} />
         {/* --- STUDENT ROUTES --- */}
         <Route path="/" element={<><Navbar /><Home /></>} />
-        <Route path="/course-list" element={<><Navbar /><CourseList /><Footer /></>} />
-        <Route path="/course-list/:input" element={<><Navbar /><CourseList /><Footer /></>} />
-        <Route path="/course/:id" element={<><Navbar /><CourseDetail /><Footer /></>} />
-        <Route path="/my-enrollments" element={<><Navbar /><MyEnrollments /><Footer /></>} />
-        <Route path="/quizzes" element={<><Navbar /><StudentQuizzes /><Footer /></>} />
-        <Route path="/assignments" element={<><Navbar /><StudentAssignments /><Footer /></>} />
-        <Route path="/certificate/verify/:verificationCode" element={<><Navbar /><VerifyCertificate /><Footer /></>} />
+        <Route path="/course-list" element={<><Navbar /><CourseList /></>} />
+        <Route path="/course-list/:input" element={<><Navbar /><CourseList /></>} />
+        <Route path="/course/:id" element={<><Navbar /><CourseDetail /></>} />
+        <Route path="/my-enrollments" element={<><Navbar /><MyEnrollments /></>} />
+        <Route path="/quizzes" element={<><Navbar /><StudentQuizzes /></>} />
+        <Route path="/assignments" element={<><Navbar /><StudentAssignments /></>} />
+        <Route path="/certificate/verify/:verificationCode" element={<><Navbar /><VerifyCertificate /></>} />
         <Route path="/player/:courseId" element={<><Navbar /><Player /></>} />
         <Route path="/quiz/:quizId" element={<><Navbar /><QuizPlayer /></>} />
         <Route path="/loading/:path" element={<><Navbar /><Loading /></>} />
@@ -152,15 +152,14 @@ const App = () => {
         <Route path="/credits" element={<><Navbar /><CreditDashboard /><Footer /></>} />
         <Route path="/ai-analytics" element={<><Navbar /><AIUsageAnalytics /><Footer /></>} />
         <Route path="/ai-coding-assistant" element={<><Navbar /><AICodingAssistant /></>} />
-        <Route path="/bookmarks" element={<><Navbar /><Bookmarks /><Footer /></>} />
-        <Route path="/certificates" element={<><Navbar /><Certificates /><Footer /></>} />
+        <Route path="/bookmarks" element={<><Navbar /><Bookmarks /></>} />
+        <Route path="/certificates" element={<><Navbar /><Certificates /></>} />
         <Route
           path="/settings"
           element={
             <>
               <Navbar />
               <Settings />
-              <Footer />
             </>
           }
         />

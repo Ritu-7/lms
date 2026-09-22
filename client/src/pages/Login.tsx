@@ -50,7 +50,7 @@ const Login = () => {
           <Home />
         </div>
         {/* Light mode: white frosted overlay | Dark mode: deep slate overlay */}
-        <div className="absolute inset-0 bg-white/70 dark:bg-dk-base/65 backdrop-blur-[18px]" />
+        <div className="absolute inset-0 bg-white/70 dark:bg-dk-base/95 backdrop-blur-[18px]" />
         {/* Ambient gradient accents */}
         <div className="absolute left-1/4 top-1/4 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-400/15 dark:bg-indigo-600/20 blur-[120px]" />
         <div className="absolute bottom-0 right-1/4 h-[400px] w-[400px] translate-x-1/2 translate-y-1/2 rounded-full bg-cyan-400/10 dark:bg-cyan-500/15 blur-[100px]" />
@@ -67,7 +67,7 @@ const Login = () => {
           {/* Outer glow ring — adapts border color per theme */}
           <div className="rounded-[38px] bg-gradient-to-br from-slate-200/60 via-slate-100/30 to-slate-50/10 dark:from-white/[0.12] dark:via-white/[0.06] dark:to-white/[0.02] p-[1px] shadow-[0_8px_32px_rgba(2,6,23,0.12)] dark:shadow-[0_8px_32px_rgba(2,6,23,0.6),0_0_0_1px_rgba(255,255,255,0.08)] backdrop-blur-2xl">
             {/* Inner card */}
-            <div className="relative overflow-hidden rounded-[37px] bg-white/80 dark:bg-dk-base/60 px-6 py-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-3xl sm:px-10 sm:py-10">
+            <div className="relative overflow-hidden rounded-[37px] bg-white/80 dark:bg-dk-surface px-6 py-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-3xl sm:px-10 sm:py-10">
               {/* Subtle inner highlight at top */}
               <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-slate-300/60 dark:via-white/20 to-transparent" />
               {/* Corner glow */}
