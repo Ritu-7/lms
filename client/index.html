@@ -14,7 +14,7 @@
           var stored = localStorage.getItem('lms-theme');
           var dark =
             stored === 'dark' ||
-            (stored !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            (stored === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
           var el = document.documentElement;
           if (dark) {
             el.classList.add('dark');

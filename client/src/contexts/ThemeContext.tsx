@@ -44,7 +44,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     if (typeof window === 'undefined') return 'system'
     const stored = window.localStorage.getItem(STORAGE_KEY) as Theme | null
     if (stored === 'light' || stored === 'dark' || stored === 'system') return stored
-    return 'system' // first visit: use system preference
+    return 'light' // first visit: keep the interface deterministic across environments
   })
 
   const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>(getSystemTheme)
