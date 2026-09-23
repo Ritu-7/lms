@@ -18,7 +18,7 @@ export const staggerContainer = {
 export const liftHover = { y: -3 }
 
 export const glassCard =
-  'rounded-2xl border border-white/50 dark:border-white/10 bg-white/75 dark:bg-dk-surface/80 backdrop-blur-xl shadow-lg shadow-slate-900/5'
+  'rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-lg shadow-slate-900/5 dark:shadow-black/20'
 
 export const hrefForLearningResource = (item = {}) => {
   if (item.hrefHint === 'quiz' && (item.entityId || item.lessonId || item.quizId)) {

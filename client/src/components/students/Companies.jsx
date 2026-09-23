@@ -23,7 +23,7 @@ const Companies = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className='group flex items-center gap-4 rounded-2xl border border-card-border bg-card-bg p-5 shadow-sm transition-all duration-300 hover:shadow-lg hover:shadow-glow-blue hover:border-accent-blue/50 hover:-translate-y-1'
+              className='group interactive-card flex items-center gap-4 rounded-2xl border border-card-border bg-card-bg p-5 shadow-sm hover:border-accent-blue/50'
             >
               <div className="relative">
                 <img

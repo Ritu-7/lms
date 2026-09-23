@@ -12,7 +12,7 @@ const CourseCard = ({ course }) => {
     <Link
       to={`/course/${course._id}`}
       onClick={() => window.scrollTo(0, 0)}
-      className="group flex flex-col h-full overflow-hidden bg-card-bg border border-card-border rounded-2xl shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-glow-blue hover:-translate-y-1 hover:border-accent-blue/50"
+      className="group interactive-card flex flex-col h-full overflow-hidden bg-card-bg border border-card-border rounded-2xl shadow-sm hover:border-accent-blue/50"
     >
       {/* Thumbnail */}
       <div className="relative overflow-hidden aspect-video">

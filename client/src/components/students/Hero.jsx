@@ -239,7 +239,7 @@ const Hero = () => {
             <FloatingCard delay={0.5} y={-10} rotate={-2}
               className="absolute top-0 left-0 sm:left-4 z-20 w-[260px] sm:w-[280px]"
             >
-              <div className="rounded-2xl border border-card-border bg-card-bg backdrop-blur-xl shadow-2xl shadow-black/5 dark:shadow-black/40 p-5 transition-colors">
+              <div className="interactive-card rounded-2xl border border-card-border bg-card-bg backdrop-blur-xl shadow-2xl shadow-black/5 dark:shadow-black/40 p-5">
                 {/* tag */}
                 <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400 bg-amber-500/10 rounded-full px-2.5 py-1 mb-3">
                   <TrendingUp className="w-3 h-3" /> Currently Trending
@@ -274,7 +274,7 @@ const Hero = () => {
             <FloatingCard delay={0.75} y={8} rotate={3}
               className="absolute top-4 right-0 sm:right-0 z-10 w-[220px] sm:w-[240px]"
             >
-              <div className="rounded-2xl border border-card-border bg-card-bg backdrop-blur-xl shadow-2xl shadow-black/5 dark:shadow-black/40 p-5 transition-colors">
+              <div className="interactive-card rounded-2xl border border-card-border bg-card-bg backdrop-blur-xl shadow-2xl shadow-black/5 dark:shadow-black/40 p-5">
                 <span className="inline-block text-[10px] font-bold uppercase tracking-widest text-accent-blue bg-accent-blue/10 rounded-full px-2.5 py-1 mb-3">
                   Live Analytics
                 </span>
@@ -297,7 +297,7 @@ const Hero = () => {
             <FloatingCard delay={1} y={-12} rotate={-1}
               className="absolute bottom-0 left-1/2 -translate-x-1/2 sm:left-[12%] sm:translate-x-0 z-30 w-[280px] sm:w-[310px]"
             >
-              <div className="rounded-2xl border border-card-border bg-card-bg backdrop-blur-xl shadow-2xl shadow-black/5 dark:shadow-black/40 p-5 transition-colors">
+              <div className="interactive-card rounded-2xl border border-card-border bg-card-bg backdrop-blur-xl shadow-2xl shadow-black/5 dark:shadow-black/40 p-5">
                 <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-accent-purple bg-accent-purple/10 rounded-full px-2.5 py-1 mb-3">
                   <Bot className="w-3 h-3" /> Active AI Agent
                 </span>

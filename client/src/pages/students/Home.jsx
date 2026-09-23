@@ -3,7 +3,6 @@ import Hero from '../../components/students/Hero'
 import PlatformOverview from '../../components/students/PlatformOverview'
 import Companies from '../../components/students/Companies'
 import CoursesSection from '../../components/students/CoursesSection'
-import StatsSection from '../../components/students/StatsSection'
 import TestimonialsSection from '../../components/students/TestimonialsSection'
 import PricingSection from '../../components/students/PricingSection'
 import CallToAction from '../../components/students/CallToAction'
@@ -15,7 +14,6 @@ const Home = () => {
       <Hero />
       <PlatformOverview />
       <Companies />
-      <StatsSection />
       <CoursesSection/>
       <PricingSection />
       <TestimonialsSection />

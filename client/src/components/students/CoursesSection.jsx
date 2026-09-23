@@ -49,7 +49,7 @@ const CoursesSection = () => {
       <div className="text-center">
         <Link
           to="/course-list"
-          className="inline-flex items-center gap-2 px-8 py-3 rounded-xl font-semibold text-text-primary border border-card-border bg-card-bg hover:bg-text-primary/5 transition-all duration-200 shadow-sm hover:shadow-lg hover:shadow-glow-blue hover:border-accent-blue/50 group"
+          className="interactive-button inline-flex items-center gap-2 px-8 py-3 rounded-xl font-semibold text-text-primary border border-card-border bg-card-bg hover:bg-text-primary/5 hover:border-accent-blue/50 group"
         >
           Browse All Courses
           <svg 

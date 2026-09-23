@@ -50,14 +50,14 @@ const CallToAction = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="w-full sm:w-auto px-8 py-4 rounded-2xl text-white bg-accent-blue hover:bg-accent-blue/90 transition-colors font-semibold shadow-lg shadow-glow-blue"
+            className="interactive-button w-full sm:w-auto px-8 py-4 rounded-2xl text-white bg-accent-blue hover:bg-accent-blue/90 font-semibold shadow-lg shadow-glow-blue"
             onClick={handlePrimaryCTA}
           >
             {isSignedIn ? "Go to Dashboard" : "Start Learning Now"}
           </motion.button>
 
           <Link
-            className="group w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 rounded-2xl text-text-primary font-semibold border border-card-border bg-card-bg hover:border-accent-blue/50 transition-colors shadow-sm hover:shadow-lg hover:shadow-glow-blue"
+            className="group interactive-button w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 rounded-2xl text-text-primary font-semibold border border-card-border bg-card-bg hover:border-accent-blue/50 shadow-sm hover:shadow-lg hover:shadow-glow-blue"
             to="/course-list"
           >
             Explore Platform

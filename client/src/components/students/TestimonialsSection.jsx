@@ -91,7 +91,7 @@ const TestimonialsSection = () => {
                 <div
                   key={`${testimonial.id}-${idx}`}
                   onClick={() => setSelectedReview(testimonial)}
-                  className="group cursor-pointer bg-card-bg border border-card-border rounded-2xl p-6 flex flex-col w-[320px] md:w-[380px] shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-glow-blue hover:-translate-y-1 hover:border-accent-blue/50 flex-shrink-0"
+                  className="group interactive-card cursor-pointer bg-card-bg border border-card-border rounded-2xl p-6 flex flex-col w-[320px] md:w-[380px] shadow-sm hover:border-accent-blue/50 flex-shrink-0"
                 >
                   <div className="flex items-center gap-4 mb-6">
                     <Avatar name={testimonial.name} image={testimonial.image} />

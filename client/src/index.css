@@ -5,6 +5,30 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+    .interactive-card {
+        transition: transform 300ms ease, box-shadow 300ms ease, border-color 300ms ease;
+    }
+
+    .interactive-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 35px -18px var(--glow-blue);
+    }
+
+    .interactive-button {
+        transition: transform 200ms ease, box-shadow 200ms ease, background-color 200ms ease, border-color 200ms ease;
+    }
+
+    .interactive-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px -14px var(--glow-blue);
+    }
+
+    .interactive-button:active {
+        transform: translateY(0) scale(0.98);
+    }
+}
+
 
 *{
     font-family: Outfit;

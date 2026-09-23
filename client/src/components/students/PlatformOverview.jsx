@@ -25,7 +25,7 @@ const PlatformOverview = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className={`group relative flex items-center gap-4 rounded-2xl border border-slate-200/90 bg-white px-5 py-5 text-left shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 dark:border-dk-border dark:bg-dk-surface dark:hover:border-white/20 sm:px-6 sm:py-6 ${stat.glow}`}
+              className={`group interactive-card relative flex items-center gap-4 rounded-2xl border border-slate-200/90 bg-white px-5 py-5 text-left shadow-lg hover:border-slate-300 dark:border-dk-border dark:bg-dk-surface dark:hover:border-white/20 sm:px-6 sm:py-6 ${stat.glow}`}
             >
               <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${stat.bg}`}>
                 <stat.icon className={`h-6 w-6 ${stat.color}`} strokeWidth={1.8} />
@@ -258,8 +258,8 @@ const PlatformOverview = () => {
                    </motion.div>
                    
                    {/* Card Content */}
-                   <div className={`w-full h-full rounded-3xl border border-card-border bg-card-bg backdrop-blur-sm pt-12 pb-8 px-6 sm:px-8 shadow-xl transition-all duration-500
-                     group-hover:-translate-y-2 ${step.theme.hoverGlow} ${step.theme.hoverBorder}
+                   <div className={`interactive-card w-full h-full rounded-3xl border border-card-border bg-card-bg backdrop-blur-sm pt-12 pb-8 px-6 sm:px-8 shadow-xl
+                     ${step.theme.hoverGlow} ${step.theme.hoverBorder}
                      flex flex-col items-center text-center justify-between
                      ${isActive ? `${step.theme.glow} ${step.theme.border} bg-text-primary/[0.02]` : ''}
                    `}>

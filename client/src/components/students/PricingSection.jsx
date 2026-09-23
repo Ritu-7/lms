@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -25,7 +25,7 @@ const PricingSection = () => {
       features: ["Unlimited access to all courses", "Exclusive Pro-only content", "Priority mentor support", "Interactive projects & assessments", "Offline viewing"],
       recommended: true,
       buttonText: "Start Pro Trial",
-      buttonLink: "#"
+      buttonLink: "/signup"
     },
     {
       name: "Enterprise",
@@ -71,8 +71,11 @@ const PricingSection = () => {
           >
             <span className={`text-sm font-semibold transition-colors ${!isYearly ? 'text-text-primary' : 'text-text-secondary'}`}>Monthly</span>
             <button 
+              type="button"
               onClick={() => setIsYearly(!isYearly)}
-              className="relative w-16 h-8 rounded-full bg-card-bg border border-card-border p-1 shadow-inner transition-colors flex items-center"
+              aria-label={`Switch to ${isYearly ? 'monthly' : 'annual'} billing`}
+              aria-pressed={isYearly}
+              className="interactive-button relative w-16 h-8 rounded-full bg-card-bg border border-card-border p-1 shadow-inner flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary"
             >
               <motion.div 
                 animate={{ x: isYearly ? 32 : 0 }}
@@ -95,9 +98,9 @@ const PricingSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1, duration: 0.5 }}
-              className={`relative flex flex-col p-8 rounded-3xl border transition-all duration-300 bg-card-bg shadow-sm hover:shadow-xl hover:-translate-y-2 ${
+              className={`interactive-card group relative flex flex-col p-8 rounded-3xl border bg-card-bg shadow-sm hover:scale-[1.03] hover:border-accent-blue hover:shadow-xl hover:shadow-glow-blue/30 focus-within:scale-[1.03] ${
                 plan.recommended 
-                  ? 'border-accent-blue shadow-glow-blue/20' 
+                  ? 'border-accent-blue shadow-glow-blue/20 hover:shadow-glow-blue/50' 
                   : 'border-card-border'
               }`}
             >
@@ -136,7 +139,8 @@ const PricingSection = () => {
 
               <Link
                 to={plan.buttonLink}
-                className={`w-full py-4 rounded-xl font-bold text-center transition-all duration-300 ${
+                aria-label={`${plan.buttonText} with the ${plan.name} plan`}
+                className={`interactive-button w-full py-4 rounded-xl font-bold text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary ${
                   plan.recommended
                     ? 'bg-accent-blue text-white hover:bg-accent-blue/90 shadow-lg shadow-accent-blue/25'
                     : 'bg-text-primary/5 text-text-primary hover:bg-text-primary/10 border border-card-border'
