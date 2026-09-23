@@ -96,14 +96,14 @@ const StudentNotifications = () => {
         </div>
 
         {/* Notifications List */}
-        <div className="bg-white dark:bg-dk-surface rounded-xl shadow-custom-card border border-slate-200 dark:border-dk-border divide-y divide-slate-100 dark:divide-dk-border overflow-hidden">
+        <div className="interactive-card bg-white dark:bg-dk-surface rounded-2xl shadow-custom-card border border-slate-200 dark:border-dk-border divide-y divide-slate-100 dark:divide-dk-border overflow-hidden">
           {error && (
             <div className="p-6 text-center text-red-500">
               <p className="font-semibold">Error loading notifications</p>
               <p className="text-sm mt-1">{error}</p>
               <button
                 onClick={() => fetchNotifications(1, activeTab === 'unread' ? { unread: true } : (activeTab !== 'all' ? { type: activeTab } : {}))}
-                className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700"
+                className="interactive-button mt-3 rounded-xl bg-accent-blue px-4 py-2 text-sm font-semibold text-white hover:bg-accent-blue/90"
               >
                 Retry
               </button>

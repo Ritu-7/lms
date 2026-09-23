@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { Bookmark, BookmarkX, BookOpen, FileText, Layers, RefreshCw, Search, Trash2, UserRound } from 'lucide-react';
 import { AppContext } from '../../context/AppContext';
 import Footer from '../../components/students/Footer';
+import Button from '../../components/ui/Button';
 
 const getCourseId = (courseOrId) => {
   if (!courseOrId) return '';
@@ -221,14 +222,15 @@ const Bookmarks = () => {
                 className="w-full sm:w-72 rounded-xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface py-3 pl-11 pr-4 text-sm text-slate-900 dark:text-dk-text outline-none transition-all placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
               />
             </div>
-            <button
+            <Button
+              variant="primary"
               onClick={fetchBookmarks}
               disabled={loading}
-              className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70 transition-all active:scale-95 shadow-lg shadow-blue-600/25"
+              className="shadow-lg shadow-blue-600/25"
             >
               <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
               Refresh
-            </button>
+            </Button>
           </div>
         </header>
 
@@ -270,7 +272,7 @@ const Bookmarks = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm"
+                className="interactive-card rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm"
               >
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-medium text-slate-500 dark:text-dk-text-2">{stat.label}</p>
@@ -340,7 +342,7 @@ const Bookmarks = () => {
                     initial={{ opacity: 0, y: 18 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-xl"
+                    className="group interactive-card flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm hover:border-blue-400 dark:hover:border-blue-500"
                   >
                     <button
                       onClick={() => bookmark.courseId && navigate(`/course/${bookmark.courseId}`)}
@@ -485,4 +487,4 @@ const Bookmarks = () => {
   );
 };
 
-export default Bookmarks;
+export default Bookmarks;

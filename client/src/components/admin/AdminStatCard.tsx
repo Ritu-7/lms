@@ -1,5 +1,6 @@
 import React, { ReactNode, useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+import Card from '../ui/Card'
 import { TrendingUp, TrendingDown } from 'lucide-react'
 import { useInView } from 'react-intersection-observer'
 
@@ -86,10 +87,12 @@ const AdminStatCard = ({
   const styles = COLOR_MAP[color] || COLOR_MAP.blue
 
   return (
-    <motion.div
+    <Card
+      as={motion.div}
+      variant="interactive"
       whileHover={{ y: -4 }}
       transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-      className={`rounded-2xl border border-slate-200/80 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm transition-all duration-300 ${styles.glow}`}
+      className={`p-6 ${styles.glow}`}
     >
       <div className="flex items-center justify-between gap-4">
         <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-dk-text-2">
@@ -124,7 +127,7 @@ const AdminStatCard = ({
           </div>
         )}
       </div>
-    </motion.div>
+    </Card>
   )
 }
 

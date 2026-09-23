@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
 import CourseCard from "./CourseCard";
 import { motion } from "framer-motion";
+import Button from '../ui/Button';
 
 const CoursesSection = () => {
   const { allCourses, platformHomeData } = useContext(AppContext);
@@ -47,9 +48,11 @@ const CoursesSection = () => {
 
       {/* Button */}
       <div className="text-center">
-        <Link
+        <Button
+          as={Link}
           to="/course-list"
-          className="interactive-button inline-flex items-center gap-2 px-8 py-3 rounded-xl font-semibold text-text-primary border border-card-border bg-card-bg hover:bg-text-primary/5 hover:border-accent-blue/50 group"
+          variant="secondary"
+          className="px-8 py-3 group"
         >
           Browse All Courses
           <svg 
@@ -58,7 +61,7 @@ const CoursesSection = () => {
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
-        </Link>
+        </Button>
       </div>
     </div>
   );

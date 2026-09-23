@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { Link } from "react-router-dom";
 import { useAuthModal } from '../../contexts/AuthContext'
 import { motion } from 'framer-motion'
+import Button from '../ui/Button'
 
 const CallToAction = () => {
   const { openAuth } = useAuthModal()
@@ -47,24 +48,28 @@ const CallToAction = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-          <motion.button
+          <Button
+            as={motion.button}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="interactive-button w-full sm:w-auto px-8 py-4 rounded-2xl text-white bg-accent-blue hover:bg-accent-blue/90 font-semibold shadow-lg shadow-glow-blue"
+            variant="primary"
+            className="w-full sm:w-auto px-8 py-4 rounded-2xl font-semibold"
             onClick={handlePrimaryCTA}
           >
             {isSignedIn ? "Go to Dashboard" : "Start Learning Now"}
-          </motion.button>
+          </Button>
 
-          <Link
-            className="group interactive-button w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 rounded-2xl text-text-primary font-semibold border border-card-border bg-card-bg hover:border-accent-blue/50 shadow-sm hover:shadow-lg hover:shadow-glow-blue"
+          <Button
+            as={Link}
             to="/course-list"
+            variant="secondary"
+            className="group w-full sm:w-auto px-8 py-4 rounded-2xl font-semibold shadow-sm hover:shadow-lg hover:shadow-glow-blue"
           >
             Explore Platform
             <svg className="h-4 w-4 transition-transform group-hover:translate-x-1 text-accent-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-          </Link>
+          </Button>
         </div>
       </motion.div>
     </section>

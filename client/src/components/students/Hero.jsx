@@ -3,6 +3,7 @@ import { motion, useMotionValue, useTransform, animate } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { ArrowRight, Sparkles, BarChart3, Bot, BookOpen, TrendingUp } from 'lucide-react'
 import { AppContext } from '../../context/AppContext'
+import Button from '../ui/Button'
 
 /* ───────────── tiny animated counter ───────────── */
 const AnimatedCounter = ({ target, suffix = '', duration = 2 }) => {
@@ -204,11 +205,13 @@ const Hero = () => {
 
             {/* CTA buttons */}
             <motion.div variants={item} className="flex flex-wrap items-center gap-4 mt-9">
-              <motion.button
+              <Button
+                as={motion.button}
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => navigate('/course-list')}
-                className="group relative overflow-hidden inline-flex items-center gap-2 rounded-xl bg-accent-blue px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-glow-blue transition-shadow hover:shadow-xl hover:shadow-accent-blue/30"
+                variant="primary"
+                className="group relative overflow-hidden rounded-xl px-7 py-3.5"
               >
                 Get Started Free
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
@@ -218,16 +221,18 @@ const Hero = () => {
                   animate={{ translateX: ['-100%', '200%'] }}
                   transition={{ duration: 2, repeat: Infinity, ease: "linear", repeatDelay: 3 }}
                 />
-              </motion.button>
+              </Button>
 
-              <motion.button
+              <Button
+                as={motion.button}
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => navigate('/course-list')}
-                className="inline-flex items-center gap-2 rounded-xl border border-card-border bg-card-bg px-7 py-3.5 text-sm font-semibold text-text-primary transition-colors hover:border-accent-blue/50 hover:shadow-lg hover:shadow-glow-blue"
+                variant="secondary"
+                className="rounded-xl px-7 py-3.5"
               >
                 Explore Courses
-              </motion.button>
+              </Button>
             </motion.div>
 
           </motion.div>

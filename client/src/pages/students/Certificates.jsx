@@ -19,6 +19,7 @@ import { AppContext } from '../../context/AppContext';
 import Footer from '../../components/students/Footer';
 import CertificateViewer from '../../components/students/CertificateViewer';
 import PortfolioGeneratorPanel from '../../components/students/ai/PortfolioGeneratorPanel';
+import Button from '../../components/ui/Button';
 
 const MotionDiv = motion.div;
 const MotionArticle = motion.article;
@@ -168,14 +169,15 @@ const Certificates = () => {
             <h1 className="text-3xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">My Certificates</h1>
             <p className="text-slate-500 dark:text-dk-text-2 mt-2">View, download, and verify every certificate you have earned.</p>
           </div>
-          <button
+          <Button
+            variant="primary"
             onClick={fetchCertificates}
             disabled={loading}
-            className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70 transition-all active:scale-95 shadow-lg shadow-blue-600/25"
+            className="shadow-lg shadow-blue-600/25"
           >
             <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
             Refresh
-          </button>
+          </Button>
         </header>
 
         {/* Stats */}
@@ -188,7 +190,7 @@ const Certificates = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm"
+                className="interactive-card rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm"
               >
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-medium text-slate-500 dark:text-dk-text-2">{stat.label}</p>

@@ -6,6 +6,7 @@ import { AlertCircle, BookOpen, CheckCircle2, FileEdit, FileText, Paperclip, Ref
 import { AppContext } from "../../context/AppContext";
 import Footer from "../../components/students/Footer";
 import Loading from "../../components/students/Loading";
+import Button from "../../components/ui/Button";
 
 const badgeClasses = {
   not_submitted: "bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800/60 dark:text-slate-300 dark:border-slate-700",
@@ -110,14 +111,15 @@ const Assignments = () => {
             <h1 className="text-3xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">My Assignments</h1>
             <p className="text-slate-500 dark:text-dk-text-2 mt-2">Track deadlines, submit files, review feedback, and resubmit when requested.</p>
           </div>
-          <button
+          <Button
+            variant="primary"
             onClick={fetchAssignments}
             disabled={loading}
-            className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70 transition-all active:scale-95 shadow-lg shadow-blue-600/25 w-fit"
+            className="shadow-lg shadow-blue-600/25 w-fit"
           >
             <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
             Refresh
-          </button>
+          </Button>
         </header>
 
         {/* Stats Grid */}
@@ -130,68 +132,70 @@ const Assignments = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm"
+                className="interactive-card rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm"
               >
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium text-slate-500 dark:text-dk-text-2">{stat.label}</p>
+                <div className="flex items-center justify-between gap-4">
+                  <p className={`text-3xl font-bold font-space-grotesk ${stat.color}`}>{stat.value}</p>
                   <Icon size={20} className={stat.color} />
                 </div>
-                <p className={`mt-2 text-3xl font-bold font-space-grotesk ${stat.color}`}>{stat.value}</p>
+                <p className="mt-2 text-sm font-medium text-slate-500 dark:text-dk-text-2">{stat.label}</p>
               </motion.div>
             );
           })}
         </div>
 
         {/* Assignments Master-Detail Grid */}
-        <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(280px,320px)_1fr]">
           {/* Left: Assignment List */}
-          <div className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm overflow-hidden flex flex-col h-fit">
-            <div className="border-b border-slate-100 dark:border-dk-border px-6 py-4 bg-slate-50/50 dark:bg-dk-surface-2/50">
-              <h2 className="text-base font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Your Assignments</h2>
-            </div>
-            <div className="divide-y divide-slate-100 dark:divide-dk-border">
-              {assignments.map((assignment) => {
-                const submission = assignment.submission || {};
-                const isSelected = selectedAssignmentId === assignment._id;
-                return (
-                  <button
-                    key={assignment._id}
-                    type="button"
-                    onClick={() => setSelectedAssignmentId(assignment._id)}
-                    className={`w-full text-left px-6 py-5 transition-all flex flex-col gap-2 ${
-                      isSelected
-                        ? "bg-blue-50/70 dark:bg-blue-950/30 border-l-4 border-blue-600 dark:border-blue-500"
-                        : "hover:bg-slate-50 dark:hover:bg-dk-surface-2"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="space-y-1">
-                        <p className="font-bold text-sm font-space-grotesk text-slate-900 dark:text-dk-text">{assignment.title}</p>
-                        <p className="text-xs text-slate-500 dark:text-dk-text-2">
-                          {assignment.course?.courseTitle || "Untitled course"} • Due {assignment.dueDate ? new Date(assignment.dueDate).toLocaleDateString() : "N/A"}
-                        </p>
-                      </div>
-                      <span className={`shrink-0 rounded-full border px-2.5 py-0.5 text-xs font-semibold capitalize ${badgeClasses[submission.status] || badgeClasses.not_submitted}`}>
-                        {submission.status?.replace("_", " ") || "Not submitted"}
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap gap-2 text-xs font-medium text-slate-500 dark:text-dk-text-2">
-                      <span className="rounded-md bg-slate-100 dark:bg-dk-surface-2 px-2 py-0.5">{submission.attempts || 0} attempts</span>
-                      <span className="rounded-md bg-slate-100 dark:bg-dk-surface-2 px-2 py-0.5">{submission.isLate ? "Late" : "On time"}</span>
-                      {submission.maxScore ? (
-                        <span className="rounded-md bg-slate-100 dark:bg-dk-surface-2 px-2 py-0.5">
-                          {submission.totalScore || 0} / {submission.maxScore} pts
+          <div className="lg:sticky lg:top-6 lg:self-start">
+            <div className="interactive-card rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm overflow-hidden flex flex-col">
+              <div className="border-b border-slate-100 dark:border-dk-border px-6 py-4 bg-slate-50/50 dark:bg-dk-surface-2">
+                <h2 className="text-base font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Your Assignments</h2>
+              </div>
+              <div className="divide-y divide-slate-100 dark:divide-dk-border">
+                {assignments.map((assignment) => {
+                  const submission = assignment.submission || {};
+                  const isSelected = selectedAssignmentId === assignment._id;
+                  return (
+                    <button
+                      key={assignment._id}
+                      type="button"
+                      onClick={() => setSelectedAssignmentId(assignment._id)}
+                      className={`w-full text-left px-6 py-5 transition-all flex flex-col gap-2 ${
+                        isSelected
+                          ? "bg-blue-50/70 dark:bg-blue-950/30 border-l-4 border-blue-600 dark:border-blue-500"
+                          : "hover:bg-slate-50 dark:hover:bg-dk-surface-2"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="space-y-1">
+                          <p className="font-bold text-sm font-space-grotesk text-slate-900 dark:text-dk-text">{assignment.title}</p>
+                          <p className="text-xs text-slate-500 dark:text-dk-text-2">
+                            {assignment.course?.courseTitle || "Untitled course"} • Due {assignment.dueDate ? new Date(assignment.dueDate).toLocaleDateString() : "N/A"}
+                          </p>
+                        </div>
+                        <span className={`shrink-0 rounded-full border px-2.5 py-0.5 text-xs font-semibold capitalize ${badgeClasses[submission.status] || badgeClasses.not_submitted}`}>
+                          {submission.status?.replace("_", " ") || "Not submitted"}
                         </span>
-                      ) : null}
-                    </div>
-                  </button>
-                );
-              })}
-              {assignments.length === 0 ? (
-                <div className="px-6 py-12 text-center text-sm text-slate-500 dark:text-dk-text-2">
-                  No assignments have been assigned yet.
-                </div>
-              ) : null}
+                      </div>
+                      <div className="flex flex-wrap gap-2 text-xs font-medium text-slate-500 dark:text-dk-text-2">
+                        <span className="rounded-md bg-slate-100 dark:bg-dk-surface-2 px-2 py-0.5">{submission.attempts || 0} attempts</span>
+                        <span className="rounded-md bg-slate-100 dark:bg-dk-surface-2 px-2 py-0.5">{submission.isLate ? "Late" : "On time"}</span>
+                        {submission.maxScore ? (
+                          <span className="rounded-md bg-slate-100 dark:bg-dk-surface-2 px-2 py-0.5">
+                            {submission.totalScore || 0} / {submission.maxScore} pts
+                          </span>
+                        ) : null}
+                      </div>
+                    </button>
+                  );
+                })}
+                {assignments.length === 0 ? (
+                  <div className="px-6 py-12 text-center text-sm text-slate-500 dark:text-dk-text-2">
+                    No assignments have been assigned yet.
+                  </div>
+                ) : null}
+              </div>
             </div>
           </div>
 
@@ -203,7 +207,7 @@ const Assignments = () => {
                   key={selectedAssignment._id}
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm space-y-6"
+                  className="interactive-card rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm space-y-6"
                 >
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between border-b border-slate-100 dark:border-dk-border pb-5">
                     <div>
@@ -219,7 +223,7 @@ const Assignments = () => {
                     <p className="text-sm text-slate-600 dark:text-dk-text-2 leading-relaxed">{selectedAssignment.description}</p>
                   )}
 
-                  <div className="grid gap-3 text-sm sm:grid-cols-2">
+                  <div className="grid grid-cols-2 gap-4 text-sm">
                     <div className="rounded-xl border border-slate-100 dark:border-dk-border bg-slate-50 dark:bg-dk-surface-2 p-3">
                       <span className="block text-xs font-medium text-slate-400 dark:text-dk-text-3">Due date</span>
                       <p className="font-semibold text-slate-800 dark:text-dk-text mt-0.5">
@@ -249,17 +253,23 @@ const Assignments = () => {
                       <FileText size={16} className="text-blue-600 dark:text-blue-400" />
                       Instructions
                     </h3>
-                    <p className="mt-2 text-sm text-slate-600 dark:text-dk-text-2 whitespace-pre-line leading-relaxed">
-                      {selectedAssignment.instructions || "No instructions provided."}
-                    </p>
+                    {selectedAssignment.instructions ? (
+                      <ol className="mt-2 list-decimal list-inside space-y-1 text-sm leading-relaxed text-slate-600 dark:text-dk-text-2">
+                        {selectedAssignment.instructions.split(/\r?\n/).filter(Boolean).map((instruction, index) => (
+                          <li key={`${instruction}-${index}`}>{instruction.replace(/^\d+[.)]\s*/, '')}</li>
+                        ))}
+                      </ol>
+                    ) : (
+                      <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-dk-text-2">No instructions provided.</p>
+                    )}
                   </div>
 
                   {Array.isArray(selectedAssignment.rubric) && selectedAssignment.rubric.length > 0 ? (
-                    <div className="rounded-xl border border-slate-100 dark:border-dk-border bg-slate-50/50 dark:bg-dk-surface-2/50 p-4 space-y-3">
+                    <div className="rounded-xl border border-slate-100 dark:border-dk-border-2 bg-white dark:bg-dk-surface p-4 space-y-3">
                       <h3 className="text-sm font-bold text-slate-800 dark:text-dk-text">Rubric</h3>
                       <div className="space-y-2.5">
                         {selectedAssignment.rubric.map((item) => (
-                          <div key={item.rubricId} className="flex items-start justify-between gap-3 rounded-xl border border-slate-100 dark:border-dk-border bg-white dark:bg-dk-surface p-3.5 shadow-sm">
+                          <div key={item.rubricId} className="flex items-center justify-between gap-3 rounded-xl border border-slate-100 dark:border-dk-border bg-slate-50 dark:bg-dk-surface-2 p-3.5 shadow-sm">
                             <div>
                               <p className="text-sm font-semibold text-slate-900 dark:text-dk-text">{item.title}</p>
                               <p className="text-xs text-slate-500 dark:text-dk-text-2 mt-0.5">{item.description || "No description"}</p>
@@ -297,7 +307,7 @@ const Assignments = () => {
                 </motion.div>
 
                 {/* Submission Form */}
-                <form onSubmit={submitAssignment} className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm space-y-4">
+                <form onSubmit={submitAssignment} className="interactive-card rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm space-y-4">
                   <div>
                     <h3 className="text-base font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Submit Work</h3>
                     <p className="text-xs text-slate-500 dark:text-dk-text-2 mt-1">Attach files and write a short response. Resubmissions are supported if requested.</p>
@@ -318,29 +328,31 @@ const Assignments = () => {
                       className="block w-full rounded-xl border border-slate-200 dark:border-dk-border bg-slate-50 dark:bg-dk-surface-2 px-3 py-2 text-sm text-slate-600 dark:text-dk-text file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer"
                     />
                   </div>
-                  <div className="flex flex-wrap gap-3 pt-2">
-                    <button
+                  <div className="flex flex-wrap items-center gap-3 pt-2">
+                    <Button
                       type="submit"
+                      variant="primary"
                       disabled={submitting}
-                      className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 shadow-md shadow-blue-600/20 disabled:opacity-60 transition-all"
+                      className="shadow-md shadow-blue-600/20"
                     >
                       <Send size={15} />
                       {submitting ? "Submitting..." : selectedAssignment.submission?.status === "needs_resubmission" ? "Resubmit Assignment" : "Submit Assignment"}
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="button"
                       onClick={fetchAssignments}
-                      className="rounded-xl border border-slate-200 dark:border-dk-border px-5 py-2.5 text-sm font-medium text-slate-700 dark:text-dk-text hover:bg-slate-50 dark:hover:bg-dk-surface-2 transition-all"
+                      variant="outline"
+                      className="px-5 py-2.5"
                     >
                       Refresh
-                    </button>
+                    </Button>
                   </div>
                 </form>
 
                 {/* Submission Status */}
-                <div className="rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm space-y-4">
+                <div className="interactive-card rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm space-y-4">
                   <h3 className="text-base font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Submission Status</h3>
-                  <div className="grid gap-3 text-sm sm:grid-cols-2">
+                  <div className="grid grid-cols-2 gap-4 text-sm">
                     <div className="rounded-xl border border-slate-100 dark:border-dk-border bg-slate-50 dark:bg-dk-surface-2 p-3">
                       <span className="block text-xs font-medium text-slate-400 dark:text-dk-text-3">Score</span>
                       <p className="font-semibold text-slate-800 dark:text-dk-text mt-0.5">
@@ -360,7 +372,7 @@ const Assignments = () => {
                       <p className="font-semibold text-slate-800 dark:text-dk-text mt-0.5">{selectedAssignment.submission?.gradeLabel || "Not graded"}</p>
                     </div>
                   </div>
-                  <div className="rounded-xl border border-slate-100 dark:border-dk-border bg-slate-50 dark:bg-dk-surface-2 p-4 text-sm">
+                  <div className="col-span-2 rounded-xl border border-slate-100 dark:border-dk-border bg-slate-50 dark:bg-dk-surface-2 p-4 text-sm">
                     <p className="font-bold text-slate-800 dark:text-dk-text">Instructor Feedback</p>
                     <p className="mt-1 text-slate-600 dark:text-dk-text-2 whitespace-pre-line leading-relaxed">
                       {selectedAssignment.submission?.feedback || "No feedback yet."}

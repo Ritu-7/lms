@@ -3,16 +3,19 @@ import { assets } from '../../assets/assets'
 import { AppContext } from '../../context/AppContext'
 import { Link } from 'react-router-dom'
 import { Star } from 'lucide-react'
+import Card from '../ui/Card'
 
 const CourseCard = ({ course }) => {
   const { currency, calculateRating } = React.useContext(AppContext)
   const rating = Number(calculateRating(course))
 
   return (
-    <Link
+    <Card
+      as={Link}
       to={`/course/${course._id}`}
       onClick={() => window.scrollTo(0, 0)}
-      className="group interactive-card flex flex-col h-full overflow-hidden bg-card-bg border border-card-border rounded-2xl shadow-sm hover:border-accent-blue/50"
+      variant="interactive"
+      className="group flex flex-col h-full overflow-hidden p-0"
     >
       {/* Thumbnail */}
       <div className="relative overflow-hidden aspect-video">
@@ -58,7 +61,7 @@ const CourseCard = ({ course }) => {
           ).toFixed(2)}
         </p>
       </div>
-    </Link>
+    </Card>
   )
 }
 

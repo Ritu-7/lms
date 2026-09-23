@@ -10,6 +10,7 @@ import { BookOpen, Award, CheckCircle2, Search, FileCheck2 } from 'lucide-react'
 import LearningPathPanel from '../../components/students/ai/LearningPathPanel';
 import StudyCoachPanel from '../../components/students/ai/StudyCoachPanel';
 import LearningAnalyticsPanel from '../../components/students/ai/LearningAnalyticsPanel';
+import Button from '../../components/ui/Button';
 
 const MyEnrollments = () => {
   const navigate = useNavigate();
@@ -118,27 +119,30 @@ const MyEnrollments = () => {
             <p className="text-slate-500 dark:text-dk-text-2 mt-2">Track your progress, assignments, and earned certificates.</p>
           </div>
           <div className="flex gap-3 flex-wrap">
-            <button
+            <Button
+              variant="primary"
               onClick={() => navigate('/certificates')}
-              className="flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white hover:bg-emerald-700 transition-all active:scale-95 shadow-lg shadow-emerald-600/25"
+              className="bg-emerald-600 shadow-lg shadow-emerald-600/25 hover:bg-emerald-700"
             >
               <FileCheck2 size={16} />
               Certificates
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="primary"
               onClick={() => navigate('/quizzes')}
-              className="flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white hover:bg-indigo-700 transition-all active:scale-95 shadow-lg shadow-indigo-600/25"
+              className="bg-indigo-600 shadow-lg shadow-indigo-600/25 hover:bg-indigo-700"
             >
               <Award size={16} />
               My Quizzes
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="primary"
               onClick={() => navigate('/assignments')}
-              className="flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-600/25"
+              className="shadow-lg shadow-blue-600/25"
             >
               <BookOpen size={16} />
               My Assignments
-            </button>
+            </Button>
           </div>
         </header>
 
@@ -154,7 +158,7 @@ const MyEnrollments = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
-              className="rounded-2xl border border-slate-200 dark:border-dk-border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface dark:bg-dk-surface p-6 shadow-sm"
+              className="interactive-card rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface p-6 shadow-sm"
             >
               <p className="text-sm font-medium text-slate-500 dark:text-dk-text-2">{stat.label}</p>
               <p className={`mt-2 text-3xl font-bold font-space-grotesk ${stat.color} dark:text-dk-text`}>{stat.value}</p>
@@ -171,7 +175,7 @@ const MyEnrollments = () => {
         </div>
 
         {/* Courses Table */}
-        <div className="mb-10 rounded-2xl border border-slate-200 dark:border-dk-border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface dark:bg-dk-surface shadow-sm overflow-hidden">
+        <div className="interactive-card mb-10 rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-sm overflow-hidden">
           <div className="p-6 border-b border-slate-200 dark:border-dk-border">
             <h2 className="text-xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Active Courses</h2>
           </div>

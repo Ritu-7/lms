@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import Button from '../ui/Button';
+import Card from '../ui/Card';
 
 const PricingSection = () => {
   const [isYearly, setIsYearly] = useState(false);
@@ -92,13 +94,15 @@ const PricingSection = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {plans.map((plan, idx) => (
-            <motion.div
+            <Card
+              as={motion.div}
               key={plan.name}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1, duration: 0.5 }}
-              className={`interactive-card group relative flex flex-col p-8 rounded-3xl border bg-card-bg shadow-sm hover:scale-[1.03] hover:border-accent-blue hover:shadow-xl hover:shadow-glow-blue/30 focus-within:scale-[1.03] ${
+              variant={plan.recommended ? 'highlighted' : 'interactive'}
+              className={`group relative flex flex-col p-8 rounded-3xl hover:scale-[1.03] focus-within:scale-[1.03] ${
                 plan.recommended 
                   ? 'border-accent-blue shadow-glow-blue/20 hover:shadow-glow-blue/50' 
                   : 'border-card-border'
@@ -137,18 +141,16 @@ const PricingSection = () => {
                 ))}
               </ul>
 
-              <Link
+              <Button
+                as={Link}
                 to={plan.buttonLink}
+                variant={plan.recommended ? 'primary' : 'secondary'}
                 aria-label={`${plan.buttonText} with the ${plan.name} plan`}
-                className={`interactive-button w-full py-4 rounded-xl font-bold text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary ${
-                  plan.recommended
-                    ? 'bg-accent-blue text-white hover:bg-accent-blue/90 shadow-lg shadow-accent-blue/25'
-                    : 'bg-text-primary/5 text-text-primary hover:bg-text-primary/10 border border-card-border'
-                }`}
+                className="w-full py-4 rounded-xl font-bold"
               >
                 {plan.buttonText}
-              </Link>
-            </motion.div>
+              </Button>
+            </Card>
           ))}
         </div>
       </div>
