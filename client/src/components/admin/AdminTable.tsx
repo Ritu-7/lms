@@ -20,7 +20,7 @@ const toneClassMap: Record<NonNullable<AdminTableRow['status']>, string> = {
 
 const actionToneClassMap: Record<string, string> = {
   View: 'text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20',
-  Edit: 'text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 dark:text-dk-text-2',
+  Edit: 'text-slate-600 hover:bg-slate-50 dark:hover:bg-dk-surface-2 dark:text-dk-text-2',
   Suspend: 'text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-900/20',
   Delete: 'text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20',
   'Promote to Educator': 'text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20',
@@ -31,7 +31,7 @@ const actionToneClassMap: Record<string, string> = {
   Unpublish: 'text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-900/20',
   Schedule: 'text-cyan-700 hover:bg-cyan-50 dark:hover:bg-cyan-900/20',
   Download: 'text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20',
-  Generate: 'text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 dark:text-dk-text-2',
+  Generate: 'text-slate-600 hover:bg-slate-50 dark:hover:bg-dk-surface-2 dark:text-dk-text-2',
   'View Profile': 'text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20',
   'Edit Role': 'text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20',
 }
@@ -62,7 +62,7 @@ const AdminTable = ({ columns, rows, rowActions, emptyMessage = 'No records avai
         <tbody className="divide-y divide-slate-100 dark:divide-dk-border text-slate-700 dark:text-dk-text">
           {rows.length > 0 ? (
             rows.map((row) => (
-              <tr key={row.id} className="hover:bg-slate-50 dark:hover:bg-dk-surface-2/60 transition-colors">
+              <tr key={row.id} className="hover:bg-slate-50 dark:hover:bg-dk-surface-2 transition-colors">
                 {row.cells.map((cell, index) => {
                   const status = index === row.cells.length - 1 ? row.status : undefined
                   return (

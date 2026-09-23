@@ -511,7 +511,7 @@ const AdminAIRecommendations = () => {
                   ? `Please wait ${cooldownSeconds}s before refreshing again`
                   : 'Refresh recommendations (bypasses cache)'
               }
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-dk-surface-2 border border-slate-200 dark:border-dk-border text-slate-600 dark:text-dk-text-2 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-dk-surface-2 border border-slate-200 dark:border-dk-border text-slate-600 dark:text-dk-text-2 hover:bg-slate-50 dark:hover:bg-dk-surface-2 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <RefreshCw
                 className={`w-3 h-3 ${status === 'loading' ? 'animate-spin' : ''}`}

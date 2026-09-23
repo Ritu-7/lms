@@ -268,7 +268,7 @@ const AdminAIInsights = () => {
           <div className="relative">
             <button
               onClick={() => setShowRangeDropdown(!showRangeDropdown)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-dk-surface-2 border border-slate-200 dark:border-dk-border text-slate-600 dark:text-dk-text-2 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-dk-surface-2 border border-slate-200 dark:border-dk-border text-slate-600 dark:text-dk-text-2 hover:bg-slate-50 dark:hover:bg-dk-surface-2 transition-colors shadow-sm"
             >
               {DATE_RANGE_LABELS[dateRange]}
               <ChevronDown className="w-3 h-3" />
@@ -282,7 +282,7 @@ const AdminAIInsights = () => {
                     className={`w-full text-left px-3 py-2 text-sm transition-colors ${
                       dateRange === key
                         ? 'bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 font-medium'
-                        : 'text-slate-700 dark:text-dk-text hover:bg-slate-50 dark:hover:bg-slate-700'
+                        : 'text-slate-700 dark:text-dk-text hover:bg-slate-50 dark:hover:bg-dk-surface-2'
                     }`}
                   >
                     {label}
@@ -298,7 +298,7 @@ const AdminAIInsights = () => {
               onClick={handleRegenerate}
               disabled={status === 'loading' || cooldownSeconds > 0}
               title={cooldownSeconds > 0 ? `Please wait ${cooldownSeconds}s before refreshing again` : "Refresh insights (bypasses cache)"}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-dk-surface-2 border border-slate-200 dark:border-dk-border text-slate-600 dark:text-dk-text-2 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-dk-surface-2 border border-slate-200 dark:border-dk-border text-slate-600 dark:text-dk-text-2 hover:bg-slate-50 dark:hover:bg-dk-surface-2 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <RefreshCw className={`w-3 h-3 ${status === 'loading' ? 'animate-spin' : ''}`} />
               {cooldownSeconds > 0 ? `Refresh (${cooldownSeconds}s)` : 'Refresh'}

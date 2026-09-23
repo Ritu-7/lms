@@ -20,7 +20,7 @@ const Dashboard = () => {
     : []
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0D0D10] p-4 md:p-8 space-y-10">
+    <div className="min-h-full bg-slate-50 p-4 md:p-8 space-y-10 dark:bg-dk-base">
       <div>
         <h1 className="text-3xl font-bold font-space-grotesk text-slate-900 dark:text-dk-text">Admin Dashboard</h1>
         <p className="mt-2 text-slate-500 dark:text-dk-text-2">
@@ -48,7 +48,7 @@ const Dashboard = () => {
         />
       )}
 
-      <div className="grid gap-8 xl:grid-cols-2">
+      <div className="grid items-start gap-8 xl:grid-cols-2">
         <AdminSection
           title="Latest Enrollments"
           description="Most recent learner activity across the platform."

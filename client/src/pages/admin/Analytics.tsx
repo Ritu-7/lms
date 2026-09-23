@@ -155,7 +155,7 @@ const Analytics = () => {
           <button
             type="button"
             onClick={() => setShowDropdown(!showDropdown)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold bg-white dark:bg-dk-surface border border-slate-200/80 dark:border-dk-border text-slate-700 dark:text-dk-text hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-sm"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold bg-white dark:bg-dk-surface border border-slate-200/80 dark:border-dk-border text-slate-700 dark:text-dk-text hover:bg-slate-50 dark:hover:bg-dk-surface-2 transition-all shadow-sm"
           >
             <Calendar className="w-4 h-4 text-blue-500" />
             <span>{dateRange}</span>
@@ -174,7 +174,7 @@ const Analytics = () => {
                   className={`w-full text-left px-3.5 py-2 rounded-xl text-xs font-medium transition-colors ${
                     dateRange === range
                       ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-semibold'
-                      : 'text-slate-700 dark:text-dk-text-2 hover:bg-slate-50 dark:hover:bg-slate-800'
+                      : 'text-slate-700 dark:text-dk-text-2 hover:bg-slate-50 dark:hover:bg-dk-surface-2'
                   }`}
                 >
                   {range}

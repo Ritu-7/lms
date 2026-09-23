@@ -13,12 +13,12 @@ const AdminSidebar = () => {
     <motion.aside
       animate={{ width: isCollapsed ? 72 : 256 }}
       transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-      className="relative border-r border-slate-200/80 dark:border-dk-border bg-white dark:bg-dk-surface min-h-[calc(100vh-65px)] py-5 flex flex-col z-10 shrink-0"
+      className="relative h-full min-h-0 overflow-auto border-r border-slate-200/80 bg-white py-5 dark:border-dk-border dark:bg-dk-surface flex flex-col z-10 shrink-0"
     >
       {/* Collapse Toggle Button (desktop) */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="hidden md:flex absolute -right-3.5 top-6 w-7 h-7 rounded-full border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface text-slate-500 dark:text-dk-text items-center justify-center shadow-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+        className="hidden md:flex absolute right-2 top-6 z-30 w-7 h-7 rounded-full border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface text-slate-500 dark:text-dk-text items-center justify-center shadow-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
         title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
         {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
