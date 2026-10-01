@@ -130,6 +130,20 @@ const wrap = (handler) => async (req, res, next) => {
     error.statusCode = human.statusCode;
     error.message = human.message;
     error.isOperational = true;
+    try {
+      const user = req.clerkUserId ? await User.findOne({ clerkUserId: req.clerkUserId }) : null;
+      if (user) {
+        await logUsage({
+          user,
+          feature: String(req.path || "student_ai").replace(/^\//, "").replace(/\//g, "_"),
+          status: "error",
+          title: "Student AI",
+          errorMessage: human.message,
+        });
+      }
+    } catch {
+      // ignore logging failures
+    }
     next(error);
   }
 };

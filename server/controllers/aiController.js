@@ -244,6 +244,11 @@ export const analyzeCodingTask = async (req, res, next) => {
     }
 
     const userApiKey = decryptKey(user.encryptedGeminiKey);
+    if (!userApiKey) {
+      const missing = new Error("NO_API_KEY");
+      missing.statusCode = 403;
+      throw missing;
+    }
     const executionPayload = execution && typeof execution === "object" ? {
       stdout: execution.stdout || "",
       stderr: execution.stderr || "",
@@ -274,6 +279,15 @@ export const analyzeCodingTask = async (req, res, next) => {
 
     res.json({ success: true, data: { analysis, model } });
   } catch (error) {
+    if (error.message === "NO_API_KEY" || error.statusCode === 403) {
+      error.statusCode = 403;
+      error.message = "Add your Gemini API key in AI Settings to use this feature. We never fall back to sample answers.";
+      error.isOperational = true;
+    } else if (error.statusCode === 429 || /quota|rate/i.test(String(error.message))) {
+      error.statusCode = 429;
+      error.message = "The AI service is busy right now. Wait a moment and try again.";
+      error.isOperational = true;
+    }
     const user = req.clerkUserId ? await User.findOne({ clerkUserId: req.clerkUserId }).lean().catch(() => null) : null;
     if (user) {
       await logUsage({

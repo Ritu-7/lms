@@ -7,7 +7,7 @@ import {
   useStudentAi,
 } from './studentAiShared'
 
-const CourseChatPanel = ({ courseId, courseTitle, currentLessonTitle, currentLessonId }) => {
+const CourseChatPanel = ({ courseId, courseTitle, currentLessonTitle, currentLessonId, onSelectLesson }) => {
   const { post } = useStudentAi()
   const [question, setQuestion] = useState('')
   const [messages, setMessages] = useState([])
@@ -65,9 +65,23 @@ const CourseChatPanel = ({ courseId, courseTitle, currentLessonTitle, currentLes
                 <ul className="mt-2 space-y-1 text-xs opacity-90">
                   {message.citations.map((citation) => (
                     <li key={`${citation.lessonId}-${citation.section}`}>
-                      {citation.lessonTitle}
-                      {citation.chapterTitle ? ` · ${citation.chapterTitle}` : ''}
-                      {citation.section ? ` · ${citation.section}` : ''}
+                      {onSelectLesson ? (
+                        <button
+                          type="button"
+                          onClick={() => onSelectLesson(citation.lessonId)}
+                          className="underline-offset-2 hover:underline"
+                        >
+                          {citation.lessonTitle}
+                          {citation.chapterTitle ? ` · ${citation.chapterTitle}` : ''}
+                          {citation.section ? ` · ${citation.section}` : ''}
+                        </button>
+                      ) : (
+                        <>
+                          {citation.lessonTitle}
+                          {citation.chapterTitle ? ` · ${citation.chapterTitle}` : ''}
+                          {citation.section ? ` · ${citation.section}` : ''}
+                        </>
+                      )}
                     </li>
                   ))}
                 </ul>

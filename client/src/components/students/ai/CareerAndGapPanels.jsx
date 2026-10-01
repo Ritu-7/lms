@@ -89,7 +89,10 @@ export const SkillGapPanel = () => {
                     <button
                       key={`${resource.courseId}-${resource.lessonId}`}
                       type="button"
-                      onClick={() => navigate(`/course/${resource.courseId}`)}
+                      onClick={() => {
+                        const lesson = resource.lessonId ? `?lesson=${encodeURIComponent(resource.lessonId)}` : ''
+                        navigate(`/course/${resource.courseId}${lesson}`)
+                      }}
                       className="block w-full rounded-lg border border-slate-200 dark:border-dk-border px-3 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-dk-surface-2"
                     >
                       <span className="font-semibold text-blue-700 dark:text-blue-300">{resource.courseTitle}</span>

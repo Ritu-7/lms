@@ -59,7 +59,7 @@ const StudyCoachPanel = () => {
         />
       </div>
       <StudentAiStatus
-        loading={loading && !result}
+        loading={loading}
         error={error}
         empty={Boolean(result && !actions.length && !result.reply)}
         emptyMessage={result?.emptyReason || 'The coach needs enrollments or quiz activity before it can suggest a next action.'}

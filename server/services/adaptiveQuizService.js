@@ -44,7 +44,7 @@ export const pickAdaptiveNext = (remaining = [], { lastCorrect, lastQuestion, qu
     const words = String(item.prompt || "").toLowerCase().split(/\W+/);
     const conceptOverlap = words.filter((word) => tokens.has(word)).length;
     const rankDelta = Math.abs(difficultyRank(item) - target);
-    return { item, score: rankDelta * 4 + (lastCorrect ? 0 : -conceptOverlap) };
+    return { item, score: rankDelta * 4 + (lastCorrect ? 0 : -conceptOverlap * 6) };
   });
   scored.sort((a, b) => a.score - b.score);
   return scored[0].item;

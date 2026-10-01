@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext, useCallback, useMemo } from "react";
 import { AppContext } from "../../context/AppContext";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { assets } from "../../assets/assets";
 import YouTube from "react-youtube";
 import Footer from "../../components/students/Footer";
@@ -29,6 +29,8 @@ const Player = () => {
   } = useContext(AppContext);
 
   const { courseId } = useParams();
+  const [searchParams] = useSearchParams();
+  const requestedLessonId = searchParams.get("lesson") || "";
 
   const [courseData, setCourseData] = useState(null);
   const [openSection, setOpenSection] = useState({});
@@ -282,13 +284,24 @@ const Player = () => {
         setCourseData(data.courseData);
         const chapters = getCourseChapters(data.courseData);
         if (!playerData && chapters.length > 0) {
-          const firstChapter = chapters[0];
-          if (firstChapter.chapterContent.length > 0) {
-            setPlayerData({
-              ...firstChapter.chapterContent[0],
-              chapter: 1,
-              lecture: 1,
-            });
+          const flattened = chapters.flatMap((ch, chIdx) =>
+            (ch.chapterContent || []).map((lec, lecIdx) => ({
+              ...lec,
+              chapter: chIdx + 1,
+              lecture: lecIdx + 1,
+            }))
+          );
+          const requested = flattened.find(
+            (lec) =>
+              requestedLessonId &&
+              (String(lec.lectureId) === String(requestedLessonId) || String(lec.lessonId) === String(requestedLessonId))
+          );
+          const first = requested || flattened[0];
+          if (first) {
+            setPlayerData(first);
+            if (requested) {
+              setOpenSection((prev) => ({ ...prev, [requested.chapter - 1]: true }));
+            }
           }
         }
       } else {
@@ -299,7 +312,7 @@ const Player = () => {
     } finally {
       setLoading(false);
     }
-  }, [backendURL, courseId, getToken, playerData, getCourseChapters]);
+  }, [backendURL, courseId, getToken, playerData, getCourseChapters, requestedLessonId]);
 
   const getCourseProgress = useCallback(async () => {
     try {
@@ -413,6 +426,19 @@ const Player = () => {
       setNoteSaving(false);
     }
   }, [backendURL, courseId, currentLessonNote?._id, currentLessonPosition.label, currentLessonPosition.seconds, currentLessonPosition.type, fetchStudyLibrary, getLessonType, getToken, playerData]);
+
+  useEffect(() => {
+    if (!requestedLessonId || !flatLessons.length) return;
+    const currentId = playerData?.lectureId || playerData?.lessonId;
+    if (String(currentId) === String(requestedLessonId)) return;
+    const match = flatLessons.find(
+      (lec) => String(lec.lectureId) === String(requestedLessonId) || String(lec.lessonId) === String(requestedLessonId)
+    );
+    if (match) {
+      setPlayerData(match);
+      setOpenSection((prev) => ({ ...prev, [match.chapter - 1]: true }));
+    }
+  }, [flatLessons, playerData?.lectureId, playerData?.lessonId, requestedLessonId]);
 
   useEffect(() => {
     if (playerData) {
@@ -588,6 +614,15 @@ const Player = () => {
                 courseTitle={courseData.courseTitle}
                 currentLessonId={playerData?.lectureId || playerData?.lessonId}
                 currentLessonTitle={playerData?.lectureTitle || playerData?.lessonTitle}
+                onSelectLesson={(lessonId) => {
+                  const match = flatLessons.find(
+                    (lec) => String(lec.lectureId) === String(lessonId) || String(lec.lessonId) === String(lessonId)
+                  );
+                  if (match) {
+                    setPlayerData(match);
+                    setOpenSection((prev) => ({ ...prev, [match.chapter - 1]: true }));
+                  }
+                }}
               />
             )}
           </div>

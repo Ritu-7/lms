@@ -20,6 +20,8 @@ export const liftHover = { y: -3 }
 export const glassCard =
   'interactive-card rounded-2xl border border-slate-200 dark:border-dk-border bg-white dark:bg-dk-surface shadow-lg shadow-slate-900/5 dark:shadow-black/20'
 
+const lessonQuery = (lessonId) => (lessonId ? `?lesson=${encodeURIComponent(lessonId)}` : '')
+
 export const hrefForLearningResource = (item = {}) => {
   if (item.hrefHint === 'quiz' && (item.entityId || item.lessonId || item.quizId)) {
     return `/quiz/${item.entityId || item.lessonId || item.quizId}`
@@ -28,13 +30,13 @@ export const hrefForLearningResource = (item = {}) => {
     return '/assignments'
   }
   if (item.hrefHint === 'catalog' && item.courseId) {
-    return `/course/${item.courseId}`
+    return `/course/${item.courseId}${lessonQuery(item.lessonId)}`
   }
   if (item.kind === 'course' && item.courseId) {
     return `/course/${item.courseId}`
   }
   if (item.courseId) {
-    return `/player/${item.courseId}`
+    return `/player/${item.courseId}${lessonQuery(item.lessonId)}`
   }
   return '/course-list'
 }

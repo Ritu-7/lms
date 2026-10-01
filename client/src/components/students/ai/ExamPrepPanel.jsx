@@ -62,7 +62,11 @@ const ExamPrepPanel = ({ quizId, compact = false }) => {
                 <button
                   type="button"
                   className="w-full text-left"
-                  onClick={() => topic.courseId && navigate(`/player/${topic.courseId}`)}
+                  onClick={() => {
+                    if (!topic.courseId) return
+                    const lesson = topic.lessonId ? `?lesson=${encodeURIComponent(topic.lessonId)}` : ''
+                    navigate(`/player/${topic.courseId}${lesson}`)
+                  }}
                 >
                   <p className="text-xs font-semibold text-blue-600">Rank {topic.rank}</p>
                   <h3 className="font-semibold text-slate-900 dark:text-dk-text">{topic.topic}</h3>
